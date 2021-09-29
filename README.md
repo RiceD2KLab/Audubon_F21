@@ -104,7 +104,6 @@ The following open source packages are used in this project:
     │
     ├── README.md
     ├── requirements.txt
-    ├── dataloader.py
     ├── data_exploration.py  
     ├── cropping.py
     ├── train_net.py
@@ -225,8 +224,8 @@ same object class, and will boost the performance of the models.
 <p>
   
   <b>Krish Kabra</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: <a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: krish.kabra@rice.edu <a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/krishk97">@krishk97</a> <br>
   
   <b>Minxuan Luo</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: <a></a> <br>
