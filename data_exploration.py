@@ -47,6 +47,13 @@ def draw_bounding_boxes(img, data, legend=True):
   plt.show()
 
 def dataLoader():
+    """
+    Function to load data in for data exploration
+    INPUTS: 
+        
+    OUTPUTS: 
+        target_data -- <pd.dataframe> dataframe with bounding boxes processed and aggregated
+    """
     data_dir = 'data/Annotations 20210912/'
 
     # Load CSV files 
@@ -64,6 +71,12 @@ def dataLoader():
     return target_data
 
 def birdCounts(target_data):
+    """
+    Function to display bird counts graphic
+    INPUTS: 
+        target_data -- <pd.dataframe> dataframe with bounding boxes processed and aggregated
+    OUTPUTS: 
+    """
     bounding_box_data = target_data.groupby(['class_name']).agg({'width': ['mean'], 'height': ['mean', 'count']})
 
     bounding_box_data[('area',  'mean')] = bounding_box_data[( 'width',  'mean')] * bounding_box_data[('height',  'mean')]
@@ -85,6 +98,12 @@ def birdCounts(target_data):
     plt.show()
 
 def birdPerPhoto(target_data):
+    """
+    Function to display bird pper photo graphic
+    INPUTS: 
+        target_data -- <pd.dataframe> dataframe with bounding boxes processed and aggregated
+    OUTPUTS: 
+    """
     by_file = target_data.groupby(["file"]).count()["class_id"]
     a = list(by_file)
     print(pd.Series(a).describe())
@@ -130,6 +149,11 @@ def birdPerPhoto(target_data):
     plt.show()
 
 def birdExamples():
+    """
+    Function to display examples of each bird
+    INPUTS: 
+    OUTPUTS: 
+    """
     target_data = {'Avocet': "", 'Black Crowned Night Heron': "", 'Brown Pelican': "", 'Cormorant': "",
  'Great Blue Heron': "", 'Great Egret/White Morph': "", 'Herring/Ringbilled Gull': "",
  'Laughing Gull': "", 'Mixed Tern': "", 'Other/Unknown': "", 'Reddish Egret': "",
