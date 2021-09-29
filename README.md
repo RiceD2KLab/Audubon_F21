@@ -165,14 +165,11 @@ The following open source packages are used in this project:
 <h2 id="preprocessing"> Preprocessing</h2>
 
 <p align="justify"> 
-  The WISDM (Wireless Sensor Data Mining) dataset includes raw time-series data collected from accelerometer and gyroscope sensors of a smartphone and smartwatch with their corresponding labels for each activity. The sensor data was collected at a rate of 20 Hz (i.e., every 50ms). Weiss et.al., collected this dataset from 51 subjects who performed 18 different activities listed in the previous table, each for 3 minutes, while having the smartphone in their right pant pocket and wearing the smartwatch in their dominant hand. <br>
-  In this project we tried three different feature sets, extracted from the raw data, which are as follows: 
+  The data wrangling module of the pipeline largely involves preparing the data to be fed into deep learning models used to detect objects, namely birds. Our data wrangling process includes:
   <ol>
     <li><b>Tiling</b></li> 
     <li><b>Data Augmentation</b></li>
   </ol>
-  
-All these three approaches used windowing technique to segment the raw time series and extract features from each segment.
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -184,7 +181,7 @@ All these three approaches used windowing technique to segment the raw time seri
   
   A caveat of this approach is that unavoidably some birds will be cut into two parts and appear in two neighboring patches, as seen in Figure 2. In addition, as counting the number of birds is among the objectives, the same problem needs to be tackled in the detection phase as well. In this case, only the generated image with over 50% fraction of the cropped bird keeps the bounding box, while the remaining fraction of the bounding box in another image is discarded. This means that we are training the model to detect both complete birds and partial birds.
   
-  In the detection stage, We will also try to come up with a proper merging mechanism to merge partial detection in neighboring patches and count as one if repeated counting is a common pattern in detection.
+  In the detection stage, we will also try to come up with a proper merging mechanism to merge partial detection in neighboring patches and count as one if repeated counting is a common pattern in detection.
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
