@@ -10,7 +10,7 @@ import csv
 
 def csv_to_dict(csv_path, test=False):
     """
-    Function to extract an info dictionary from an xml file
+    Function to extract an info dictionary from an csv file
     INPUT:
       csv_path -- path for an csv file, format of bndbox should be xmin, ymin,
                   xmax, ymax
