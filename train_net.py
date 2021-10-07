@@ -7,6 +7,7 @@
 #
 # WORK IN PROGRESS:
 # 1. Update how argparser is currently working within setup, train, and eval functions 
+# 2. Fix detectron2 crash with uncropped images. 
 
 import detectron2
 from detectron2.utils.logger import setup_logger
