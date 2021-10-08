@@ -1,0 +1,28 @@
+project: audubon_f21
+program: train_net.py
+method: bayes
+metric:
+  name: val_loss
+  goal: minimize
+parameters:
+    dataset_path:
+        value: './data/lipread_20_mp4/'
+    checkpoint_dir:
+        value: './checkpoints/'
+    epochs: 
+        value: 35
+    feature_size: 
+        value: 136
+    batch_size: 
+        values: [32, 48, 64, 96, 128] 
+    dropout_p: 
+        values: [0.15, 0.2, 0.25, 0.3, 0.4]
+    learning_rate: 
+        min: 1e-6
+        max: 1e-4
+    weight_decay: 
+        values: [0, 1e-5, 1e-6, 1e-7]
+    hidden_size:
+        values: [128, 256, 512, 1024]
+    num_layers: 
+        values: [1,2,3,4]
