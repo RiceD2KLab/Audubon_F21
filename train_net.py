@@ -8,6 +8,7 @@
 # WORK IN PROGRESS:
 # 1. Update to include loading model weights from checkpoint 
 # 2. Setup evaluation only mode 
+# 3. setup checkpointing 
 
 import detectron2
 from detectron2.utils.logger import setup_logger
@@ -30,25 +31,26 @@ from detectron2.utils.visualizer import Visualizer, ColorMode
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 
 # import project utility functions 
+from utils.config import add_retinanet_config
 from utils.dataloader import get_bird_dicts
 from utils.trainer import Trainer 
 
 
 def get_parser():
     parser = default_argument_parser() #  Create a parser with some common arguments used by detectron2 users.
-    parser.add_argument('--data_dir',type=str, help="path to dataset directory")
-    parser.add_argument('--img_ext',default='.JPG',type=str, help="image file extension")
-    parser.add_argument('--dir_exceptions',type=list, help="list of folders in dataset directory to be ignored")
+    parser.add_argument('--data_dir',default='./data',type=str, help="path to dataset directory. must contain 'train', 'val', and 'test' folders")
+    parser.add_argument('--img_ext',default='.JPEG',type=str, help="image file extension")
+    parser.add_argument('--dir_exceptions',default=[],type=list, help="list of folders in dataset directory to be ignored")
    
-    parse.add_argument('--model_type',default='retinanet',type=str,help='choice of object detector. Options: "retinanet"')
-    parse.add_argument('--num_workers',default=2,type=int,help='number of workers for dataloader')
-    parse.add_argument('--learning_rate',default=0.0001,,help='base learning rate')
+    parser.add_argument('--model_type',default='retinanet',type=str,help='choice of object detector. Options: "retinanet"')
+    parser.add_argument('--num_workers',default=2,type=int,help='number of workers for dataloader')
+    parser.add_argument('--learning_rate',default=1e-4,type=float,help='base learning rate')
     parser.add_argument('--weight_decay', type=float, default=0, help='L2 regularization')
-    parse.add_argument('--max_iter',default=1e-4,type=float,help='maximum epochs')
-    parse.add_argument('--batch_size',default=64,type=int,help='batch size')
+    parser.add_argument('--max_iter',default=100,type=int,help='maximum epochs')
+    parser.add_argument('--batch_size',default=64,type=int,help='batch size')
 
-    parse.add_argument('--output_dir',default='./output',type=str,help='output directory for training logs and final model')
-    # parse.add_argument('--',default=,type=,help=)
+    parser.add_argument('--output_dir',default='./output',type=str,help='output directory for training logs and final model')
+    # parser.add_argument('--',default=,type=,help=)
 
     return parser
 
@@ -69,12 +71,12 @@ def setup(args):
       MetadataCatalog.get(f"birds_{d}").set(thing_classes=["bird"])
 
       #dataset_dicts = get_bird_dicts(os.path.join(data_dir,d),img_ext)
-      #print(f"\n {d} examples:")
-      #for k in random.sample(dataset_dicts, 3):
+      #for i,k in enumerate(random.sample(dataset_dicts, 3)):
       #    img = cv2.imread(k["file_name"])
       #    visualizer = Visualizer(img[:, :, ::-1], metadata=MetadataCatalog.get(f"birds_{d}"), scale=0.5)
       #    out = visualizer.draw_dataset_dict(k)
-      #    cv2_imshow(out.get_image()[:, :, ::-1])
+      #    cv2.imshow(f'{d} example {i}',out.get_image()[:, :, ::-1])
+      #    cv2.waitKey(1)
 
     # Create detectron2 config 
     if args.model_type == 'retinanet': 
@@ -102,6 +104,8 @@ def eval(cfg):
     cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")  # path to the model we just trained
     predictor = DefaultPredictor(cfg)
     
+    cfg.DATASETS.TEST = ("birds_val","birds_test") 
+
     val_evaluator = COCOEvaluator("birds_val", output_dir=cfg.OUTPUT_DIR)
     val_loader = build_detection_test_loader(cfg, "birds_val")
     print('validation inference:',inference_on_dataset(predictor.model, val_loader, val_evaluator))
@@ -109,29 +113,30 @@ def eval(cfg):
     test_loader = build_detection_test_loader(cfg, "birds_test")
     print('test inference:',inference_on_dataset(predictor.model, test_loader, test_evaluator))
 
-    #for d in ["val", "test"]: 
-    #    dataset_dicts = get_bird_dicts(os.path.join(data_dir,d),img_ext)
-    #    print(f'\n {d} examples:')
-    #    for k in random.sample(dataset_dicts, 3):    
-    #        im = cv2.imread(k["file_name"])
-    #        outputs = predictor(im)  
-    #        outputs = outputs["instances"].to("cpu")
-    #        outputs = outputs[outputs.scores > 0.8]
-    #        v = Visualizer(im[:, :, ::-1],
-    #                    metadata=MetadataCatalog.get(f"birds_{d}"), 
-    #                    scale=0.5, 
-    #                    instance_mode=ColorMode.IMAGE_BW   # remove the colors of unsegmented pixels. This option is only available for segmentation models
-    #        )
-    #        out = v.draw_instance_predictions(outputs)
-    #        cv2_imshow(out.get_image()[:, :, ::-1])
-    #        cv2.waitKey(1)
+    for d in ["val", "test"]: 
+        dataset_dicts = get_bird_dicts(os.path.join(data_dir,d),img_ext)
+        print(f'\n {d} examples:')
+        for k in random.sample(dataset_dicts, 3):    
+            im = cv2.imread(k["file_name"])
+            outputs = predictor(im)  
+            outputs = outputs["instances"].to("cpu")
+            outputs = outputs[outputs.scores > 0.8]
+            v = visualizer(im[:, :, ::-1],
+                        metadata=metadatacatalog.get(f"birds_{d}"), 
+                        scale=0.5, 
+                        instance_mode=colormode.image_bw   # remove the colors of unsegmented pixels. this option is only available for segmentation models
+            )
+            out = v.draw_instance_predictions(outputs)
+            cv2.imshow(f'{d} prediction {i}',out.get_image()[:, :, ::-1])
+            cv2.waitKey(1)
 
 def main(args): 
     cfg = setup(args)
-    train(cfg, args)
+    train(cfg)
     eval(cfg)
-    #cv2.destroyAllWindows()
-    pass  
+    cv2.waitkey(0)
+    print("Press any key to continue...")
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     
@@ -144,5 +149,5 @@ if __name__ == "__main__":
         num_machines=args.num_machines,
         machine_rank=args.machine_rank,
         dist_url=args.dist_url,
-        args=(args,),
+        args=(args,)
     )
