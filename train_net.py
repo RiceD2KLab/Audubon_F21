@@ -31,7 +31,7 @@ from detectron2.utils.visualizer import Visualizer, ColorMode
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 
 # import project utility functions 
-from utils.config import add_retinanet_config
+from utils.config import add_retinanet_config, add_fasterrcnn_config
 from utils.dataloader import get_bird_dicts
 from utils.trainer import Trainer 
 
@@ -42,7 +42,7 @@ def get_parser():
     parser.add_argument('--img_ext',default='.JPEG',type=str, help="image file extension")
     parser.add_argument('--dir_exceptions',default=[],type=list, help="list of folders in dataset directory to be ignored")
    
-    parser.add_argument('--model_type',default='retinanet',type=str,help='choice of object detector. Options: "retinanet"')
+    parser.add_argument('--model_type',default='retinanet',type=str,help='choice of object detector. Options: "retinanet", "faster-rcnn"')
     parser.add_argument('--num_workers',default=2,type=int,help='number of workers for dataloader')
     parser.add_argument('--learning_rate',default=1e-4,type=float,help='base learning rate')
     parser.add_argument('--weight_decay', type=float, default=0, help='L2 regularization')
@@ -54,89 +54,89 @@ def get_parser():
 
     return parser
 
-def setup(args): 
-    # data setup
-    data_dir = args.data_dir
-    img_ext = args.img_ext
-    dir_exceptions = args.dir_exceptions 
+def setup(args):
+   # data setup
+   data_dir = args.data_dir
+   img_ext = args.img_ext
+   dir_exceptions = args.dir_exceptions
 
-    dirs = [d for d in os.listdir(data_dir) 
-              if d not in dir_exceptions]
-    for d in dirs: 
-      if f"birds_{d}" in DatasetCatalog.list():
-          DatasetCatalog.remove(f"birds_{d}")
-      DatasetCatalog.register(f"birds_{d}", lambda d=d: get_bird_dicts(os.path.join(data_dir,d),img_ext))
-      if f"birds_{d}" in MetadataCatalog.list():
-          MetadataCatalog.remove(f"birds_{d}")
-      MetadataCatalog.get(f"birds_{d}").set(thing_classes=["bird"])
+   dirs = [d for d in os.listdir(data_dir)
+             if d not in dir_exceptions]
+   for d in dirs:
+     if f"birds_{d}" in DatasetCatalog.list():
+         DatasetCatalog.remove(f"birds_{d}")
+     DatasetCatalog.register(f"birds_{d}", lambda d=d: get_bird_dicts(os.path.join(data_dir,d),img_ext))
+     if f"birds_{d}" in MetadataCatalog.list():
+         MetadataCatalog.remove(f"birds_{d}")
+     MetadataCatalog.get(f"birds_{d}").set(thing_classes=["bird"])
 
-      #dataset_dicts = get_bird_dicts(os.path.join(data_dir,d),img_ext)
-      #for i,k in enumerate(random.sample(dataset_dicts, 3)):
-      #    img = cv2.imread(k["file_name"])
-      #    visualizer = Visualizer(img[:, :, ::-1], metadata=MetadataCatalog.get(f"birds_{d}"), scale=0.5)
-      #    out = visualizer.draw_dataset_dict(k)
-      #    cv2.imshow(f'{d} example {i}',out.get_image()[:, :, ::-1])
-      #    cv2.waitKey(1)
+     #dataset_dicts = get_bird_dicts(os.path.join(data_dir,d),img_ext)
+     #for i,k in enumerate(random.sample(dataset_dicts, 3)):
+     #    img = cv2.imread(k["file_name"])
+     #    visualizer = Visualizer(img[:, :, ::-1], metadata=MetadataCatalog.get(f"birds_{d}"), scale=0.5)
+     #    out = visualizer.draw_dataset_dict(k)
+     #    cv2.imshow(f'{d} example {i}',out.get_image()[:, :, ::-1])
+     #    cv2.waitKey(1)
 
-    # Create detectron2 config 
-    if args.model_type == 'retinanet': 
-        cfg = add_retinanet_config(args)
-    else: 
-        raise Exception("Invalid model type entered")
+   # Create detectron2 config
+   if args.model_type == 'retinanet':
+       cfg = add_retinanet_config(args)
+   else:
+       raise Exception("Invalid model type entered")
 
-    cfg.DATASETS.TRAIN = ("birds_train",)
-    cfg.DATASETS.TEST = ("birds_val",) # "birds_test"
+   cfg.DATASETS.TRAIN = ("birds_train",)
+   cfg.DATASETS.TEST = ("birds_val",) # "birds_test"
             
-    return cfg
+   return cfg
 
 
-def train(cfg): 
-    # setup training logger
-    setup_logger()
+def train(cfg):
+   # setup training logger
+   setup_logger()
        
-    trainer = Trainer(cfg) 
-    trainer.resume_or_load(resume=False)
+   trainer = Trainer(cfg)
+   trainer.resume_or_load(resume=False)
 
-    return trainer.train() 
+   return trainer.train()
 
-def eval(cfg): 
-    # load model weights
-    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")  # path to the model we just trained
-    predictor = DefaultPredictor(cfg)
+def eval(cfg, args):
+   # load model weights
+   cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")  # path to the model we just trained
+   predictor = DefaultPredictor(cfg)
     
-    cfg.DATASETS.TEST = ("birds_val","birds_test") 
+   cfg.DATASETS.TEST = ("birds_val","birds_test")
 
-    val_evaluator = COCOEvaluator("birds_val", output_dir=cfg.OUTPUT_DIR)
-    val_loader = build_detection_test_loader(cfg, "birds_val")
-    print('validation inference:',inference_on_dataset(predictor.model, val_loader, val_evaluator))
-    test_evaluator = COCOEvaluator("birds_test", output_dir=cfg.OUTPUT_DIR)
-    test_loader = build_detection_test_loader(cfg, "birds_test")
-    print('test inference:',inference_on_dataset(predictor.model, test_loader, test_evaluator))
+   val_evaluator = COCOEvaluator("birds_val", output_dir=cfg.OUTPUT_DIR)
+   val_loader = build_detection_test_loader(cfg, "birds_val")
+   print('validation inference:',inference_on_dataset(predictor.model, val_loader, val_evaluator))
+   test_evaluator = COCOEvaluator("birds_test", output_dir=cfg.OUTPUT_DIR)
+   test_loader = build_detection_test_loader(cfg, "birds_test")
+   print('test inference:',inference_on_dataset(predictor.model, test_loader, test_evaluator))
 
-    for d in ["val", "test"]: 
-        dataset_dicts = get_bird_dicts(os.path.join(data_dir,d),img_ext)
-        print(f'\n {d} examples:')
-        for k in random.sample(dataset_dicts, 3):    
-            im = cv2.imread(k["file_name"])
-            outputs = predictor(im)  
-            outputs = outputs["instances"].to("cpu")
-            outputs = outputs[outputs.scores > 0.8]
-            v = visualizer(im[:, :, ::-1],
-                        metadata=metadatacatalog.get(f"birds_{d}"), 
-                        scale=0.5, 
-                        instance_mode=colormode.image_bw   # remove the colors of unsegmented pixels. this option is only available for segmentation models
-            )
-            out = v.draw_instance_predictions(outputs)
-            cv2.imshow(f'{d} prediction {i}',out.get_image()[:, :, ::-1])
-            cv2.waitKey(1)
+   for d in ["val", "test"]:
+       dataset_dicts = get_bird_dicts(os.path.join(args.data_dir,d),args.img_ext)
+       print(f'\n {d} examples:')
+       for k in random.sample(dataset_dicts, 3):
+           im = cv2.imread(k["file_name"])
+           outputs = predictor(im)
+           outputs = outputs["instances"].to("cpu")
+           outputs = outputs[outputs.scores > 0.8]
+           v = visualizer(im[:, :, ::-1],
+                       metadata=metadatacatalog.get(f"birds_{d}"),
+                       scale=0.5,
+                       instance_mode=colormode.image_bw   # remove the colors of unsegmented pixels. this option is only available for segmentation models
+           )
+           out = v.draw_instance_predictions(outputs)
+           cv2.imshow(f'{d} prediction {i}',out.get_image()[:, :, ::-1])
+           cv2.waitKey(1)
 
-def main(args): 
-    cfg = setup(args)
-    train(cfg)
-    eval(cfg)
-    cv2.waitkey(0)
-    print("Press any key to continue...")
-    cv2.destroyAllWindows()
+def main(args):
+   cfg = setup(args)
+   train(cfg)
+   eval(cfg,args)
+   cv2.waitkey(0)
+   print("Press any key to continue...")
+   cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     
