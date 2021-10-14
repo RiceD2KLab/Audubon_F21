@@ -1,4 +1,4 @@
--e git+https://github.com/facebookresearch/detectron2.git
+-e git+https://github.com/facebookresearch/detectron2.git#egg=detectron2
 numpy~=1.20.3
 torch~=1.9.0+cu102
 pandas~=1.3.3
