@@ -1,0 +1,37 @@
+project: audubon_f21
+program: wandb_train.py
+method: grid
+metric:
+  name: validation_loss
+  goal: minimize
+parameters:
+  data_dir:
+    value: './data'
+  img_ext:
+    value: '.JPEG'
+  output_dir:
+    value: './output/wandb_sweep/'
+  model_type:
+    value: 'retinanet'
+  model_config_file:
+    value: ["COCO-Detection/retinanet_R_50_FPN_1x.yaml" ,
+            "COCO-Detection/retinanet_R_50_FPN_3x.yaml",
+            "COCO-Detection/retinanet_R_101_FPN_3x.yaml",
+            ]
+  pretrained_coco_model_weights:
+    value: [ True, False ]
+  eval_period:
+    value: 10
+  max_iter:
+    value: 20000
+  learning_rate:
+    value: 0.0001
+  weight_decay:
+    value: 0.0001
+  batch_size:
+    value: 32
+  focal_loss_gamma:
+    value: 2.0
+  focal_loss_alpha:
+    value: 0.25
+
