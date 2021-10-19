@@ -46,9 +46,9 @@ def get_parser():
                         help='path to model config file eg. "COCO-Detection/retinanet_R_50_FPN_1x.yaml"')
     parser.add_argument('--pretrained_coco_model_weights', default=True, type=bool,
                         help='load pretrained coco model weights from model config file')
-    parser.add_argument('--num_workers', default=2, type=int, help='number of workers for dataloader')
+    parser.add_argument('--num_workers', default=4, type=int, help='number of workers for dataloader')
     parser.add_argument('--eval_period', default=0, type=int, help='period between coco eval scores on val set')
-    parser.add_argument('--max_iter', default=500, type=int, help='maximum epochs')
+    parser.add_argument('--max_iter', default=1000, type=int, help='maximum epochs')
     # hyperparams
     parser.add_argument('--learning_rate', default=1e-4, type=float, help='base learning rate')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='L2 regularization')
