@@ -1,5 +1,6 @@
 project: audubon_f21
-program: wandb_train.py
+program: wandb_train_net.py
+description: tune hyperparams for retinanet R50 FPN 3x
 method: bayes
 metric:
   name: validation_loss
@@ -16,19 +17,18 @@ parameters:
   model_config_file:
     value: "COCO-Detection/retinanet_R_50_FPN_3x.yaml"
   pretrained_coco_model_weights:
-    value: [True, False]
-  eval_period:
-    value: 10
+    values: [True, False]
   max_iter:
-    value: 20000
+    value: 1000
   learning_rate:
-    value: [1e-2,5e-3,1e-3,5e-4,1e-4,1e-5]
+    values: [1e-2,5e-3,1e-3,5e-4,1e-4,1e-5]
   weight_decay:
-    value: [1e-4, 1e-5, 1e-6,1e-7,0]
+    values: [1e-4, 1e-5, 1e-6,1e-7,0]
   batch_size:
-    value: [4,8,16,32,48,64,128]
+    values: [4,8,12,16]
   focal_loss_gamma:
-    value: [0,0.2,0.5,1.0,2.0,5.0]
+    values: [0,0.2,0.5,1.0,2.0,5.0]
   focal_loss_alpha:
-    value: [0.25,0.5,0.75,0.9,0.99]
+    values: [0.25,0.5,0.75,0.9,0.99]
+
 

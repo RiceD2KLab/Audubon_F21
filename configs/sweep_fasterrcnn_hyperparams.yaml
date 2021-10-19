@@ -1,5 +1,5 @@
 project: audubon_f21
-program: wandb_train.py
+program: wandb_train_net.py
 method: bayes
 metric:
   name: validation_loss
@@ -17,10 +17,8 @@ parameters:
     value: "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"
   pretrained_coco_model_weights:
     value: [True, False]
-  eval_period:
-    value: 10
   max_iter:
-    value: 20000
+    value: 1000
   learning_rate:
     value: [1e-2,5e-3,1e-3,5e-4,1e-4,1e-5]
   weight_decay:
