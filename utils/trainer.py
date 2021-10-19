@@ -1,13 +1,15 @@
 import numpy as np
 import torch
-import time
-from datetime import timedelta
 
 from detectron2.engine.hooks import HookBase
 import detectron2.utils.comm as comm
 from detectron2.data import DatasetMapper, build_detection_test_loader
 from detectron2.engine import DefaultTrainer
-from detectron2.evaluation import COCOEvaluator
+from detectron2.evaluation import COCOEvaluator, DatasetEvaluators
+
+from utils.events import WAndBWriter
+
+# TODO: add visualization hook to see visual performance during training
 
 class ValidationLossHook(HookBase): 
   """
@@ -48,16 +50,13 @@ class ValidationLossHook(HookBase):
     if is_final or (self._period > 0 and next_iter % self._period == 0):
       self._do_loss_eval()
 
-# Build custom trainer with validation loss hook + evaluation  
-
-
-class Trainer(DefaultTrainer): 
+class Trainer(DefaultTrainer):
   @classmethod
   def build_evaluator(cls, cfg, dataset_name, output_folder=None):
     if output_folder is None:     
-      return COCOEvaluator(dataset_name, output_dir=cfg.OUTPUT_DIR)
+      return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=cfg.OUTPUT_DIR)])
     else: 
-      return COCOEvaluator(dataset_name, output_dir=output_folder)
+      return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=output_folder)])
 
   def build_hooks(self): 
     hooks = super().build_hooks()
@@ -71,4 +70,32 @@ class Trainer(DefaultTrainer):
                               eval_period = 20,
                               )
     )
-    return hooks 
+    return hooks
+
+class WAndBTrainer(DefaultTrainer):
+  @classmethod
+  def build_evaluator(cls, cfg, dataset_name, output_folder=None):
+    if output_folder is None:
+      return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=cfg.OUTPUT_DIR)])
+    else:
+      return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=output_folder)])
+
+  def build_hooks(self):
+    hooks = super().build_hooks()
+    hooks.append(ValidationLossHook(
+                              self.model,
+                              build_detection_test_loader(
+                                self.cfg,
+                                self.cfg.DATASETS.TEST[0], # assume first testing dataset is validation dataset
+                                DatasetMapper(self.cfg,True)
+                                ),
+                              eval_period = 20,
+                              )
+    )
+
+    return hooks
+
+  def build_writers(self):
+    writers = super().build_writers()
+    writers.append(WAndBWriter())
+    return writers
