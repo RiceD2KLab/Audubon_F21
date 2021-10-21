@@ -21,11 +21,17 @@ parameters:
   max_iter:
     value: 1000
   learning_rate:
-    values: [1e-2,5e-3,1e-3,5e-4,1e-4,1e-5]
+    values: [1e-2,5e-3,1e-3,5e-4,1e-4,1e-5,1e-7]
+  solver_warmup_factor:
+    values: [1,1e-1,1e-2,1e-3]
+  solver_warmup_iters:
+    values: [1,100]
+  scheduler_steps:
+    values: [[], [500,]]
   weight_decay:
     values: [1e-4, 1e-5, 1e-6,1e-7,0]
   batch_size:
-    values: [4,8,12,16]
+    values: [4,6,8,12]
   focal_loss_gamma:
     values: [0,0.2,0.5,1.0,2.0,5.0]
   focal_loss_alpha:

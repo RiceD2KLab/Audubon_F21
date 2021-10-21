@@ -1,14 +1,10 @@
 # config.py 
 #
-# functions 
-#
 # Authors: Krish Kabra, Minxuan Luo, Alexander Xiong, William Lu
 # Copyright (C) 2021-2022 Houston Audubon and others
 
-import os 
 from detectron2.config import get_cfg
 from detectron2 import model_zoo
-
 
 def add_retinanet_config(args):
     # Create detectron2 config and predictor
@@ -27,11 +23,14 @@ def add_retinanet_config(args):
     # solver parameters
     cfg.SOLVER.IMS_PER_BATCH = args.batch_size
     cfg.SOLVER.BASE_LR = args.learning_rate
+    cfg.SOLVER.WARMUP_FACTOR = args.solver_warmup_factor
+    cfg.SOLVER.WARMUP_ITERS = args.solver_warmup_iters
+    cfg.SOLVER.GAMMA = args.scheduler_gamma
+    cfg.SOLVER.STEPS = args.scheduler_steps
     cfg.SOLVER.MAX_ITER = args.max_iter
     # other
     cfg.TEST.EVAL_PERIOD = args.eval_period # set to non-zero integer to get evaluation metric results
     cfg.DATALOADER.NUM_WORKERS = args.num_workers
-    cfg.SOLVER.STEPS = []        
 
     return cfg
 
@@ -50,6 +49,10 @@ def add_fasterrcnn_config(args):
     # solver parameters
     cfg.SOLVER.IMS_PER_BATCH = args.batch_size
     cfg.SOLVER.BASE_LR = args.learning_rate
+    cfg.SOLVER.WARMUP_FACTOR = args.solver_warmup_factor
+    cfg.SOLVER.WARMUP_ITERS = args.solver_warmup_iters
+    cfg.SOLVER.GAMMA = args.scheduler_gamma
+    cfg.SOLVER.STEPS = args.scheduler_steps
     cfg.SOLVER.MAX_ITER = args.max_iter
     # other
     cfg.TEST.EVAL_PERIOD = args.eval_period  # set to non-zero integer to get evaluation metric results
@@ -57,3 +60,4 @@ def add_fasterrcnn_config(args):
     cfg.SOLVER.STEPS = []
 
     return cfg
+
