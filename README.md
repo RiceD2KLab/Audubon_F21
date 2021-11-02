@@ -13,7 +13,7 @@
     <li><a href="#about-the-project"> ➤ About The Project</a></li>
     <li><a href="#prerequisites"> ➤ Prerequisites</a></li>
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
-    <li><a href="#installation"> ➤ Installation Instructions</a></li>
+    <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
     <li><a href="#dataset"> ➤ Dataset</a></li>
     <li>
       <a href="#preprocessing"> ➤ Preprocessing</a>
@@ -109,9 +109,10 @@ The following open source packages are used in this project:
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
-<h2 id="installation"> Installation Instructions</h2>
+<h2 id="installation"> Installation & Usage Instructions</h2>
 <p> 
   <ol>
+  <li>##### Add more information here ######</li>
   <li>Clone the repository</li>
   <li>Execute 'pip install requirements.txt'</li>
   <li>Execute the files wanted.</li>
