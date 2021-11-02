@@ -3,3 +3,11 @@ desktop.ini
 
 # Visual Studio 
 .vs
+
+# PyCharm
+.idea
+
+# folders
+detectron2/
+data/
+output/

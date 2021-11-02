@@ -1,0 +1,36 @@
+project: audubon_f21
+program: wandb_train_net.py
+method: grid
+metric:
+  name: validation_loss
+  goal: minimize
+parameters:
+  data_dir:
+    value: './data'
+  img_ext:
+    value: '.JPEG'
+  output_dir:
+    value: './output/wandb_sweep/'
+  model_type:
+    value: 'faster-rcnn'
+  model_config_file:
+    value: ["COCO-Detection/faster_rcnn_R_101_C4_3x.yaml",
+            "COCO-Detection/faster_rcnn_R_101_DC5_3x.yaml",
+            "COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml",
+            "COCO-Detection/faster_rcnn_R_50_C4_1x.yaml",
+            "COCO-Detection/faster_rcnn_R_50_C4_3x.yaml",
+            "COCO-Detection/faster_rcnn_R_50_DC5_1x.yaml",
+            "COCO-Detection/faster_rcnn_R_50_DC5_3x.yaml"
+            "COCO-Detection/faster_rcnn_R_50_FPN_1x.yaml"
+            "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"
+            ]
+  pretrained_coco_model_weights:
+    value: [True, False]
+  max_iter:
+    value: 1000
+  learning_rate:
+    value: 0.0001
+  weight_decay:
+    value: 0.0001
+  batch_size:
+    value: 16
