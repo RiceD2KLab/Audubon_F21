@@ -102,7 +102,7 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',skip_empty_imgs=T
         obj = {
               "bbox": [row["x"], row["y"], row["width"], row["height"]],
               "bbox_mode": BoxMode.XYWH_ABS,
-              "category_id": len(class_names)+1
+              "category_id": len(class_names)
                }
         objs.append(obj)
 
