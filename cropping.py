@@ -213,7 +213,7 @@ def crop_dataset(data_dir, output_dir, class_map, crop_height=640, crop_width=64
 
 def train_val_test_split(file_dir, output_dir, train, val):
     """
-    :param file_dir: crop_dataset()'s output path
+    :param file_dir: crop_dataset()'s output path: an empty folder
     :param train: fraction for training
     :param val: fraction for validation, 1-train-val will be fraction for test
     :return:
