@@ -3,6 +3,7 @@
 # Authors: Krish Kabra, Minxuan Luo, Alexander Xiong, William Lu
 # Copyright (C) 2021-2022 Houston Audubon and others
 
+import os
 from detectron2.config import get_cfg
 from detectron2 import model_zoo
 
@@ -12,9 +13,14 @@ def add_retinanet_config(args):
     if args.model_config_file != "":
         # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
         cfg.merge_from_file(model_zoo.get_config_file(args.model_config_file))
-        if args.pretrained_coco_model_weights:
-            # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
-            cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(args.model_config_file)
+        if args.pretrained_weights_file:
+            if os.path.splitext(args.pretrained_weights_file)[1] == ".yaml":
+                cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(args.pretrained_weights_file)
+            else:
+                cfg.MODEL.WEIGHTS = args.pretrained_weights_file
+        # if args.pretrained_coco_model_weights:
+        #     # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
+        #     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(args.model_config_file)
 
     # Loss parameters
     cfg.MODEL.RETINANET.FOCAL_LOSS_GAMMA = args.focal_loss_gamma
@@ -29,6 +35,7 @@ def add_retinanet_config(args):
     cfg.SOLVER.STEPS = args.scheduler_steps
     cfg.SOLVER.MAX_ITER = args.max_iter
     # other
+    cfg.SOLVER.CHECKPOINT_PERIOD = args.checkpoint_period
     cfg.TEST.EVAL_PERIOD = args.eval_period # set to non-zero integer to get evaluation metric results
     cfg.DATALOADER.NUM_WORKERS = args.num_workers
 
@@ -40,9 +47,14 @@ def add_fasterrcnn_config(args):
     if args.model_config_file != "":
         # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
         cfg.merge_from_file(model_zoo.get_config_file(args.model_config_file))
-        if args.pretrained_coco_model_weights:
-            # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
-            cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(args.model_config_file)
+        if args.pretrained_weights_file != "":
+            if os.path.splitext(args.pretrained_weights_file)[1] == ".yaml":
+                cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(args.pretrained_weights_file)
+            else:
+                cfg.MODEL.WEIGHTS = args.pretrained_weights_file
+        # if args.pretrained_coco_model_weights:
+        #     # Find a model from detectron2's model zoo. You can use the https://dl.fbaipublicfiles... url as well
+        #     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(args.model_config_file)
 
     # loss parameters
     cfg.SOLVER.WEIGHT_DECAY = args.weight_decay
@@ -55,9 +67,9 @@ def add_fasterrcnn_config(args):
     cfg.SOLVER.STEPS = args.scheduler_steps
     cfg.SOLVER.MAX_ITER = args.max_iter
     # other
+    cfg.SOLVER.CHECKPOINT_PERIOD = args.checkpoint_period
     cfg.TEST.EVAL_PERIOD = args.eval_period  # set to non-zero integer to get evaluation metric results
     cfg.DATALOADER.NUM_WORKERS = args.num_workers
-    cfg.SOLVER.STEPS = []
 
     return cfg
 

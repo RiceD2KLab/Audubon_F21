@@ -1,4 +1,4 @@
-from IPython.display import Image  # for displaying images
+from tqdm import tqdm
 import os
 from PIL import Image, ImageDraw
 import numpy as np
@@ -8,7 +8,7 @@ import cv2
 import csv
 
 
-def csv_to_dict(csv_path, test=False):
+def csv_to_dict(csv_path, img_ext='JPG'):
     """
     Function to extract an info dictionary from an csv file
     INPUT:
@@ -23,10 +23,9 @@ def csv_to_dict(csv_path, test=False):
     info_dict['file_name'] = csv_path.split('/')[-1]
 
     # plotting function needs it, but in JPEG.
-    if test:
-        im = cv2.imread(csv_path.replace('csv', 'JPEG'))
-    else:
-        im = cv2.imread(csv_path.replace('csv', 'JPG'))
+    _, annot_file_ext = os.path.splitext(csv_path)
+
+    im = cv2.imread(csv_path.replace(annot_file_ext, img_ext))
 
     # append width, height, depth
     info_dict['img_size'] = im.shape
@@ -75,7 +74,7 @@ def dict_to_csv(info_dict, output_path, empty):
         if not empty:
             writer.writerows(new_bbx_buffer)
 
-    print(save_file_name)
+    # print(save_file_name)
 
 
 def plot_img_bbx(image, annotation_lst):
@@ -110,11 +109,12 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
     info_dict -- the info_dict we get from the csv_to_dict function.
     overlap -- threshold for keeping a bbox.
     """
+
     # file_dict stores info of one subimage as a dictionary. keys indicate original file name and subimage position.
-    file_dict[str(i) + '_' + str(j)] = {}
-    file_dict[str(i) + '_' + str(j)]['bbox'] = []
-    file_dict[str(i) + '_' + str(j)]['file_name'] = info_dict['file_name'][:-4] + '_' + str(i) + '_' + str(j) + '.JPG'
-    file_dict[str(i) + '_' + str(j)]['img_size'] = (right - left, bottom - top, 3)
+    file_dict = {'bbox': [],
+                 'file_name': info_dict['file_name'][:-4] + '_' + str(i) + '_' + str(j) + '.JPG',
+                 'img_size': (right - left, bottom - top, 3)
+                 }
 
     for b in info_dict['bbox']:
         ymin = max(b['ymin'] - top, 0)
@@ -129,19 +129,20 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
             if (xmax - xmin) * (ymax - ymin) > overlap * (b['xmax'] - b['xmin']) * (b['ymax'] - b['ymin']) \
                     or b['xmin'] >= left and b['xmax'] <= right and b['ymin'] >= top and b['ymax'] <= bottom:
                 # instance_dict is the info_dict for one patch
-                instance_dict = {}
+                instance_dict = {'class': b['class'],
+                                 'desc': b['desc'],
+                                 'xmin': max(b['xmin'] - left, 0),
+                                 'xmax': min(b['xmax'] - left, crop_width),
+                                 'ymin': max(b['ymin'] - top, 0),
+                                 'ymax': min(b['ymax'] - top, crop_height)
+                                 }
                 # transform bbx coordinates
-                instance_dict['class'] = b['class']
-                instance_dict['desc'] = b['desc']
-                instance_dict['xmin'] = max(b['xmin'] - left, 0)
-                instance_dict['xmax'] = min(b['xmax'] - left, crop_width)
-                instance_dict['ymin'] = max(b['ymin'] - top, 0)
-                instance_dict['ymax'] = min(b['ymax'] - top, crop_height)
+                file_dict['bbox'].append(instance_dict)
 
-                file_dict[str(i) + '_' + str(j)]['bbox'].append(instance_dict)
+    return file_dict
 
 
-def crop_img(csv_file, crop_height, crop_width, overlap=0.5, output_path='../content/data/crop_test/'):
+def crop_img(csv_file, img_ext, output_path, crop_height, crop_width, sliding_size, overlap=0.5):
     """
     This function crops one image and output corresponding labels.
     Currently, this function generates the cropped images AND the corresponding csv files to '../content/data/crop_test'
@@ -149,32 +150,34 @@ def crop_img(csv_file, crop_height, crop_width, overlap=0.5, output_path='../con
     crop_height, crop_weight -- desired patch size.
     overlap -- threshold for keeping bbx.
     """
-    info_dict = csv_to_dict(csv_file)
+
+    _, annot_file_ext = os.path.splitext(csv_file)
+    info_dict = csv_to_dict(csv_file, img_ext=img_ext)
     img_height, img_width, img_depth = info_dict['img_size']
-    im = Image.open(csv_file.replace('csv', 'JPG'), 'r')
+    im = Image.open(csv_file.replace(annot_file_ext, img_ext), 'r')
     file_name = csv_file.split('/')[-1][:-4]
 
+    file_dicts = {}
     # go through the image from top left corner
-    for i in range(img_height // crop_height + 1):
+    for i in range((img_height - crop_height) // sliding_size + 2):
+        for j in range((img_width - crop_width) // sliding_size + 2):
 
-        for j in range(img_width // crop_width + 1):
+            if j < ((img_width - crop_width) // sliding_size + 1) and i < ((img_height - crop_height) // sliding_size + 1):
+                left = j * sliding_size
+                right = crop_width + j * sliding_size
+                top = i * sliding_size
+                bottom = crop_height + i * sliding_size
 
-            if j < (img_width // crop_width) and i < (img_height // crop_height):
-                left = j * crop_width
-                right = (j + 1) * crop_width
-                top = i * crop_height
-                bottom = (i + 1) * crop_height
-
-            elif j == img_width // crop_width and i < (img_height // crop_height):
+            elif j == ((img_width - crop_width) // sliding_size + 1) and i < ((img_height - crop_height) // sliding_size + 1):
                 left = img_width - crop_width
                 right = img_width
-                top = i * crop_height
-                bottom = (i + 1) * crop_height
+                top = i * sliding_size
+                bottom = crop_height + i * sliding_size
 
             # if rectangles left on edges, take subimage of crop_height*crop_width by taking a part from within.
-            elif i == img_height // crop_height and j < (img_width // crop_width):
-                left = j * crop_width
-                right = (j + 1) * crop_width
+            elif i == ((img_height - crop_height) // sliding_size + 1) and j < ((img_width - crop_width) // sliding_size + 1):
+                left = j * sliding_size
+                right = crop_width + j * sliding_size
                 top = img_height - crop_height
                 bottom = img_height
 
@@ -184,27 +187,44 @@ def crop_img(csv_file, crop_height, crop_width, overlap=0.5, output_path='../con
                 top = img_height - crop_height
                 bottom = img_height
 
-                # even if no birds in cropped img, keep the cropped image
-            tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap)
-            print('Generating segmentation at position: ', left, top, right, bottom)
+            # even if no birds in cropped img, keep the cropped image
+
+            file_dicts[str(i) + '_' + str(j)] = tile_annot(left, right, top, bottom, info_dict,
+                                                           i, j, crop_height, crop_width, overlap)
+            # print('Generating segmentation at position: ', left, top, right, bottom)
 
             c_img = im.crop((left, top, right, bottom))
-            c_img.save(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
-            image = Image.open(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
-            image.save(output_path + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
+            c_img.save(os.path.join(output_path, file_name + '_' + str(i) + '_' + str(j) + '.JPEG'))
+            # image = Image.open(os.path.join(output_path, file_name + '_' + str(i) + '_' + str(j)))
+            # image.save(output_path + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
 
     # output the file_dict to a folder of txt files containing labels for each cropped file
-    for b in file_dict:
-        if file_dict[b]['bbox'] == []:
+    for b in file_dicts:
+        if not file_dicts[b]['bbox']:
             empty = True
         else:
             empty = False
-        dict_to_csv(file_dict[b], empty=empty, output_path=output_path)
+        dict_to_csv(file_dicts[b], empty=empty, output_path=output_path)
 
-    return file_dict
+    return file_dicts
 
 
-if __name__ == 'main':
-    file_dict = {}
-    file_dict = crop_img('/Users/luominxuan/Desktop/UAV Image - XML - CSV - Ref/DSC06695.csv', crop_height=640,
-                         crop_width=640, output_path='/Users/luominxuan/Desktop/UAV Image - XML - CSV - Ref/test')
+def crop_dataset(data_dir, output_dir,
+                 annot_file_ext='csv', img_ext='.JPG', crop_height=640, crop_width=640, sliding_size=400,
+                 overlap=0.5):
+    # Load CSV files
+    files = [d for d in os.listdir(data_dir) if d[-3:] == annot_file_ext]
+    for f in tqdm(files):
+        f = os.path.join(data_dir, f)
+        crop_img(f, img_ext, output_dir, crop_height, crop_width, sliding_size, overlap)
+
+
+if __name__ == '__main__':
+    data_dir = "../data/DJI_202105201111_006_ACI/"
+    output_dir = "../data/DJI_202105201111_006_ACI/cropped/"
+
+    if not os.path.isdir(output_dir):
+        os.mkdir(output_dir)
+
+    crop_dataset(data_dir=data_dir, output_dir=output_dir, img_ext='JPG',
+                 annot_file_ext='bbx', crop_height=640, crop_width=640, sliding_size=400, overlap=0.5)
