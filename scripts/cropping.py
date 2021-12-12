@@ -8,7 +8,7 @@ from pathlib import Path
 import random
 
 
-def csv_to_dict(csv_path, class_map, test=False, annot_file='csv'):
+def csv_to_dict(csv_path, class_map = {}, test=False, annot_file='csv'):
     """
     Function to extract an info dictionary from an xml file
     INPUT:
@@ -37,7 +37,8 @@ def csv_to_dict(csv_path, class_map, test=False, annot_file='csv'):
         # store bbx info for one object
         bbox = {}
         bbox['class'], bbox['desc'], bbox['xmin'], bbox['ymin'], w, h = df.iloc[i,]
-        bbox['class'] = class_map[bbox['desc']]
+        if class_map != {}:
+            bbox['class'] = class_map[bbox['desc']]
         bbox['xmax'] = bbox['xmin'] + w
         bbox['ymax'] = bbox['ymin'] + h
         info_dict['bbox'].append(bbox)
@@ -123,7 +124,7 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
 
 # this function generates all the cropped images and all corresponding label txt files for a single file
 # file_dict stores cropped images info dict in one dictionary.
-def crop_img(csv_file, crop_height, crop_width, output_dir, class_map, overlap=0.2, annot_file='csv', file_dict={}):
+def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file='csv', file_dict={}):
     """
     This function crops one image and output corresponding labels.
     Currently, this function generates the cropped images AND the corresponding csv files to output_dir
@@ -177,7 +178,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map, overlap=0
                 image = Image.open(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
                 image.save(output_dir + '/' + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
 
-    # output the file_dict to a folder of txt files containing labels for each cropped file
+    # output the file_dict to a folder of csv files containing labels for each cropped file
     for b in file_dict:
         if file_dict[b]['bbox'] == []:
             empty = True
@@ -189,7 +190,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map, overlap=0
     return file_dict
 
 
-def crop_dataset(data_dir, output_dir, class_map, crop_height=640, crop_width=640):
+def crop_dataset(data_dir, output_dir, annot_file = 'csv', class_map = {}, crop_height=640, crop_width=640):
     """
     :param data_dir: image set directory
     :param output_dir: output directory
@@ -204,19 +205,22 @@ def crop_dataset(data_dir, output_dir, class_map, crop_height=640, crop_width=64
         print('Please create an empty folder named "Intermediate" inside the output directory')
 
     # Load CSV files
-    files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
+    if annot_file == 'csv':
+        files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
+    if annot_file == 'bbx':
+        files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'bbx']
     for f in files:
-        crop_img(f, crop_height, crop_width, output_dir, class_map)
+        crop_img(csv_file=f, crop_height=crop_height, crop_width=crop_width, output_dir = output_dir, class_map=class_map, annot_file = annot_file)
 
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
 
 def train_val_test_split(file_dir, output_dir, train, val):
     """
-    :param file_dir: crop_dataset()'s output path: an empty folder
+    :param file_dir: crop_dataset()'s output path:
+    :parama output_dir: an empty folder
     :param train: fraction for training
     :param val: fraction for validation, 1-train-val will be fraction for test
-    :return:
     """
     p = Path(output_dir)
     p1 = Path(os.path.join(output_dir, 'train'))
