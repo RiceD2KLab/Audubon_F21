@@ -194,12 +194,13 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
     :param crop_height: image height after tiling, default 640
     :param crop_width: image width after tiling, default 640
     """
-    p = Path(output_dir)
-    p1 = Path(os.path.join(output_dir, 'Intermediate'))
-    if not p.is_dir():
-        print('The output directory should be an empty folder')
-    if not p1.is_dir():
-        print('Please create an empty folder named "Intermediate" inside the output directory')
+
+    if not os.path.exists(output_dir):
+        print(f"Creating output directory at: {output_dir}")
+        os.makedirs(output_dir)
+        os.makedirs(os.path.join(output_dir, 'Intermediate'))
+    elif not os.path.exists(os.path.join(output_dir, 'Intermediate')):
+        os.makedirs(os.path.join(output_dir, 'Intermediate'))
 
     # Load CSV files
     if annot_file_ext == 'csv':
