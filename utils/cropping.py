@@ -73,7 +73,7 @@ def dict_to_csv(info_dict, output_path, empty):
         writer.writerow([g for g in schema])
         if not empty:
             writer.writerows(new_bbx_buffer)
-    print(save_file_name)
+    # print(save_file_name)
 
 
 def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
