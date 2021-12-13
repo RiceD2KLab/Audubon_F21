@@ -4,7 +4,10 @@ import itertools
 import detectron2.utils.comm as comm
 from pycocotools.cocoeval import COCOeval
 from detectron2.evaluation.fast_eval_api import COCOeval_opt
+from detectron2.evaluation import inference_on_dataset
 from detectron2.evaluation.coco_evaluation import COCOEvaluator
+from detectron2.data import build_detection_test_loader
+
 
 class PrecisionRecallEvaluator(COCOEvaluator):
     """
@@ -95,6 +98,19 @@ class PrecisionRecallEvaluator(COCOEvaluator):
         return coco_eval
 
 
+def get_precisions_recalls(cfg, predictor, dataset_name):
+    """
+    get precisions and recalls outputted by PrecisionRecallEvaluator
+    INPUTS:
+        cfg -- detectron2 CfgNode
+        predictor -- detectron2 predictor
+        dataset_name -- registered dataset name to evaluate on
+    """
+    evaluator = PrecisionRecallEvaluator(dataset_name, output_dir=cfg.OUTPUT_DIR)
+    data_loader = build_detection_test_loader(cfg, dataset_name)
+    return inference_on_dataset(predictor.model, data_loader, evaluator)
+
+
 def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
     """
     Plot precision-recall curves outputted by PrecisionRecallEvaluator
@@ -114,11 +130,11 @@ def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
         print(f"AP75 for {class_name}: {avg_precision[5]}")
         max_recall = np.squeeze(max_recalls[:, c_indx, 0, -1])
         print(f"Max recall (IoU 50) for {class_name}: {max_recall[0]}")
-        ax.plot(max_recall, avg_precision, color=bird_species_colors[c_indx])
+        ax.plot(max_recall, avg_precision, color=class_colors[c_indx])
         precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
-        ax_iou50.plot(recall, precisions_iou50, color=bird_species_colors[c_indx])
+        ax_iou50.plot(recall, precisions_iou50, color=class_colors[c_indx])
         precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
-        ax_iou75.plot(recall, precisions_iou75, color=bird_species_colors[c_indx])
+        ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
 
     ax.set(ylabel="Avg. Precision",
            xlabel="Max Recall")

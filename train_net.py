@@ -28,7 +28,7 @@ from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from utils.config import add_retinanet_config, add_fasterrcnn_config
 from utils.dataloader import get_bird_only_dicts, get_bird_species_dicts, register_datasets
 from utils.trainer import Trainer
-from utils.evaluation import PrecisionRecallEvaluator, plot_precision_recall
+from utils.evaluation import PrecisionRecallEvaluator, get_precisions_recalls, plot_precision_recall
 
 BIRD_SPECIES = ["Brown Pelican", "Laughing Gull", "Mixed Tern",
                 "Great Blue Heron", "Great Egret/White Morph"]
@@ -130,17 +130,13 @@ def eval(cfg, args):
 
     cfg.DATASETS.TEST = ("birds_species_val","birds_species_test")
 
-    val_evaluator = PrecisionRecallEvaluator("birds_species_val", output_dir=cfg.OUTPUT_DIR)
-    val_loader = build_detection_test_loader(cfg, "birds_species_val")
     print('validation inference:')
-    val_precisions, val_max_recalls = inference_on_dataset(predictor.model, val_loader, val_evaluator)
+    val_precisions, val_max_recalls = get_precisions_recalls(cfg, predictor, "birds_species_val")
     plot_precision_recall(val_precisions, val_max_recalls, BIRD_SPECIES + ["Unknown Bird"],
                           BIRD_SPECIES_COLORS + [(0, 0, 0)])
 
-    test_evaluator = PrecisionRecallEvaluator("birds_species_test", output_dir=cfg.OUTPUT_DIR)
-    test_loader = build_detection_test_loader(cfg, "birds_species_test")
     print('test inference:')
-    test_precisions, test_max_recalls = inference_on_dataset(predictor.model, test_loader, test_evaluator)
+    test_precisions, test_max_recalls = get_precisions_recalls(cfg, predictor, "birds_species_test")
     plot_precision_recall(test_precisions, test_max_recalls, BIRD_SPECIES + ["Unknown Bird"],
                           BIRD_SPECIES_COLORS + [(0, 0, 0)])
 

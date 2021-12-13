@@ -116,6 +116,7 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_cate
 
   return dataset_dicts
 
+
 def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colors=None):
   """
   Register dataset as part of Detectron2's dataset and metadataset catalogs
