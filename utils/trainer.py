@@ -3,6 +3,7 @@ import torch
 
 from detectron2.engine.hooks import HookBase
 import detectron2.utils.comm as comm
+from detectron2.utils.events import EventWriter, get_event_storage
 from detectron2.data import DatasetMapper, build_detection_test_loader
 from detectron2.engine import DefaultTrainer
 from detectron2.evaluation import COCOEvaluator, DatasetEvaluators
@@ -11,7 +12,6 @@ from detectron2.evaluation import COCOEvaluator, DatasetEvaluators
 # TODO: add visualization hook to see visual performance during training
 class WAndBWriter(EventWriter):
     import wandb
-    from detectron2.utils.events import EventWriter, get_event_storage
     """
     Write all scalars to a wandb tool.
     Code adapted from: https://github.com/facebookresearch/detectron2/issues/774#issuecomment-776944522
