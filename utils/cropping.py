@@ -276,11 +276,16 @@ def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_w
         :param crop_width: image width after tiling, default 640
         :param sliding_size: sliding size between each crop, default 400
     """
+    # intermediate folder for cropped images
+    if not os.path.exists(os.path.join(output_path, 'Intermediate')):
+        os.makedirs(os.path.join(output_path, 'Intermediate'))
     # Load CSV files
     files = [d for d in os.listdir(data_dir) if os.path.splitext(d)[1] == img_ext]
     for f in tqdm(files):
         f = os.path.join(data_dir, f)
         crop_img_only(f, output_dir, crop_height, crop_width, sliding_size)
+    # remove intermediate folder
+    shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
 
 def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1):
