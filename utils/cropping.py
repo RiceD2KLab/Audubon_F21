@@ -214,6 +214,75 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
 
+def crop_img_only(img_file, output_path, crop_height, crop_width, sliding_size):
+    """
+    This function crops one image with an adjustable overlap
+    INPUT:
+    crop_height, crop_weight -- desired patch size.
+    """
+    # append width, height, depth
+    im = cv2.imread(img_file)
+    img_height, img_width, img_depth = im.shape
+    im = Image.open(img_file, 'r')
+    file_name = img_file.split('/')[-1][:-4]
+    # go through the image from top left corner
+    for i in range((img_height - crop_height) // sliding_size + 2):
+
+        for j in range((img_width - crop_width) // sliding_size + 2):
+
+            if j < ((img_width - crop_width) // sliding_size + 1) and i < (
+                    (img_height - crop_height) // sliding_size + 1):
+                left = j * sliding_size
+                right = crop_width + j * sliding_size
+                top = i * sliding_size
+                bottom = crop_height + i * sliding_size
+
+            elif j == ((img_width - crop_width) // sliding_size + 1) and i < (
+                    (img_height - crop_height) // sliding_size + 1):
+                left = img_width - crop_width
+                right = img_width
+                top = i * sliding_size
+                bottom = crop_height + i * sliding_size
+
+            # if rectangles left on edges, take subimage of crop_height*crop_width by taking a part from within.
+            elif i == ((img_height - crop_height) // sliding_size + 1) and j < (
+                    (img_width - crop_width) // sliding_size + 1):
+                left = j * sliding_size
+                right = crop_width + j * sliding_size
+                top = img_height - crop_height
+                bottom = img_height
+
+            else:
+                left = img_width - crop_width
+                right = img_width
+                top = img_height - crop_height
+                bottom = img_height
+
+            c_img = im.crop((left, top, right, bottom))
+            c_img.save(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
+            image = Image.open(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
+            image.save(output_path + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
+
+
+def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_width=640, sliding_size=400):
+    """
+    This function crops image dataset with adjustable sliding size. Bounding boxes are not cropped alongside images.
+    Function is to be used during final pipeline stage for prediction
+    INPUTS:
+        :param data_dir: image set directory
+        :param img_ext: image file extension eg. "JPG"
+        :param output_dir: output directory
+        :param crop_height: image height after tiling, default 640
+        :param crop_width: image width after tiling, default 640
+        :param sliding_size: sliding size between each crop, default 400
+    """
+    # Load CSV files
+    files = [d for d in os.listdir(data_dir) if os.path.splitext(d)[1] == img_ext]
+    for f in tqdm(files):
+        f = os.path.join(data_dir, f)
+        crop_img_only(f, output_dir, crop_height, crop_width, sliding_size)
+
+
 def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1):
     """
     :param file_dir: crop_dataset()'s output path:
