@@ -59,7 +59,7 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_cate
   INPUTS: 
     data_dir -- directory containing dataset files 
     img_ext -- file extension for images in dataset
-    class_names -- 
+    class_names -- names of bird species
     skip_empty_imgs -- keep images with no birds 
   OUTPUTS: 
     dataset_dicts -- list of dictionaries in detectron2 standard format
@@ -116,9 +116,18 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_cate
 
   return dataset_dicts
 
-def register_datasets(data_dirs,img_ext,birds_species_names):
+def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colors=None):
   """
-  TODO: insert comment about registering datasets
+  Register dataset as part of Detectron2's dataset and metadataset catalogs
+  For each dataset directory to be registered, a "bird-only" and "bird-species" dataset will be registered
+  INPUTS:
+    data_dirs: list of directories containing dataset images to be registered
+    img_ext: file extension for images in dataset
+    birds_species_names: names of bird species to be registered. Species not in this list will be registered as
+                        "Unknown Bird"
+    bird_species_colors: List of colors for corresponding to bird species to be used for visualizations. Color
+                         format should be tuple containing RGB values between 0-255 eg. (255,0,0) for red
+
   """
   for data_dir in data_dirs:
     d = os.path.basename(data_dir)
@@ -134,21 +143,13 @@ def register_datasets(data_dirs,img_ext,birds_species_names):
     if f"birds_species_{d}" in DatasetCatalog.list():
       DatasetCatalog.remove(f"birds_species_{d}")
     DatasetCatalog.register(f"birds_species_{d}", lambda d=d: get_bird_species_dicts(data_dir,
-                                                                                  birds_species_names,
-                                                                                  img_ext,
-                                                                                  unknown_bird_category=True))
+                                                                                     birds_species_names,
+                                                                                     img_ext,
+                                                                                     unknown_bird_category=True))
     if f"birds_species_{d}" in MetadataCatalog.list():
       MetadataCatalog.remove(f"birds_species_{d}")
     MetadataCatalog.get(f"birds_species_{d}").set(thing_classes=birds_species_names + ["Unknown Bird"])
 
-    # each bird species
-    for species in birds_species_names:
-      if f"{species}_{d}" in DatasetCatalog.list():
-        DatasetCatalog.remove(f"{species}_{d}")
-      DatasetCatalog.register(f"{species}_{d}", lambda d=d: get_bird_species_dicts(data_dir,
-                                                                                       [species],
-                                                                                       img_ext,
-                                                                                       unknown_bird_category=False))
-      if f"{species}_{d}" in MetadataCatalog.list():
-        MetadataCatalog.remove(f"{species}_{d}")
-      MetadataCatalog.get(f"{species}_{d}").set(thing_classes=[species])
+    if bird_species_colors is not None:
+      MetadataCatalog.get(f"birds_species_{d}").set(thing_colors=bird_species_colors + [(0, 0, 0)])
+

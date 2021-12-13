@@ -57,8 +57,10 @@ The following open source packages are used in this project:
 * Numpy
 * Pandas
 * Matplotlib
-* Detectron
-* Keras
+* OpenCV 
+* Detectron2
+* PyTorch
+* WAndB
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 

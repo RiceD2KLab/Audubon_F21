@@ -1,4 +1,5 @@
 import pandas as pd
+from tqdm.autonotebook import tqdm
 import cv2
 from PIL import Image, ImageDraw
 import csv
@@ -8,7 +9,7 @@ from pathlib import Path
 import random
 
 
-def csv_to_dict(csv_path, class_map = {}, test=False, annot_file='csv'):
+def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     """
     Function to extract an info dictionary from an xml file
     INPUT:
@@ -25,10 +26,7 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file='csv'):
     if test:
         im = cv2.imread(csv_path.replace('csv', 'JPEG'))
     else:
-        if annot_file == 'csv':
-            im = cv2.imread(csv_path.replace('csv', 'JPG'))
-        elif annot_file == 'bbx':
-            im = cv2.imread(csv_path.replace('bbx', 'JPG'))
+        im = cv2.imread(csv_path.replace(annot_file_ext, 'JPG'))
 
     # append width, height, depth
     info_dict['img_size'] = im.shape
@@ -124,20 +122,18 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
 
 # this function generates all the cropped images and all corresponding label txt files for a single file
 # file_dict stores cropped images info dict in one dictionary.
-def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file='csv', file_dict={}):
+def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}):
     """
     This function crops one image and output corresponding labels.
     Currently, this function generates the cropped images AND the corresponding csv files to output_dir
     INPUT:
     crop_height, crop_weight -- desired patch size.
     overlap -- threshold for keeping bbx.
+    annot_file_ext -- annotation file extension
     """
-    info_dict = csv_to_dict(csv_file, class_map, annot_file=annot_file)
+    info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
     img_height, img_width, img_depth = info_dict['img_size']
-    if annot_file == 'csv':
-        im = Image.open(csv_file.replace('csv', 'JPG'), 'r')
-    if annot_file == 'bbx':
-        im = Image.open(csv_file.replace('bbx', 'JPG'), 'r')
+    im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
     file_name = csv_file.split('/')[-1][:-4]
     # go through the image from top left corner
     for i in range(img_height // crop_height + 1):
@@ -171,7 +167,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
 
                 # even if no birds in cropped img, keep the cropped image
             if tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
-                print('Generating segmentation at position: ', left, top, right, bottom)
+                # print('Generating segmentation at position: ', left, top, right, bottom)
 
                 c_img = im.crop((left, top, right, bottom))
                 c_img.save(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
@@ -190,10 +186,11 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     return file_dict
 
 
-def crop_dataset(data_dir, output_dir, annot_file = 'csv', class_map = {}, crop_height=640, crop_width=640):
+def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, crop_height=640, crop_width=640):
     """
     :param data_dir: image set directory
     :param output_dir: output directory
+    :param annot_file_ext: annotation file extension
     :param crop_height: image height after tiling, default 640
     :param crop_width: image width after tiling, default 640
     """
@@ -205,12 +202,13 @@ def crop_dataset(data_dir, output_dir, annot_file = 'csv', class_map = {}, crop_
         print('Please create an empty folder named "Intermediate" inside the output directory')
 
     # Load CSV files
-    if annot_file == 'csv':
+    if annot_file_ext == 'csv':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
-    if annot_file == 'bbx':
+    if annot_file_ext == 'bbx':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'bbx']
-    for f in files:
-        crop_img(csv_file=f, crop_height=crop_height, crop_width=crop_width, output_dir = output_dir, class_map=class_map, annot_file = annot_file)
+    for f in tqdm(files, desc='Cropping files'):
+        crop_img(csv_file=f, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir, class_map=class_map,
+                 annot_file_ext=annot_file_ext)
 
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
@@ -218,7 +216,7 @@ def crop_dataset(data_dir, output_dir, annot_file = 'csv', class_map = {}, crop_
 def train_val_test_split(file_dir, output_dir, train, val):
     """
     :param file_dir: crop_dataset()'s output path:
-    :parama output_dir: an empty folder
+    :param output_dir: an empty folder
     :param train: fraction for training
     :param val: fraction for validation, 1-train-val will be fraction for test
     """

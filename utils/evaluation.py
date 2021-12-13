@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import itertools
 import detectron2.utils.comm as comm
 from pycocotools.cocoeval import COCOeval
@@ -94,6 +95,44 @@ class PrecisionRecallEvaluator(COCOEvaluator):
         return coco_eval
 
 
+def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
+    """
+    Plot precision-recall curves outputted by PrecisionRecallEvaluator
+    INPUTS:
+         precisions: [TxRxKxAxM] precision for every evaluation setting
+         max_recalls: [TxKxAxM] max recall for every evaluation setting
+         class_names: names of bird species registered.
+         class_colors: List of colors for corresponding to bird species
+    """
+    recall = np.linspace(0, 1, 101)
+    fig, ax = plt.subplots()
+    fig_iou50, ax_iou50 = plt.subplots()
+    fig_iou75, ax_iou75 = plt.subplots()
+    for c_indx, class_name in enumerate(class_names):
+        avg_precision = np.mean(np.squeeze(precisions[:, :, c_indx, 0, -1]), axis=1)
+        print(f"AP50 for {class_name}: {avg_precision[0]}")
+        print(f"AP75 for {class_name}: {avg_precision[5]}")
+        max_recall = np.squeeze(max_recalls[:, c_indx, 0, -1])
+        print(f"Max recall (IoU 50) for {class_name}: {max_recall[0]}")
+        ax.plot(max_recall, avg_precision, color=bird_species_colors[c_indx])
+        precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
+        ax_iou50.plot(recall, precisions_iou50, color=bird_species_colors[c_indx])
+        precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
+        ax_iou75.plot(recall, precisions_iou75, color=bird_species_colors[c_indx])
+
+    ax.set(ylabel="Avg. Precision",
+           xlabel="Max Recall")
+    ax_iou50.set(title="Precision-Recall Curve (IoU = 0.5)",
+                 ylabel="Precision",
+                 xlabel="Recall")
+    ax_iou75.set(title="Precision-Recall Curve (IoU = 0.75)",
+                 ylabel="Precision",
+                 xlabel="Recall")
+    ax.legend(class_names, loc='best')
+    ax_iou50.legend(class_names, loc='best')
+    ax_iou75.legend(class_names, loc='best')
+
+    plt.show()
 
 
 

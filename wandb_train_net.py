@@ -1,6 +1,6 @@
 # wandb_train.py
 #
-# Utilize wandb
+# Train object detection model on Houston Audubon dataset, and utilize WAndB for logging metrics
 #
 # Authors: Krish Kabra, Minxuan Luo, Alexander Xiong, William Lu
 # Copyright (C) 2021-2022 Houston Audubon and others
@@ -20,6 +20,10 @@ from utils.config import add_retinanet_config, add_fasterrcnn_config
 from utils.dataloader import register_datasets
 from utils.trainer import WAndBTrainer
 
+BIRD_SPECIES = ["Brown Pelican", "Laughing Gull", "Mixed Tern",
+                "Great Blue Heron", "Great Egret/White Morph"]
+
+
 def get_parser():
     parser = default_argument_parser() #  Create a parser with some common arguments used by detectron2 users.
     # directory management
@@ -27,8 +31,10 @@ def get_parser():
     parser.add_argument('--img_ext',default='.JPEG',type=str, help="image file extension")
     parser.add_argument('--dir_exceptions',default=[],type=list, help="list of folders in dataset directory to be ignored")
     # model
-    parser.add_argument('--model_type',default='retinanet',type=str,help='choice of object detector. Options: "retinanet", "faster-rcnn"')
-    parser.add_argument('--model_config_file', default="COCO-Detection/retinanet_R_50_FPN_1x.yaml", type=str, help='path to model config file eg. "COCO-Detection/retinanet_R_50_FPN_1x.yaml"')
+    parser.add_argument('--model_type', default='faster-rcnn', type=str,
+                        help='choice of object detector. Options: "retinanet", "faster-rcnn"')
+    parser.add_argument('--model_config_file', default="COCO-Detection/faster_rcnn_R_50_FPN_1x.yaml", type=str,
+                        help='path to model config file eg. "COCO-Detection/faster_rcnn_R_50_FPN_1x.yaml"')
     parser.add_argument('--pretrained_weights_file', default="",type=str, help='load pretrained model weights from file. ')
     parser.add_argument('--num_workers', default=2, type=int, help='number of workers for dataloader')
     parser.add_argument('--eval_period', default=0, type=int, help='period between coco eval scores on val set')
@@ -41,7 +47,7 @@ def get_parser():
     parser.add_argument('--scheduler_gamma', type=float, default=0.1,help='gamma decay factor used in lr scheduler')
     parser.add_argument('--scheduler_steps', default=[], help='list containing lr scheduler iteration steps eg. 1000,2000')
     parser.add_argument('--weight_decay', type=float, default=1e-4, help='L2 regularization')
-    parser.add_argument('--batch_size', default=16, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=8, type=int, help='batch size')
     parser.add_argument('--focal_loss_gamma',default=2.0,type=float,help='focal loss gamma (only for retinanet)')
     parser.add_argument('--focal_loss_alpha',default=0.25,type=float,help='focal loss alpha (only for retinanet)')
 
@@ -56,16 +62,15 @@ def setup(args):
     dir_exceptions = args.dir_exceptions
     dirs = [os.path.join(data_dir,d) for d in os.listdir(data_dir)
             if d not in dir_exceptions]
-    bird_species = ["Brown Pelican", "Laughing Gull", "Mixed Tern"]
-    register_datasets(dirs, img_ext, bird_species)
+    register_datasets(dirs, img_ext, BIRD_SPECIES)
 
     # Create detectron2 config
     if args.model_type == 'retinanet':
         cfg = add_retinanet_config(args)
-        cfg.MODEL.RETINANET.NUM_CLASSES = len(bird_species)
+        cfg.MODEL.RETINANET.NUM_CLASSES = len(BIRD_SPECIES)
     elif args.model_type == 'faster-rcnn':
         cfg = add_fasterrcnn_config(args)
-        cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(bird_species)
+        cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
     else:
         raise Exception("Invalid model type entered")
 
@@ -74,6 +79,7 @@ def setup(args):
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
     return cfg
+
 
 def train(cfg):
     # setup training logger
@@ -89,24 +95,22 @@ def train(cfg):
 
     return trainer.train()
 
+
 def eval(cfg):
     # load model weights
     cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")  # path to the model we just trained
     predictor = DefaultPredictor(cfg)
 
-    cfg.DATASETS.TEST = ("birds_val","birds_test")
+    val_evaluator = COCOEvaluator("birds_species_val", output_dir=cfg.OUTPUT_DIR)
+    val_loader = build_detection_test_loader(cfg, "birds_species_val")
+    print('validation inference:', inference_on_dataset(predictor.model, val_loader, val_evaluator))
 
-    val_evaluator = COCOEvaluator("birds_only_val", output_dir=cfg.OUTPUT_DIR)
-    val_loader = build_detection_test_loader(cfg, "birds_only_val")
-    print('validation inference:',inference_on_dataset(predictor.model, val_loader, val_evaluator))
-    # test_evaluator = COCOEvaluator("birds_only_test", output_dir=cfg.OUTPUT_DIR)
-    # test_loader = build_detection_test_loader(cfg, "birds_only_test")
-    # print('test inference:',inference_on_dataset(predictor.model, test_loader, test_evaluator))
 
 def main(args):
     cfg = setup(args)
     train(cfg)
     eval(cfg)
+
 
 if __name__ == "__main__":
     args = get_parser().parse_args()

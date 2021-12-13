@@ -28,6 +28,13 @@ from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from utils.config import add_retinanet_config, add_fasterrcnn_config
 from utils.dataloader import get_bird_only_dicts, get_bird_species_dicts, register_datasets
 from utils.trainer import Trainer
+from utils.evaluation import PrecisionRecallEvaluator, plot_precision_recall
+
+BIRD_SPECIES = ["Brown Pelican", "Laughing Gull", "Mixed Tern",
+                "Great Blue Heron", "Great Egret/White Morph"]
+
+BIRD_SPECIES_COLORS = [(255, 0, 0), (255, 153, 51), (0, 255, 0),
+                       (0, 0, 255), (255, 51, 255)]
 
 
 def get_parser():
@@ -39,10 +46,10 @@ def get_parser():
     parser.add_argument('--dir_exceptions', default=[], type=list,
                         help="list of folders in dataset directory to be ignored")
     # model
-    parser.add_argument('--model_type', default='retinanet', type=str,
+    parser.add_argument('--model_type', default='faster-rcnn', type=str,
                         help='choice of object detector. Options: "retinanet", "faster-rcnn"')
-    parser.add_argument('--model_config_file', default="COCO-Detection/retinanet_R_50_FPN_1x.yaml", type=str,
-                        help='path to model config file eg. "COCO-Detection/retinanet_R_50_FPN_1x.yaml"')
+    parser.add_argument('--model_config_file', default="COCO-Detection/faster_rcnn_R_50_FPN_1x.yaml", type=str,
+                        help='path to model config file eg. "COCO-Detection/faster_rcnn_R_50_FPN_1x.yaml"')
     parser.add_argument('--pretrained_weights_file', default="", type=str, help='load pretrained model weights from file. ')
     parser.add_argument('--num_workers', default=4, type=int, help='number of workers for dataloader')
     parser.add_argument('--eval_period', default=0, type=int, help='period between coco eval scores on val set')
@@ -63,6 +70,7 @@ def get_parser():
 
     return parser
 
+
 def setup(args):
     # data setup
     data_dir = args.data_dir
@@ -70,26 +78,27 @@ def setup(args):
     dir_exceptions = args.dir_exceptions
     dirs = [os.path.join(data_dir,d) for d in os.listdir(data_dir)
             if d not in dir_exceptions]
-    bird_species = ["Brown Pelican", "Laughing Gull", "Mixed Tern"]
-    register_datasets(dirs, img_ext, bird_species)
+    register_datasets(dirs, img_ext, BIRD_SPECIES, bird_species_colors=BIRD_SPECIES_COLORS)
 
     for d in dirs:
         dataset_dicts = DatasetCatalog.get(f"birds_species_{os.path.basename(d)}")
-        for i,k in enumerate(random.sample(dataset_dicts, 3)):
+        for i, k in enumerate(random.sample(dataset_dicts, 3)):
             d = os.path.basename(d)
             img = cv2.imread(k["file_name"])
-            visualizer = Visualizer(img[:, :, ::-1], metadata=MetadataCatalog.get(f"birds_species_{os.path.basename(d)}"), scale=0.5)
+            visualizer = Visualizer(img[:, :, ::-1],
+                                    metadata=MetadataCatalog.get(f"birds_species_{os.path.basename(d)}"), scale=0.5,
+                                    instance_mode=ColorMode.SEGMENTATION)
             out = visualizer.draw_dataset_dict(k)
-            cv2.imshow(f'{d} example {i}',out.get_image()[:, :, ::-1])
+            cv2.imshow(f'{d} example {i}', out.get_image()[:, :, ::-1])
             cv2.waitKey(1)
 
     # Create detectron2 config
     if args.model_type == 'retinanet':
        cfg = add_retinanet_config(args)
-       cfg.MODEL.RETINANET.NUM_CLASSES = len(bird_species)
+       cfg.MODEL.RETINANET.NUM_CLASSES = len(BIRD_SPECIES)
     elif args.model_type == 'faster-rcnn':
        cfg = add_fasterrcnn_config(args)
-       cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(bird_species)
+       cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
     else:
        raise Exception("Invalid model type entered")
 
@@ -100,6 +109,7 @@ def setup(args):
     setup_logger()
 
     return cfg
+
 
 def train(cfg):
     cfg.DATASETS.TRAIN = ("birds_species_train",)
@@ -112,6 +122,7 @@ def train(cfg):
 
     return trainer.train()
 
+
 def eval(cfg, args):
     # load model weights
     cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")  # path to the model we just trained
@@ -119,39 +130,45 @@ def eval(cfg, args):
 
     cfg.DATASETS.TEST = ("birds_species_val","birds_species_test")
 
-    val_evaluator = COCOEvaluator("birds_species_val", output_dir=cfg.OUTPUT_DIR)
+    val_evaluator = PrecisionRecallEvaluator("birds_species_val", output_dir=cfg.OUTPUT_DIR)
     val_loader = build_detection_test_loader(cfg, "birds_species_val")
-    print('validation inference:',inference_on_dataset(predictor.model, val_loader, val_evaluator))
-    test_evaluator = COCOEvaluator("birds_species_test", output_dir=cfg.OUTPUT_DIR)
+    print('validation inference:')
+    val_precisions, val_max_recalls = inference_on_dataset(predictor.model, val_loader, val_evaluator)
+    plot_precision_recall(val_precisions, val_max_recalls, BIRD_SPECIES + ["Unknown Bird"],
+                          BIRD_SPECIES_COLORS + [(0, 0, 0)])
+
+    test_evaluator = PrecisionRecallEvaluator("birds_species_test", output_dir=cfg.OUTPUT_DIR)
     test_loader = build_detection_test_loader(cfg, "birds_species_test")
-    print('test inference:',inference_on_dataset(predictor.model, test_loader, test_evaluator))
+    print('test inference:')
+    test_precisions, test_max_recalls = inference_on_dataset(predictor.model, test_loader, test_evaluator)
+    plot_precision_recall(test_precisions, test_max_recalls, BIRD_SPECIES + ["Unknown Bird"],
+                          BIRD_SPECIES_COLORS + [(0, 0, 0)])
 
     for d in ["val", "test"]:
-        dataset_dicts = get_bird_only_dicts(os.path.join(args.data_dir,d),args.img_ext)
+        dataset_dicts = DatasetCatalog.get(f"birds_species_{d}")
         print(f'\n {d} examples:')
         for k in random.sample(dataset_dicts, 3):
             im = cv2.imread(k["file_name"])
             outputs = predictor(im)
             outputs = outputs["instances"].to("cpu")
-            outputs = outputs[outputs.scores > 0.8]
+            outputs = outputs[outputs.scores > 0.5]
             v = Visualizer(im[:, :, ::-1],
                            metadata=MetadataCatalog.get(f"birds_species_{d}"),
-                           scale=0.5)
+                           scale=0.5,
+                           instance_mode=ColorMode.SEGMENTATION)
             out = v.draw_instance_predictions(outputs)
             cv2.imshow(f'{d} prediction {i}',out.get_image()[:, :, ::-1])
             cv2.waitKey(1)
 
+
 def main(args):
     cfg = setup(args)
     train(cfg)
-    eval(cfg,args)
+    eval(cfg, args)
     cv2.waitkey(0)
     print("Press any key to continue...")
     cv2.destroyAllWindows()
 
-   # pretrain(cfg)
-   # train(cfg)
-   # eval(cfg,args)
 
 if __name__ == "__main__":
     
