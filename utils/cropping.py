@@ -214,12 +214,12 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
 
-def train_val_test_split(file_dir, output_dir, train, val):
+def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1):
     """
     :param file_dir: crop_dataset()'s output path:
     :param output_dir: an empty folder
-    :param train: fraction for training
-    :param val: fraction for validation, 1-train-val will be fraction for test
+    :param train_frac: fraction for training
+    :param val_frac: fraction for validation, 1-train-val will be fraction for test
     """
     p = Path(output_dir)
     p1 = Path(os.path.join(output_dir, 'train'))
@@ -239,8 +239,8 @@ def train_val_test_split(file_dir, output_dir, train, val):
     random.Random(4).shuffle(img_list)
     csv_list = [f.replace('JPEG', 'csv') for f in img_list]
     size = len(img_list)
-    train_sz = int(size * train)
-    val_sz = int(size * val)
+    train_sz = int(size * train_frac)
+    val_sz = int(size * val_frac)
     for idx in range(size):
         if idx < train_sz:
             shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'train'))
