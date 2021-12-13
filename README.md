@@ -1,4 +1,4 @@
-<h1 align="center"> Houston Audubon </h1>
+<h1 align="center"> Team Audubon </h1>
 <h3 align="center"> Development of Machine Learning Algorithms for Precision Waterbird Monitoring </h3>  
 
 </br>
@@ -35,12 +35,11 @@
 <h2 id="about-the-project"> About The Project</h2>
 
 <p align="justify"> 
-  In order to both improve the accuracy of bird counts as well as the speed, Houston Audubon has asked us to develop machine learning and computer vision algorithms for the detection of birds using images from UAVs, with the specific goals to:
+  In order to both improve the accuracy of bird counts as well as the speed, Houston Audubon and students from the D2K capstone course at Rice University
+  develop machine learning and computer vision algorithms for the detection of birds using images from UAVs, with the specific goals to:
   <ol> 
   <li> Count and survey the number of birds.
   <li> Identify different species of detected birds.
-  <li> Determine if detected birds are adults or chicks.
-  <li> Count the number of nests in the UAV images.
 </ol>
 </p>
 
@@ -50,7 +49,7 @@
 <h2 id="prerequisites"> Prerequisites</h2>
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) <br>
-[![Made withJupyter](https://img.shields.io/badge/Made%20with-Jupyter-orange?style=for-the-badge&logo=Jupyter)](https://jupyter.org/try) <br>
+<img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200"> <br>
 
 <!--This project is written in Python programming language. <br>-->
 The following open source packages are used in this project:
@@ -59,59 +58,36 @@ The following open source packages are used in this project:
 * Matplotlib
 * OpenCV 
 * Detectron2
-* PyTorch
 * WAndB
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
-<!-- :paw_prints:-->
-<!-- FOLDER STRUCTURE -->
-<!-- │   ├── raw_data
-│   │   ├── phone
-│   │   │   ├── accel
-│   │   │   └── gyro
-│   │   ├── watch
-│   │       ├── accel
-│   │       └── gyro
-│   │
-│   ├── transformed_data
-│   │   ├── phone
-│   │   │   ├── accel
-│   │   │   └── gyro
-│   │   ├── watch
-│   │       ├── accel
-│   │       └── gyro
-│   │
-│   ├── feature_label_tables
-│   │    ├── feature_phone_accel
-│   │    ├── feature_phone_gyro
-│   │    ├── feature_watch_accel
-│   │    ├── feature_watch_gyro
-│   │
-│   ├── wisdm-dataset
-│        ├── raw
-│        │   ├── phone
-│        │   ├── accel
-│        │   └── gyro
-│        ├── watch
-│            ├── accel
-│            └── gyro -->
 <h2 id="folder-structure"> Folder Structure</h2>
 
     code
     .
-    │
-    ├── data
-    │
+    ├── configs
+    ├────── (useful sweep config files for WAndB)
+    ├── scripts
+    ├────── data_exploration.py
+    ├── utils
+    ├────── config.py
+    ├────── cropping.py
+    ├────── dataloader.py
+    ├────── evaluation.py
+    ├────── plotting.py
+    ├────── trainer.py
     ├── README.md
     ├── requirements.txt
     ├── data_exploration.py  
-    ├── cropping.py
+    ├── Audubon-Bird-Detection-Tutorial.ipynb
     ├── train_net.py
+    ├── wandb_train_net.py
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <h2 id="installation"> Installation & Usage Instructions</h2>
+
 <p> 
   <ol>
   <li>Clone the repository</li>
@@ -119,9 +95,18 @@ The following open source packages are used in this project:
   ```linux
   git clone https://github.com/RiceD2KLab/Audubon_F21.git
   ```
-
-  <li>Install Detectron2</li>
+  <li><b>Install Pytorch</b></li>
+<a href="https://pytorch.org/get-started/locally/">Installation instructions here</a> <br>
   Requirements: Linux or macOS with Python ≥ 3.6
+
+  ```linux
+  pip3 install torch==1.10.0+cu102 torchvision==0.11.1+cu102 -f https://download.pytorch.org/whl/cu102/torch_stable.html
+  ```
+
+  <li> <b> Install Detectron2 </b> </li>
+  <a href="https://detectron2.readthedocs.io/en/latest/tutorials/install.html">Installation instructions here</a> <br>
+  Requirements: Linux or macOS with Python ≥ 3.6 <br>
+  For Windows: Detectron2 is continuously built on Windows with CircleCI. However, official support for it is not provided.
 
   ```linux
   python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
@@ -135,12 +120,6 @@ The following open source packages are used in this project:
   CC=clang CXX=clang++ ARCHFLAGS="-arch x86_64" python -m pip install ...
   ```
 
-  <li>Install Pytorch</li>
-  Requirements: Linux or macOS with Python ≥ 3.6
-
-  ```linux
-  pip3 install torch torchvision
-  ```
 
   <li>Install other dependencies</li>
 
@@ -149,13 +128,33 @@ The following open source packages are used in this project:
   ```
 
   <li>Execute the scripts as required.</li>
+  
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RiceD2KLab/Audubon_F21/blob/main/Audubon_Bird_Detection_Tutorial.ipynb) <br> 
+
+See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [Colab Notebook](Audubon_Bird_Detection_Tutorial.ipynb) for usage of code. 
+
+
   </ol>
 </p> 
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
+<!-- DATA SCIENCE PIPELINE -->
+<h2 id="dataset"> Data Science Pipeline </h2>
+
+<p align="center">
+  <img src="assets/pipeline.png" width="600">
+</p>
+
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+
 <!-- DATASET -->
 <h2 id="dataset"> Dataset</h2>
+
+<p align="center">
+  <img src="assets/DSC06695 - Ref Image.jpg" width="600">
+</p>
+
 <p> 
   Houston Audubon has provided us a 52 GB image dataset consisting of images captured using DJI M300RTK UAV with a P1 camera attachment. The images are typically 8192 x 5460 high-resolution images. The dataset contains 3 GB annotated images with corresponding CSV files for each image specifying species labels and bounding box locations. The annotated dataset features 19276 birds of 15 species, and the remaining 50.5 GB are raw images without annotations. The CSV files contain:
   <ul>
@@ -213,7 +212,8 @@ same object class, and will boost the performance of the models.
 
 We utilized the <i>imgaug</i> library to generate modified images. We have tried several types of augmentations: flipping, blurring, adding Gaussian noise and changing color contrasts. 
 
-For the time being, our model is only trained on original data. We plan to retrain our model on the augmented dataset and compare performances. We are generating a larger training set using the augmentation methods mentioned above. Specifically, both the original images and the transformed images will be fed to the model in the training phase, but only original images will be used for evaluation and testing purposes.
+<b> For the time being, our model is only trained on original data. </b> We plan to retrain our model on the augmented dataset and compare performances. We are generating a larger training set using the augmentation methods mentioned above. Specifically, both the original images and the transformed images will be fed to the model in the training phase,
+but only original images will be used for evaluation and testing purposes.
 
 </p>
 
@@ -224,14 +224,16 @@ For the time being, our model is only trained on original data. We plan to retra
 
 <p align="justify"> 
 
-For our initial testing, we choose to train a single RetinaNet module with a ResNet-50-FPN backbone. We first train our model to perform the simple task of detecting birds with no distinction of species. 
+We utilize a RetinaNet and Faster R-CNN module both with a ResNet-50-FPN backbone. 
+We first train our model to perform the simple task of detecting birds with no distinction of species.
+We then train the model to identify bird species: namely, Brown Pelicans, Laughing Gulls, Mixed Terns, Great Blue Herons, and Great Egrets/White Morphs. 
 
-We then train the model to identify bird species: namely, Brown Pelicans, Laughing Gulls, and Mixed Terns. Due to the lack of annotated data available for other bird species, we re-label all other bird species under the "Other/Unknown" category. 
+Due to the lack of annotated data available for other bird species, we re-label all other bird species under the "Other/Unknown" category. 
 
-<i><b>Note:</b> The model weights used to initialize the bird-only detector come from a pre-trained RetinaNet on the COCO dataset, and the weights used to initialize the bird species detector come from the pre-trained bird-only detector. </i>
+<i><b>Note:</b> The model weights used to initialize both the bird-only and bird-species detector come from a pre-trained model on the MS COCO dataset. </i>
 
 <ol>
-  <li><b>Bird-only detector</b></li> 
+  <li><b>Bird-only detector (RetinaNet ResNet-50 FPN)</b></li> 
       
   |                 | Birds |
   |-----------------|-------|
@@ -242,34 +244,17 @@ We then train the model to identify bird species: namely, Brown Pelicans, Laughi
   The high AP of 93.7% using an IoU threshold of 0.50 is very promising.
   
   The mAP of 43.7% is comparableto the state-of-the-art results for challenging object detection tasks such as on the COCO dataset.
-  <li><b>Bird species detector</b></li>
+  <li><b>Bird species detector (Faster R-CNN ResNet-50 FPN)</b></li>
 
-  |                | Brown Pelican | Laughing Gull | Mixed Tern | Other/Unknown | Overall |
-  |----------------|---------------|---------------|------------|---------------|---------|
-  | AP (IoU = 0.5) | 87.1%         | 91.6%         | 81.6%      | 30.1%         | 72.6%   |
-  | mAP            | 43.6%         | 33.1%         | 40.7%      | 11.9%         | 32.3%   |
+  |                | Brown Pelican | Laughing Gull | Mixed Tern | Great Blue Heron | Great Egret/White Morph | Other/Unknown | Overall |
+  |----------------|---------------|---------------|------------|------------------|-------------------------|--------------|---------|
+  | AP (IoU = 0.5) | 98.8%         | 100.0%        | 97.6%      | 98.5%            | 96.9%                   | 0.0%         | 82.0%   |
 
-  The lower AP of 72.6% using an IoU threshold of 0.50 in comparison to the bird-only detector is problematic. In particular, the model drastically fails to classify “Other/Unknown” birds. We see that the model achieves mediocre performance in detecting birds, with several birds remaining undetected or being classified incorrectly. Although the model  weights were initialized to those of  the trained bird-only detector, the network has unlearnt its ability to localize birds adequately.
+  The higher AP for all bird species using an IoU threshold of 0.50 in comparison to the bird-only detector is excellent, except for the “Other/Unknown” categroy, where the model drastically fails to classify. 
+  Nevertheless, we can combine the results from a bird-only detector and bird-species detector to recover the poor performance of the "Other/Unknown" bird category.
 </ol>
 
 </p>
-
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
-<!-- RESULTS AND DISCUSSION -->
-<h2 id="results-and-discussion"> Results and Discussion</h2>
-
-<p>
-Leveraging RetinaNet, we trained a bird-only detection model as well as a bird species detection model that classified Brown Pelicans, Laughing Gulls, and Mixed Terns. As observed in the results, for the bird-only detector we achieved a mean average precision of 43.7% across the 11 different IoU thresholds, which is comparable to state-of-the-art results achieved by object detectors on benchmark computer vision datasets. Across the bird species detector model, we observe a mean average precision of 32.3%, which is significantly worse. We have some next steps that we hope will help improve the mAP precision results.
-</p>
-
-
-
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
-<!-- REFERENCES -->
-<h2 id="references"> References</h2>
-
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -283,17 +268,25 @@ Leveraging RetinaNet, we trained a bird-only detection model as well as a bird s
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/krishk97">@krishk97</a> <br>
   
   <b>Minxuan Luo</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: <a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ml122@rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
 
   <b>William Lu</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: xionga27@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
+
+  <b>Alexander Xiong</b> wyl1@rice.edu<br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: <a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
 
-  <b>Alexander Xiong</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: <a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
+  <b>Anna Vallery</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: avallery@houstonaudubon.org<a></a> <br>
+
+  <b>Richard Gibbons Lu</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: rgibbons@houstonaudubon.org<a></a> <br>
+  
+  <b>Hank Arnold</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: hmarnold@msn.com<a></a> <br>
 </p>
-
 <br>
-✤ <i>This was the project for the course COMP 449 - Machine Learning and Data Science Projects (Fall 2021), at <a href="https://www.rice.edu/">Rice University</a><i>
+✤ <i>This was the project for the course COMP 449/549 - Machine Learning and Data Science Projects (Fall 2021), at <a href="https://www.rice.edu/">Rice University</a><i>
