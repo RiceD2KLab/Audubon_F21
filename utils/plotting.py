@@ -1,3 +1,5 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 
 
@@ -22,4 +24,5 @@ def plot_img_bbx(image, annotation_lst, color_dict=None):
 
     plt.figure(figsize=(60, 30))
     plt.imshow(np.array(image), interpolation='nearest')
+    plt.axis('off')
     plt.show()
