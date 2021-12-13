@@ -214,17 +214,18 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
 
-def crop_img_only(img_file, output_path, crop_height, crop_width, sliding_size):
+def crop_img_only(img_file_path, output_path, crop_height, crop_width, sliding_size):
     """
     This function crops one image with an adjustable overlap
     INPUT:
     crop_height, crop_weight -- desired patch size.
     """
     # append width, height, depth
-    im = cv2.imread(img_file)
+    im = cv2.imread(img_file_path)
     img_height, img_width, img_depth = im.shape
-    im = Image.open(img_file, 'r')
-    file_name = img_file.split('/')[-1][:-4]
+    im = Image.open(img_file_path, 'r')
+    _, file_name_full = os.path.split(img_file_path)
+    file_name, _ = os.path.splitext(file_name_full)
     # go through the image from top left corner
     for i in range((img_height - crop_height) // sliding_size + 2):
 
@@ -261,7 +262,7 @@ def crop_img_only(img_file, output_path, crop_height, crop_width, sliding_size):
             c_img = im.crop((left, top, right, bottom))
             c_img.save(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
             image = Image.open(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
-            image.save(output_path + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
+            image.save(os.path.join(output_path, file_name + '_' + str(i) + '_' + str(j) + '.JPEG'))
 
 
 def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_width=640, sliding_size=400):
@@ -270,7 +271,7 @@ def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_w
     Function is to be used during final pipeline stage for prediction
     INPUTS:
         :param data_dir: image set directory
-        :param img_ext: image file extension eg. "JPG"
+        :param img_ext: image file extension eg. ".JPG"
         :param output_dir: output directory
         :param crop_height: image height after tiling, default 640
         :param crop_width: image width after tiling, default 640

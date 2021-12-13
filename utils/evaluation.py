@@ -1,5 +1,8 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm.autonotebook import tqdm
+import cv2
 import itertools
 import detectron2.utils.comm as comm
 from pycocotools.cocoeval import COCOeval
@@ -227,12 +230,12 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
         # convert the tiled coordinates to original coordinates
         # ((img_width - crop_width) // sliding_size + 1) and i < ((img_height - crop_height) // sliding_size + 1)
         # get original coord idx from file name
-        output_df['height_idx'] = output_df['file_name'].map(lambda x: int(x.split('.')[0].split('_')[-2]))
-        output_df['width_idx'] = output_df['file_name'].map(lambda x: int(x.split('.')[0].split('_')[-1]))
+        output_df['height_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-2])))
+        output_df['width_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-1])))
 
         # get original file name
         output_df['orig_name'] = output_df['file_name'].map(
-            lambda x: '_'.join(x.split('/')[4].split('_')[:-2]) + '.JPG')
+            lambda x: '_'.join(os.path.split(x)[1].split('_')[:-2]) + '.JPG')
 
         # convert xmin, xmax, ymin, ymax
         def convert_xmin(row):
@@ -259,8 +262,8 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
             else:
                 return row['height_idx'] * sliding_size + row['ymax']
 
-        output_df['height_idx'] = output_df['file_name'].map(lambda x: int(x.split('.')[0].split('_')[-2]))
-        output_df['width_idx'] = output_df['file_name'].map(lambda x: int(x.split('.')[0].split('_')[-1]))
+        output_df['height_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-2])))
+        output_df['width_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-1])))
         output_df['orig_xmin'] = output_df.apply(convert_xmin, axis=1)
         output_df['orig_xmax'] = output_df.apply(convert_xmax, axis=1)
         output_df['orig_ymin'] = output_df.apply(convert_ymin, axis=1)
@@ -269,7 +272,7 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
         output_df['boxes'] = output_df[['orig_xmin', 'orig_xmax', 'orig_ymin', 'orig_ymax']].values.tolist()
         output_df = output_df.groupby('orig_name').apply(non_max_suppression_fast)
 
-        return output_df
+    return output_df
 
 
 
