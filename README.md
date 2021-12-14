@@ -271,11 +271,11 @@ Due to the lack of annotated data available for other bird species, we re-label 
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ml122@rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/minxuanluo">@minxuanluo</a> <br>
 
-  <b>William Lu</b> <br>
+  <b>Alexander Xiong</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: xionga27@rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
 
-  <b>Alexander Xiong</b> wyl1@rice.edu<br>
+  <b>William Lu</b> wyl1@rice.edu<br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: <a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
 
