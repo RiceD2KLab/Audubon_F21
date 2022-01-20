@@ -278,8 +278,8 @@ def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_w
         :param sliding_size: sliding size between each crop, default 400
     """
     # intermediate folder for cropped images
-    if not os.path.exists(os.path.join(output_path, 'Intermediate')):
-        os.makedirs(os.path.join(output_path, 'Intermediate'))
+    if not os.path.exists(os.path.join(output_dir, 'Intermediate')):
+        os.makedirs(os.path.join(output_dir, 'Intermediate'))
     # Load CSV files
     files = [d for d in os.listdir(data_dir) if os.path.splitext(d)[1] == img_ext]
     for f in tqdm(files):
