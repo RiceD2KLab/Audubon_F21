@@ -21,7 +21,7 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     df = pd.read_csv(csv_path, header=0, names=["class_id", "class_name", "x", "y", "width", "height"])
     info_dict = {}
     info_dict['bbox'] = []
-    info_dict['file_name'] = os.path.split(csv_path)[-1][:-4]
+    info_dict['file_name'] = os.path.split(csv_path)[-1]
     # plotting function needs it, but in JPEG.
     if test:
         im = cv2.imread(csv_path.replace('csv', 'JPEG'))
