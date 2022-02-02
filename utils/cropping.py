@@ -9,6 +9,47 @@ from pathlib import Path
 import random
 
 
+def csv_to_dict_AWS(bucket_name, key, test=False, annot_file_ext='csv'):
+    """
+    Function to extract an info dictionary from an xml file
+    INPUT:
+      csv_path -- path for an csv file, format of bndbox should be xmin, ymin,
+                  xmax, ymax
+    OUTPUT:
+      info_dict -- an info dictionary
+    """
+    
+    response = s3client.get_object(Bucket=my_bucket, Key=key)
+    body = response['Body']
+    
+    df = pd.read_csv(body, header=0, names=["class_id", "class_name", "x", "y", "width", "height"])
+    info_dict = {}
+    info_dict['bbox'] = []
+    # get the 
+    info_dict['file_name'] = key.split('/')[-1]
+    # plotting function needs it, but in JPEG.
+    
+    
+    if test:
+        im = cv2.imread(csv_path.replace('csv', 'JPEG'))
+    else:
+        im = cv2.imread(csv_path.replace(annot_file_ext, 'JPG'))
+
+    # append width, height, depth
+    info_dict['img_size'] = im.shape
+    # bndbox info
+    for i in range(len(df)):
+        # store bbx info for one object
+        bbox = {}
+        bbox['class'], bbox['desc'], bbox['xmin'], bbox['ymin'], w, h = df.iloc[i,]
+        
+        bbox['xmax'] = bbox['xmin'] + w
+        bbox['ymax'] = bbox['ymin'] + h
+        info_dict['bbox'].append(bbox)
+    return info_dict
+
+
+
 def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     """
     Function to extract an info dictionary from an xml file
