@@ -9,6 +9,7 @@ from pathlib import Path
 import random
 import boto3
 from PIL import Image
+import numpy as np
 
 
 def csv_to_dict_AWS(bucket_name, key,  im_fold, AWS_storage = 's3',annot_file_ext='bbx'):
