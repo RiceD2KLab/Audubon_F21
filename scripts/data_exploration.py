@@ -4,47 +4,47 @@ import matplotlib.pyplot as plt
 from skimage import io 
 import pandas as pd
 import seaborn as sns
-%matplotlib inline
+#%matplotlib inline
 
 def draw_bounding_boxes(img, data, legend=True):    
-  """
-  Function to draw bounding boxes onto image 
-  INPUTS: 
-    img -- <numpy.ndarray> input image for bounding boxes to be placed on
-    data -- <pandas.DataFrame> dataframe containing columns for object class and 
-            bounding box parameters (x, y, width, height)
-    legend -- <boolean> toggle to place legend on plot 
-  OUTPUTS: 
-    output -- <numpy.ndarray> edited input image with bounding boxes
-  """
-  from matplotlib.patches import Rectangle, Patch
+    """
+    Function to draw bounding boxes onto image 
+    INPUTS: 
+        img -- <numpy.ndarray> input image for bounding boxes to be placed on
+        data -- <pandas.DataFrame> dataframe containing columns for object class and 
+                bounding box parameters (x, y, width, height)
+        legend -- <boolean> toggle to place legend on plot 
+    OUTPUTS: 
+        output -- <numpy.ndarray> edited input image with bounding boxes
+    """
+    from matplotlib.patches import Rectangle, Patch
 
-  classes = pd.unique(data["class_name"])
-  
-  # colormap 
-  cmap = plt.cm.get_cmap("jet")
-  color_ls = np.linspace(0,1,num=classes.size)
+    classes = pd.unique(data["class_name"])
+    
+    # colormap 
+    cmap = plt.cm.get_cmap("jet")
+    color_ls = np.linspace(0,1,num=classes.size)
   
   # draw bounding boxes
-  fig, ax = plt.subplots(figsize=[6,4], dpi=100)
-  ax.imshow(img)
-  # ax.imshow(np.fliplr(np.flipud(img)))
-  for i in range(data.shape[0]): 
-  # for i in range(1):
-    display(data)
-    class_num = np.squeeze(np.argwhere(data["class_name"][i]==classes))
-    rect = Rectangle((data["x"][i],data["y"][i]),data["width"][i],data["height"][i],
-                                 edgecolor=cmap(color_ls[class_num])[:3], 
-                                 linewidth=1, facecolor='none')
-    ax.add_patch(rect)
+    fig, ax = plt.subplots(figsize=[6,4], dpi=100)
+    ax.imshow(img)
+    # ax.imshow(np.fliplr(np.flipud(img)))
+    for i in range(data.shape[0]): 
+    # for i in range(1):
+        display(data)
+        class_num = np.squeeze(np.argwhere(data["class_name"][i]==classes))
+        rect = Rectangle((data["x"][i],data["y"][i]),data["width"][i],data["height"][i],
+                                    edgecolor=cmap(color_ls[class_num])[:3], 
+                                    linewidth=1, facecolor='none')
+        ax.add_patch(rect)
 
-  ax.set_title("Bounding boxes")  
-  # legend
-  if legend: 
-    legend_elements = [Patch(facecolor='none',edgecolor=cmap(color_ls[i])[:3],label=c) for i,c in enumerate(classes)]
-    ax.legend(handles=legend_elements, loc='upper right')
-  
-  plt.show()
+    ax.set_title("Bounding boxes")  
+    # legend
+    if legend: 
+        legend_elements = [Patch(facecolor='none',edgecolor=cmap(color_ls[i])[:3],label=c) for i,c in enumerate(classes)]
+        ax.legend(handles=legend_elements, loc='upper right')
+    
+    plt.show()
 
 def dataLoader():
     """
@@ -99,7 +99,7 @@ def birdCounts(target_data):
 
 def birdPerPhoto(target_data):
     """
-    Function to display bird pper photo graphic
+    Function to display bird per photo graphic
     INPUTS: 
         target_data -- <pd.dataframe> dataframe with bounding boxes processed and aggregated
     OUTPUTS: 
@@ -155,9 +155,9 @@ def birdExamples():
     OUTPUTS: 
     """
     target_data = {'Avocet': "", 'Black Crowned Night Heron': "", 'Brown Pelican': "", 'Cormorant': "",
- 'Great Blue Heron': "", 'Great Egret/White Morph': "", 'Herring/Ringbilled Gull': "",
- 'Laughing Gull': "", 'Mixed Tern': "", 'Other/Unknown': "", 'Reddish Egret': "",
- 'Roseate Spoonbill': "", 'Trash/Debris': "", 'TriColored Heron': "", 'White Ibis': ""}
+   'Great Blue Heron': "", 'Great Egret/White Morph': "", 'Herring/Ringbilled Gull': "",
+   'Laughing Gull': "", 'Mixed Tern': "", 'Other/Unknown': "", 'Reddish Egret': "",
+   'Roseate Spoonbill': "", 'Trash/Debris': "", 'TriColored Heron': "", 'White Ibis': ""}
     counter = 0
     data_dir = 'data/Annotations 20210912/'
 
