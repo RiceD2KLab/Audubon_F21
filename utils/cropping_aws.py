@@ -244,8 +244,40 @@ def crop_dataset_AWS(bucket, data_key, output_key, annot_key, annot_file_ext = '
                             
     # for each annotated file, crop the image and place it into the output directory
     for f in tqdm(files, desc='Cropping files'):
-        crop_img_AWS(s3client = s3client, my_bucket = bucket, annot_key=f ,img_key = data_key, output_key = output_key, crop_height=crop_height, crop_width=crop_width, class_map=class_map,
-                 annot_file_ext=annot_file_ext)
+        crop_img_AWS(s3client = s3client, my_bucket = bucket, annot_key=f ,img_key = data_key, output_key = output_key,
+                     crop_height=crop_height, crop_width=crop_width, class_map=class_map, annot_file_ext=annot_file_ext)
     
     shutil.rmtree('./temp')
     return None
+
+def train_val_test_split_AWS(s3client, my_bucket, file_key, train_key, val_key, test_key, train_frac=0.8, val_frac=0.1):
+    """
+    :param file_dir: crop_dataset()'s output path:
+    :param output_dir: an empty folder
+    :param train_frac: fraction for training
+    :param val_frac: fraction for validation, 1-train-val will be fraction for test
+    """
+            
+    img_list = [f['Key'] for f in s3client.list_objects(Bucket=my_bucket, Prefix=file_key)['Contents']]
+    random.Random(4).shuffle(img_list)
+    csv_list = [f.replace('JPEG', 'csv') for f in img_list]
+    number_img = len(img_list)
+    train_sz = int(number_img * train_frac)
+    val_sz = int(number_img * val_frac)
+    
+   
+    s3 = boto3.resource('s3')
+
+    
+    for i in range(number_img):
+        copy_source_img = {'Bucket': my_bucket, 'Key': img_list[i]}
+        copy_source_csv = {'Bucket': my_bucket, 'Key': csv_list[i]}
+        if i < train_sz:
+            s3.meta.client.copy(copy_source, my_bucket, train_key+img_list[i].split('/')[-1])
+            s3.meta.client.copy(copy_source, my_bucket, train_key+csv_list[i].split('/')[-1])
+        elif i < train_sz+val_sz:
+            s3.meta.client.copy(copy_source, my_bucket, val_key+img_list[i].split('/')[-1])
+            s3.meta.client.copy(copy_source, my_bucket, val_key+csv_list[i].split('/')[-1])
+        else:
+            s3.meta.client.copy(copy_source, my_bucket, test_key+img_list[i].split('/')[-1])
+            s3.meta.client.copy(copy_source, my_bucket, test_key+csv_list[i].split('/')[-1])
