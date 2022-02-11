@@ -66,7 +66,7 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     df = pd.read_csv(csv_path, header=0, names=["class_id", "class_name", "x", "y", "width", "height"])
     info_dict = {}
     info_dict['bbox'] = []
-    info_dict['file_name'] = csv_path.split('/')[-1]
+    info_dict['file_name'] = os.path.split(csv_path)[-1]
     # plotting function needs it, but in JPEG.
     if test:
         im = cv2.imread(csv_path.replace('csv', 'JPEG'))
@@ -179,7 +179,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
     img_height, img_width, img_depth = info_dict['img_size']
     im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
-    file_name = csv_file.split('/')[-1][:-4]
+    file_name = os.path.split(csv_file)[-1][:-4]
     # go through the image from top left corner
     for i in range(img_height // crop_height + 1):
 
