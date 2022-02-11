@@ -259,9 +259,9 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
         obj_dict['pred_cls'] = obj_dict['pred_cls'] + class_for_file
         obj_dict['file_name'] = obj_dict['file_name'] + [f] * len(score_for_file)
 
-        output_df = pd.DataFrame(obj_dict)   # Need it to be a DataFrame
-        output_df['pred_cls'] = output_df['pred_cls'].map(species_map)
-        # print(output_df)
+    output_df = pd.DataFrame(obj_dict)   # Need it to be a DataFrame
+    output_df['pred_cls'] = output_df['pred_cls'].map(species_map)
+    # print(output_df)
 
     # convert the tiled coordinates to original coordinates
     # ((img_width - crop_width) // sliding_size + 1) and i < ((img_height - crop_height) // sliding_size + 1)
