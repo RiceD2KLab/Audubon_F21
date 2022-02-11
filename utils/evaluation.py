@@ -209,6 +209,32 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
 
     obj_dict = {'cnt_id': [], 'file_name': [], 'xmin': [], 'ymin': [], 'xmax': [], 'ymax': [], 'score': [],
                 'pred_cls': []}
+
+    # # convert xmin, xmax, ymin, ymax
+    # def convert_xmin(row):
+    #     if row['width_idx'] == ((raw_img_width - crop_width) // sliding_size + 1):
+    #         return raw_img_width - (crop_width - row['xmin'])
+    #     else:
+    #         return row['width_idx'] * sliding_size + row['xmin']
+
+    # def convert_xmax(row):
+    #     if row['width_idx'] == ((raw_img_width - crop_width) // sliding_size + 1):
+    #         return raw_img_width - (crop_width - row['xmax'])
+    #     else:
+    #         return row['width_idx'] * sliding_size + row['xmax']
+
+    # def convert_ymin(row):
+    #     if row['height_idx'] == ((raw_img_height - crop_height) // sliding_size + 1):
+    #         return raw_img_height - (crop_height - row['ymin'])
+    #     else:
+    #         return row['height_idx'] * sliding_size + row['ymin']
+
+    # def convert_ymax(row):
+    #     if row['height_idx'] == ((raw_img_height - crop_height) // sliding_size + 1):
+    #         return raw_img_height - (crop_height - row['ymax'])
+    #     else:
+    #         return row['height_idx'] * sliding_size + row['ymax']
+
     idx = 1
     for f in tqdm(eval_file_lst):
         im = cv2.imread(f)
@@ -233,54 +259,56 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
         obj_dict['pred_cls'] = obj_dict['pred_cls'] + class_for_file
         obj_dict['file_name'] = obj_dict['file_name'] + [f] * len(score_for_file)
 
-        output_df = pd.DataFrame(obj_dict)
+        output_df = pd.DataFrame(obj_dict)   # Need it to be a DataFrame
         output_df['pred_cls'] = output_df['pred_cls'].map(species_map)
+        # print(output_df)
 
-        # convert the tiled coordinates to original coordinates
-        # ((img_width - crop_width) // sliding_size + 1) and i < ((img_height - crop_height) // sliding_size + 1)
-        # get original coord idx from file name
-        output_df['height_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-2])))
-        output_df['width_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-1])))
+    # convert the tiled coordinates to original coordinates
+    # ((img_width - crop_width) // sliding_size + 1) and i < ((img_height - crop_height) // sliding_size + 1)
+    # get original coord idx from file name
+    output_df['height_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-2])))
+    output_df['width_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-1])))
 
-        # get original file name
-        output_df['orig_name'] = output_df['file_name'].map(
-            lambda x: '_'.join(os.path.split(x)[1].split('_')[:-2]) + '.JPG')
+    # get original file name
+    output_df['orig_name'] = output_df['file_name'].map(
+        lambda x: '_'.join(os.path.split(x)[1].split('_')[:-2]) + '.JPG')
 
-        # convert xmin, xmax, ymin, ymax
-        def convert_xmin(row):
-            if row['width_idx'] == ((raw_img_width - crop_width) // sliding_size + 1):
-                return raw_img_width - (crop_width - row['xmin'])
-            else:
-                return row['width_idx'] * sliding_size + row['xmin']
+    # # convert xmin, xmax, ymin, ymax
+    def convert_xmin(row):
+        if row['width_idx'] == ((raw_img_width - crop_width) // sliding_size + 1):
+            return raw_img_width - (crop_width - row['xmin'])
+        else:
+            return row['width_idx'] * sliding_size + row['xmin']
 
-        def convert_xmax(row):
-            if row['width_idx'] == ((raw_img_width - crop_width) // sliding_size + 1):
-                return raw_img_width - (crop_width - row['xmax'])
-            else:
-                return row['width_idx'] * sliding_size + row['xmax']
+    def convert_xmax(row):
+        if row['width_idx'] == ((raw_img_width - crop_width) // sliding_size + 1):
+            return raw_img_width - (crop_width - row['xmax'])
+        else:
+            return row['width_idx'] * sliding_size + row['xmax']
 
-        def convert_ymin(row):
-            if row['height_idx'] == ((raw_img_height - crop_height) // sliding_size + 1):
-                return raw_img_height - (crop_height - row['ymin'])
-            else:
-                return row['height_idx'] * sliding_size + row['ymin']
+    def convert_ymin(row):
+        if row['height_idx'] == ((raw_img_height - crop_height) // sliding_size + 1):
+            return raw_img_height - (crop_height - row['ymin'])
+        else:
+            return row['height_idx'] * sliding_size + row['ymin']
 
-        def convert_ymax(row):
-            if row['height_idx'] == ((raw_img_height - crop_height) // sliding_size + 1):
-                return raw_img_height - (crop_height - row['ymax'])
-            else:
-                return row['height_idx'] * sliding_size + row['ymax']
+    def convert_ymax(row):
+        if row['height_idx'] == ((raw_img_height - crop_height) // sliding_size + 1):
+            return raw_img_height - (crop_height - row['ymax'])
+        else:
+            return row['height_idx'] * sliding_size + row['ymax']
 
-        output_df['height_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-2])))
-        output_df['width_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-1])))
-        output_df['orig_xmin'] = output_df.apply(convert_xmin, axis=1, result_type='reduce')
-        output_df['orig_xmax'] = output_df.apply(convert_xmax, axis=1, result_type='reduce')
-        output_df['orig_ymin'] = output_df.apply(convert_ymin, axis=1, result_type='reduce')
-        output_df['orig_ymax'] = output_df.apply(convert_ymax, axis=1, result_type='reduce')
+    output_df['height_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-2])))
+    output_df['width_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-1])))
+    output_df['orig_xmin'] = output_df.apply(convert_xmin, axis=1, result_type='reduce')
+    output_df['orig_xmax'] = output_df.apply(convert_xmax, axis=1, result_type='reduce')
+    output_df['orig_ymin'] = output_df.apply(convert_ymin, axis=1, result_type='reduce')
+    output_df['orig_ymax'] = output_df.apply(convert_ymax, axis=1, result_type='reduce')
 
-        output_df['boxes'] = output_df[['orig_xmin', 'orig_xmax', 'orig_ymin', 'orig_ymax']].values.tolist()
-        output_df = output_df.groupby('orig_name').apply(non_max_suppression_fast)
+    output_df['boxes'] = output_df[['orig_xmin', 'orig_xmax', 'orig_ymin', 'orig_ymax']].values.tolist()
+    output_df = output_df.groupby('orig_name').apply(non_max_suppression_fast)
 
+    # output_df = pd.DataFrame(output_df)
     return output_df
 
 
