@@ -137,7 +137,8 @@ def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
         ax.plot(max_recall, avg_precision, color=class_colors[c_indx])
         precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
         ax_iou50.plot(recall, precisions_iou50, color=class_colors[c_indx])
-        precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
+        # precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
+        precisions_iou75 = np.squeeze(precisions[5, :, c_indx, 0, -1])
         ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
 
     ax.set(ylabel="Avg. Precision",
