@@ -7,7 +7,6 @@ import os
 import shutil
 from pathlib import Path
 import random
-import boto3
 from PIL import Image
 import numpy as np
 
