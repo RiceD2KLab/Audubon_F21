@@ -107,6 +107,7 @@ dataloader.py
         """
     # Essentially the same function as above, except that the dictionaries containing all birds in
     #   each image have been split into smaller dictionaries by species
+    # TODO: Line 95, if class_name in row["class_name"]:   # why using "in" instead of "==" ?
 
     def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colors=None):
         """

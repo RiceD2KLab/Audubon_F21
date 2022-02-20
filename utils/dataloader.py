@@ -39,7 +39,7 @@ def get_bird_only_dicts(data_dir,img_ext='.JPG'):
     imgs_anns_df = imgs_anns_df[imgs_anns_df["class_name"]!="Trash/Debris"]
     
     objs = []
-    for idx, row in imgs_anns_df.iterrows():  
+    for _, row in imgs_anns_df.iterrows():  
       obj = {
           "bbox": [row["x"], row["y"], row["width"], row["height"]],      
           "bbox_mode": BoxMode.XYWH_ABS,
@@ -89,10 +89,10 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_cate
     imgs_anns_df = imgs_anns_df[imgs_anns_df["class_name"]!="Trash/Debris"]
 
     objs = []
-    for idx, row in imgs_anns_df.iterrows():
+    for _, row in imgs_anns_df.iterrows():
       obj = None
       for id, class_name in enumerate(class_names):
-        if class_name in row["class_name"]:
+        if class_name in row["class_name"]:   ########### why using "in" instead of "==" ?
           obj = {
             "bbox": [row["x"], row["y"], row["width"], row["height"]],
             "bbox_mode": BoxMode.XYWH_ABS,
