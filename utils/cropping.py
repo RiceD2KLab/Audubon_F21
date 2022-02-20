@@ -132,10 +132,11 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
     overlap -- threshold for keeping a bbox.
     """
     # file_dict stores info of one subimage as a dictionary. keys indicate original file name and subimage position.
-    file_dict[str(i) + '_' + str(j)] = {}
-    file_dict[str(i) + '_' + str(j)]['bbox'] = []
-    file_dict[str(i) + '_' + str(j)]['file_name'] = info_dict['file_name'][:-4] + '_' + str(i) + '_' + str(j) + '.JPG'
-    file_dict[str(i) + '_' + str(j)]['img_size'] = (right - left, bottom - top, 3)
+    subimage_suffix = str(i) + '_' + str(j)
+    file_dict[subimage_suffix] = {}
+    file_dict[subimage_suffix]['bbox'] = []
+    file_dict[subimage_suffix]['file_name'] = info_dict['file_name'][:-4] + '_' + subimage_suffix + '.JPG'
+    file_dict[subimage_suffix]['img_size'] = (right - left, bottom - top, 3)
 
     valid = False
     for b in info_dict['bbox']:
@@ -148,19 +149,19 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
             continue
         else:
             if (xmax - xmin) * (ymax - ymin) > overlap * (b['xmax'] - b['xmin']) * (b['ymax'] - b['ymin']) \
-                    or b['xmin'] >= left and b['xmax'] <= right and b['ymin'] >= top and b['ymax'] <= bottom:
+                    or (b['xmin'] >= left and b['xmax'] <= right and b['ymin'] >= top and b['ymax'] <= bottom):
                 valid = True
                 # instance_dict is the info_dict for one patch
                 instance_dict = {}
                 # transform bbx coordinates
                 instance_dict['class'] = b['class']
                 instance_dict['desc'] = b['desc']
-                instance_dict['xmin'] = max(b['xmin'] - left, 0)
-                instance_dict['xmax'] = min(b['xmax'] - left, crop_width)
-                instance_dict['ymin'] = max(b['ymin'] - top, 0)
-                instance_dict['ymax'] = min(b['ymax'] - top, crop_height)
+                instance_dict['xmin'] = xmin
+                instance_dict['xmax'] = xmax
+                instance_dict['ymin'] = ymin
+                instance_dict['ymax'] = ymax
 
-                file_dict[str(i) + '_' + str(j)]['bbox'].append(instance_dict)
+                file_dict[subimage_suffix]['bbox'].append(instance_dict)
     return valid
 
 
@@ -239,6 +240,7 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
     :param crop_width: image width after tiling, default 640
     """
 
+    # intermediate folder for cropped images
     if not os.path.exists(output_dir):
         print(f"Creating output directory at: {output_dir}")
         os.makedirs(output_dir)
@@ -321,9 +323,15 @@ def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_w
         :param crop_width: image width after tiling, default 640
         :param sliding_size: sliding size between each crop, default 400
     """
+    
     # intermediate folder for cropped images
-    if not os.path.exists(os.path.join(output_dir, 'Intermediate')):
+    if not os.path.exists(output_dir):
+        print(f"Creating output directory at: {output_dir}")
+        os.makedirs(output_dir)
         os.makedirs(os.path.join(output_dir, 'Intermediate'))
+    elif not os.path.exists(os.path.join(output_dir, 'Intermediate')):
+        os.makedirs(os.path.join(output_dir, 'Intermediate'))
+    
     # Load CSV files
     files = [d for d in os.listdir(data_dir) if os.path.splitext(d)[1] == img_ext]
     for f in tqdm(files):
@@ -333,7 +341,7 @@ def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_w
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
 
-def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1):
+def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, seed=4):
     """
     :param file_dir: crop_dataset()'s output path:
     :param output_dir: an empty folder
@@ -355,7 +363,8 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1):
         print('Please create an empty folder named "test" inside the output folder')
 
     img_list = [f for f in os.listdir(file_dir) if f[-4:] == 'JPEG']
-    random.Random(4).shuffle(img_list)
+    # random.Random(4).shuffle(img_list)
+    random.Random(seed).shuffle(img_list)
     csv_list = [f.replace('JPEG', 'csv') for f in img_list]
     size = len(img_list)
     train_sz = int(size * train_frac)
