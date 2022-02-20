@@ -11,14 +11,7 @@ from detectron2.evaluation.fast_eval_api import COCOeval_opt
 from detectron2.evaluation import inference_on_dataset
 from detectron2.evaluation.coco_evaluation import COCOEvaluator
 from detectron2.data import build_detection_test_loader
-
-# import json
-# import torch
-# from torchvision import transforms, datasets
-# from tqdm import tqdm
 from prettytable import PrettyTable
-# from torch import nn
-# import torch.nn.functional as F
 
 
 class PrecisionRecallEvaluator(COCOEvaluator):
@@ -286,6 +279,7 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
     return output_df
 
 
+# TODO: Describe this code
 class ConfusionMatrix(object):
     def __init__(self, num_classes: int, labels: list):
         self.matrix = np.zeros((num_classes, num_classes))
