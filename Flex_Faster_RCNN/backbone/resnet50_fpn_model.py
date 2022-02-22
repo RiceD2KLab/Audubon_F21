@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.jit.annotations import List, Dict
 from torchvision.ops.misc import FrozenBatchNorm2d
 
-from Flex_Faster_RCNN import FeaturePyramidNetwork, LastLevelMaxPool
+from .Flex_Faster_RCNN import FeaturePyramidNetwork, LastLevelMaxPool
 
 
 class Bottleneck(nn.Module):
