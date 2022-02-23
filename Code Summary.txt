@@ -148,7 +148,7 @@ cropping.py
         OUTPUT:
         info_dict -- an info dictionary ######## (format is class, desc, xmin, ymin, xmax, ymax)
         """
-    # info_dict is a dictionary of dictionaries, one for each bird
+    # info_dict is a dictionary of dictionaries, one for each cropped image
     # it has two keys: 'bbx', whose value is the list of dictionaries;
     #   and 'file', whose value is the image file name
 
@@ -162,6 +162,9 @@ cropping.py
             info_dict -- an info dictionary ######## (format is class, desc, xmin, ymin, xmax, ymax)
         """
     # original function, does the same as above
+    # info_dict is a dictionary of dictionaries, one for each cropped image
+    # it has two keys: 'bbx', whose value is the list of dictionaries;
+    #   and 'file', whose value is the image file name
 
     dict_to_csv(info_dict, output_path, empty):
         """
@@ -194,8 +197,10 @@ cropping.py
     #   has key "bbox", whose value that is a list of dictionaries, one per bird in the cropped image
     # I think top, left, right, bottom are the pixels of the original images containing the cropped image
     # FIXED: Should line 152, the statement after the OR, be surrounded by parentheses?
-    # FIXRD: Lines 159-162 can use xmin, xmax, ymin, ymax since they were calculated above?
+    # FIXED: Lines 159-162 can use xmin, xmax, ymin, ymax since they were calculated above?
     # FIXED: str(i) + '_' + str(j) can be replaced by a properly named variable
+
+    # TODO: crop_img, crop_img_only, and crop_img_trainer all need the for loops fixed
 
     crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}):
         """
@@ -207,12 +212,13 @@ cropping.py
         annot_file_ext -- annotation file extension
         """
     # this function generates all the cropped images and all corresponding label txt files for a single file
-    # file_dict stores cropped images info dict in one dictionary.
-    # Uses tile_annot. Looks like cropped images without birds are not saved (line 214)
+    # file_dict stores each cropped images' info_dict in one dictionary.
+    # BUG: Uses tile_annot. Looks like cropped images without birds are not saved (line 214)
+    #   even though the comment says do save them
     # overlap is defaulted to 0.2
     # Looks like images are saved to two different directories - the Intermediate one is then deleted
     #   in crop_dataset()
-    # Don't need empty = True on line 225
+    # FIXED: Don't need empty = True on line 225
     # Each file_dict entry is saved to a csv file, hence there is a csv file for each cropped image
     #   which contains the new bounding box info for each bird in the cropped image
 

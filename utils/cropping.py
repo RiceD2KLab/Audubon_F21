@@ -52,7 +52,6 @@ def csv_to_dict_AWS(bucket_name, key,  im_fold, AWS_storage = 's3',annot_file_ex
     return info_dict
 
 
-
 def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     """
     Function to extract an info dictionary from an xml file
@@ -150,6 +149,7 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
         else:
             if (xmax - xmin) * (ymax - ymin) > overlap * (b['xmax'] - b['xmin']) * (b['ymax'] - b['ymin']) \
                     or (b['xmin'] >= left and b['xmax'] <= right and b['ymin'] >= top and b['ymax'] <= bottom):
+                # TODO: The latter condition seems redundant
                 valid = True
                 # instance_dict is the info_dict for one patch
                 instance_dict = {}
@@ -210,7 +210,8 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
                 top = img_height - crop_height
                 bottom = img_height
 
-                # even if no birds in cropped img, keep the cropped image
+            # even if no birds in cropped img, keep the cropped image
+            # however this only saves cropped images that contain birds
             if tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
                 # print('Generating segmentation at position: ', left, top, right, bottom)
 
@@ -222,11 +223,9 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     # output the file_dict to a folder of csv files containing labels for each cropped file
     for b in file_dict:
         if file_dict[b]['bbox'] == []:
-            empty = True
             continue
         else:
-            empty = False
-            dict_to_csv(file_dict[b], empty=empty, output_path=output_dir)
+            dict_to_csv(file_dict[b], empty=False, output_path=output_dir)
 
     return file_dict
 
@@ -379,3 +378,114 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
         else:
             shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'test'))
             shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'test'))
+
+#####################################################################################
+
+def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_size_y, output_dir, class_map={}, overlap=0.8, annot_file_ext='csv', file_dict={}, compute_sliding_size=False):
+    """
+    Function description.
+    From other function: 'This function crops one image and output corresponding labels.
+    Currently, this function generates the cropped images AND the corresponding csv files to output_dir'
+    INPUT:
+        crop_height, crop_weight -- desired patch size.
+        overlap -- threshold for keeping bbx.
+        annot_file_ext -- annotation file extension
+    """
+    info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
+    img_height, img_width, _ = info_dict['img_size']
+    im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
+    file_name = os.path.split(csv_file)[-1][:-4]
+
+    # if compute_sliding_size:
+    #     # TODO: function for max_w
+    #     # TODO: function for max_h
+    #     # sliding_size_x = crop_width - max_w
+    #     # sliding_size_y = crop_height - max_h
+    
+    # go through the image from top left corner
+    for i in range((img_height - crop_height) // sliding_size_y + 2):
+        for j in range((img_width - crop_width) // sliding_size_x + 2):
+
+            if j < ((img_width - crop_width) // sliding_size_x + 1) and i < (
+                    (img_height - crop_height) // sliding_size_y + 1):
+                left = j * sliding_size_x
+                right = crop_width + j * sliding_size_x
+                top = i * sliding_size_y
+                bottom = crop_height + i * sliding_size_y
+
+            elif j == ((img_width - crop_width) // sliding_size_x + 1) and i < (
+                    (img_height - crop_height) // sliding_size_y + 1):
+                left = img_width - crop_width
+                right = img_width
+                top = i * sliding_size_y
+                bottom = crop_height + i * sliding_size_y
+
+            # if rectangles left on edges, take subimage of crop_height*crop_width by taking a part from within.
+            elif i == ((img_height - crop_height) // sliding_size_y + 1) and j < (
+                    (img_width - crop_width) // sliding_size_x + 1):
+                left = j * sliding_size_x
+                right = crop_width + j * sliding_size_x
+                top = img_height - crop_height
+                bottom = img_height
+
+            else:
+                left = img_width - crop_width
+                right = img_width
+                top = img_height - crop_height
+                bottom = img_height
+
+            # this only saves subimages that have birds
+            if tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
+                # print('Generating segmentation at position: ', left, top, right, bottom)
+
+                c_img = im.crop((left, top, right, bottom))
+                c_img.save(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
+                image = Image.open(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
+                image.save(output_dir + '/' + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
+                # image.save(os.path.join(output_dir, file_name + '_' + str(i) + '_' + str(j) + '.JPEG'))
+
+
+    # output the file_dict to a folder of csv files containing labels for each cropped file
+    for b in file_dict:
+        if file_dict[b]['bbox'] == []:
+            continue
+        else:
+            dict_to_csv(file_dict[b], empty=False, output_path=output_dir)
+
+    return file_dict
+
+
+def crop_dataset_trainer(data_dir, output_dir, annot_file_ext='csv', class_map={}, crop_height=640, crop_width=640, sliding_size_x=440, sliding_size_y=440, compute_sliding_size=False):
+    """
+    Function description.
+    INPUTS:
+        data_dir: image set directory
+        output_dir: output directory
+        annot_file_ext: annotation file extension
+        crop_height: image height after tiling, default 640
+        crop_width: image width after tiling, default 640
+        sliding_size_x: DESCRIBE, default 440
+        sliding_size_y: DESCRIBE, default 440
+        compute_sliding_size: If true, computes max sliding size to avoid having cropping birds, default false
+    """
+
+    # Intermediate directory for cropped images
+    if not os.path.exists(output_dir):
+        print(f"Creating output directory at: {output_dir}")
+        os.makedirs(output_dir)
+        os.makedirs(os.path.join(output_dir, 'Intermediate'))
+    elif not os.path.exists(os.path.join(output_dir, 'Intermediate')):
+        os.makedirs(os.path.join(output_dir, 'Intermediate'))
+
+    # Load CSV files
+    if annot_file_ext == 'csv':
+        files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
+    if annot_file_ext == 'bbx':
+        files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'bbx']
+    for f in tqdm(files, desc='Cropping files'):
+        crop_img_trainer(csv_file=f, crop_height=crop_height, crop_width=crop_width, sliding_size_x=sliding_size_x,
+                         sliding_size_y=sliding_size_y, output_dir=output_dir, class_map=class_map, 
+                         annot_file_ext=annot_file_ext, compute_sliding_size=compute_sliding_size)
+
+    # Remove intermediate directory
+    shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
