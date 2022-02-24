@@ -396,11 +396,17 @@ def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_
     im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
     file_name = os.path.split(csv_file)[-1][:-4]
 
-    # if compute_sliding_size:
-    #     # TODO: function for max_w
-    #     # TODO: function for max_h
-    #     # sliding_size_x = crop_width - max_w
-    #     # sliding_size_y = crop_height - max_h
+    if compute_sliding_size:
+        max_w = 0
+        max_h = 0
+        for b in info_dict['bbox']:
+            if b['xmax'] - b['xmin'] > max_w:
+                max_w = b['xmax'] - b['xmin']
+            if b['ymax'] - b['ymin'] > max_h:
+                max_h = b['ymax'] - b['ymin']
+        if max_w > 0 and max_h > 0:
+            sliding_size_x = crop_width - max_w
+            sliding_size_y = crop_height - max_h
     
     # go through the image from top left corner
     for i in range((img_height - crop_height) // sliding_size_y + 2):
