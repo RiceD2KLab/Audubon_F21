@@ -1,4 +1,4 @@
-def crop_minor(csv_file, crop_height, crop_width, output_dir, minor_species, class_map = {}, annot_file_ext='bbx', file_dict={}):
+def crop_minor(csv_file, crop_height, crop_width, output_dir, minor_species, annot_file_ext='bbx', file_dict={}):
   file_name = os.path.split(csv_file)[-1][:-4]
 
   annot_dict = csv_to_dict(csv_path = csv_file, annot_file_ext=annot_file_ext)
