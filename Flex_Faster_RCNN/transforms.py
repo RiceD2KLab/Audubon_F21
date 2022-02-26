@@ -12,7 +12,6 @@ class Compose(object):
             image, target = t(image, target)
         return image, target
 
-
 class ToTensor(object):
     """From PIL to Tensor"""
     def __call__(self, image, target):
@@ -34,3 +33,4 @@ class RandomHorizontalFlip(object):
             bbox[:, [0, 2]] = width - bbox[:, [2, 0]]  # flip bbox
             target["boxes"] = bbox
         return image, target
+
