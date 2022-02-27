@@ -4,6 +4,8 @@ from PIL import Image, ImageDraw
 import csv
 import os
 import shutil
+from Audubon_F21.utils.cropping import csv_to_dict, dict_to_csv
+
 
 def flip_img(img, info_dict, output_path):
   name = ("_flipped.").join(info_dict["file_name"].split("."))
