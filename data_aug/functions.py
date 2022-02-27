@@ -16,7 +16,6 @@ def flip_img(img, info_dict, output_dir):
   flipped = transform(img)
   flipped.save(output_dir+"/"+name)
 
-
   img_height, img_width, img_depth = info_dict['img_size']
 
   instance_dict = info_dict["bbox"][0]
@@ -35,9 +34,7 @@ def flip_img(img, info_dict, output_dir):
 
   dict_to_csv(flipped_dict, empty=False, output_path=output_dir)
   
-  
-  
-  
+
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, annot_file_ext='bbx'):
   file_name = os.path.split(csv_file)[-1][:-4]
 
@@ -59,7 +56,6 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
   for i in range(len(minors)):
     minor = minors[i]
     center_w, center_h = (minor["xmin"] + minor["xmax"]) // 2, (minor["ymin"] + minor["ymax"]) // 2
-
     
     left, top, right, bottom = center_w-0.5*crop_width, center_h-0.5*crop_width, center_w+0.5*crop_width, center_h+0.5*crop_height
     if left < 0:
