@@ -38,7 +38,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
 
   #Load the image
   image = Image.open(image_file)
-
+  width, height = image.size
 
   minors = []
   for dic in annot_dict['bbox']:
@@ -51,6 +51,15 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
 
     
     left, top, right, bottom = center_w-0.5*crop_width, center_h-0.5*crop_width, center_w+0.5*crop_width, center_h+0.5*crop_height
+    if left < 0:
+      left, right = 0, crop_width
+    if right > width:
+      left, right = width - crop_width, width
+    if top < 0:
+      top, bottom = 0, crop_height
+    if bottom > height:
+      top, bottom = height - crop_height, height
+    
     cropped = image.crop((left, top, right, bottom)) 
     cropped.save(output_dir+"/"+file_name+"_"+str(i+1).zfill(2)+ ".JPG")
 
@@ -77,5 +86,5 @@ def dataset_aug(input_dir, output_dir, minor_species, annot_file_ext = 'bbx', cr
   if annot_file_ext == 'bbx':
     files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == 'bbx']
   for file in tqdm(files, desc='Cropping files'):
-        aug_minor(csv_file = file,crop_height = crop_height,crop_width = crop_width, output_dir = output_dir,minor_species = minor_species)
+    aug_minor(csv_file = file,crop_height = crop_height,crop_width = crop_width, output_dir = output_dir,minor_species = minor_species)
 
