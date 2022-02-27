@@ -3,7 +3,7 @@ import random
 
 
 def main():
-    random.seed(0)  # 设置随机种子，保证随机结果可复现
+    random.seed(0)  # random seeds
 
     files_path = "./VOCdevkit/VOC2012/Annotations"
     assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
