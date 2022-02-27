@@ -9,12 +9,12 @@ from torchvision import transforms
 from Audubon_F21.utils.cropping import csv_to_dict, dict_to_csv
 
 
-def flip_img(img, info_dict, output_path):
+def flip_img(img, info_dict, output_dir):
   name = ("_flipped.").join(info_dict["file_name"].split("."))
 
   transform = transforms.Compose([transforms.RandomHorizontalFlip(p=1)])
   flipped = transform(img)
-  flipped.save(output_path+"/"+name)
+  flipped.save(output_dir+"/"+name)
 
 
   img_height, img_width, img_depth = info_dict['img_size']
@@ -33,7 +33,7 @@ def flip_img(img, info_dict, output_path):
   flipped_dict["file_name"] = name
   flipped_dict["img_size"] = info_dict["img_size"]
 
-  dict_to_csv(flipped_dict, empty=False, output_path=output_path)
+  dict_to_csv(flipped_dict, empty=False, output_path=output_dir)
   
   
   
@@ -89,7 +89,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
     
     dict_to_csv(minor_dict, empty=False, output_path=output_dir)
 
-    flip_img(img = cropped, info_dict = minor_dict, output_path = output_dir)
+    flip_img(img = cropped, info_dict = minor_dict, output_dir = output_dir)
 
 
 def dataset_aug(input_dir, output_dir, minor_species, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640):
