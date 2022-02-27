@@ -5,7 +5,7 @@ from torch import Tensor
 class ImageList(object):
     """
     Structure that holds a list of images (of possibly
-    varying sizes) as a single tensor.
+    varying sizes) as a single tensor..
     This works by padding the images to the same size,
     and storing in a field the original sizes of each image
     """
@@ -14,8 +14,8 @@ class ImageList(object):
         # type: (Tensor, List[Tuple[int, int]]) -> None
         """
         Arguments:
-            tensors (tensor) padding后的图像数据
-            image_sizes (list[tuple[int, int]])  padding前的图像尺寸
+            tensors (tensor) after padding size
+            image_sizes (list[tuple[int, int]]) before padding size
         """
         self.tensors = tensors
         self.image_sizes = image_sizes

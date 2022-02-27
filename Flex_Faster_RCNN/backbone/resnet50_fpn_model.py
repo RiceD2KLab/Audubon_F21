@@ -131,7 +131,7 @@ def overwrite_eps(model, eps):
 
     Args:
         model (nn.Module): The model on which we perform the overwrite.
-        eps (float): The new value of eps.
+        eps (float): The new value of eps..
     """
     for module in model.modules():
         if isinstance(module, FrozenBatchNorm2d):

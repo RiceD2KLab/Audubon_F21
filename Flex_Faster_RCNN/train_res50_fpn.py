@@ -6,23 +6,22 @@ import torch
 import transforms
 from network_files.faster_rcnn_framework import FasterRCNN, FastRCNNPredictor
 from backbone.resnet50_fpn_model import resnet50_fpn_backbone
-
+from my_dataset import VOCDataSet
+from train_utils.group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_groups
+from train_utils import train_eval_utils as utils
 
 #
 
 
 def create_model(num_classes):
-    # 注意，这里的backbone默认使用的是FrozenBatchNorm2d，即不会去更新bn参数
-    # 目的是为了防止batch_size太小导致效果更差(如果显存很小，建议使用默认的FrozenBatchNorm2d)
-    # 如果GPU显存很大可以设置比较大的batch_size就可以将norm_layer设置为普通的BatchNorm2d
-    # trainable_layers包括['layer4', 'layer3', 'layer2', 'layer1', 'conv1']， 5代表全部训练
+    # trainable_layers consits of ['layer4', 'layer3', 'layer2', 'layer1', 'conv1']， 5 means train all layers
     backbone = resnet50_fpn_backbone(norm_layer=torch.nn.BatchNorm2d,
                                      trainable_layers=3)
-    # 训练自己数据集时不要修改这里的91，修改的是传入的num_classes参数
+    # do not change num_classes = 91
     model = FasterRCNN(backbone=backbone, num_classes=91)
-    # 载入预训练模型权重
+    # load weight
     # https://download.pytorch.org/models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth
-    weights_dict = torch.load("./backbone/fasterrcnn_resnet50_fpn_coco.pth", map_location='cpu')
+    weights_dict = torch.load("/Users/maojietang/Downloads/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth", map_location='cpu')
     missing_keys, unexpected_keys = model.load_state_dict(weights_dict, strict=False)
     if len(missing_keys) != 0 or len(unexpected_keys) != 0:
         print("missing_keys: ", missing_keys)
@@ -40,7 +39,7 @@ def main(parser_data):
     device = torch.device(parser_data.device if torch.cuda.is_available() else "cpu")
     print("Using {} device training.".format(device.type))
 
-    # 用来保存coco_info的文件
+    # save coco_info
     results_file = "results{}.txt".format(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     data_transform = {
@@ -59,21 +58,22 @@ def main(parser_data):
     train_dataset = VOCDataSet(VOC_root, "2012", data_transform["train"], "train.txt")
     train_sampler = None
 
-    # 是否按图片相似高宽比采样图片组成batch
-    # 使用的话能够减小训练时所需GPU显存，默认使用
+    # Whether to sample images by similar aspect ratio to form a batch
     if args.aspect_ratio_group_factor >= 0:
         train_sampler = torch.utils.data.RandomSampler(train_dataset)
-        # 统计所有图像高宽比例在bins区间中的位置索引
+        # Count the position index of all image aspect ratios in the bins interval
         group_ids = create_aspect_ratio_groups(train_dataset, k=args.aspect_ratio_group_factor)
-        # 每个batch图片从同一高宽比例区间中取
+        # Each batch image is taken from the same aspect ratio interval
         train_batch_sampler = GroupedBatchSampler(train_sampler, group_ids, args.batch_size)
 
-    # 注意这里的collate_fn是自定义的，因为读取的数据包括image和targets，不能直接使用默认的方法合成batch
+    # Note that the collate_fn here is custom,
+    # because the read data includes images and targets, and cannot be directly
+    # synthesized into a batch using the default method
     batch_size = parser_data.batch_size
     nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
     print('Using %g dataloader workers' % nw)
     if train_sampler:
-        # 如果按照图片高宽比采样图片，dataloader中需要使用batch_sampler
+        # If the image is sampled according to the image aspect ratio, the dataloader needs to use batch_sampler
         train_data_loader = torch.utils.data.DataLoader(train_dataset,
                                                         batch_sampler=train_batch_sampler,
                                                         pin_memory=True,
@@ -115,7 +115,8 @@ def main(parser_data):
                                                    step_size=3,
                                                    gamma=0.33)
 
-    # 如果指定了上次训练保存的权重文件地址，则接着上次结果接着训练
+    # If the address of the weight file saved from the last training is specified,
+    # the training will continue with the last result
     if parser_data.resume != "":
         checkpoint = torch.load(parser_data.resume, map_location='cpu')
         model.load_state_dict(checkpoint['model'])
@@ -147,7 +148,7 @@ def main(parser_data):
 
         # write into txt
         with open(results_file, "a") as f:
-            # 写入的数据包括coco指标还有loss和learning rate
+            # The data written includes coco metrics as well as loss and learning rate
             result_info = [str(round(i, 4)) for i in coco_info + [mean_loss.item()]] + [str(round(lr, 6))]
             txt = "epoch:{} {}".format(epoch, '  '.join(result_info))
             f.write(txt + "\n")
@@ -181,32 +182,32 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=__doc__)
 
-    # 训练设备类型
+    # device
     parser.add_argument('--device', default='cuda:0', help='device')
-    # 训练数据集的根目录(VOCdevkit)
-    parser.add_argument('--data-path', default='./', help='dataset')
-    # 检测目标类别数(不包含背景)
+    # root path(VOCdevkit)
+    parser.add_argument('--data-path', default='/Users/maojietang/Downloads', help='dataset')
+    # num_class(without considering bg)
     parser.add_argument('--num-classes', default=20, type=int, help='num_classes')
-    # 文件保存地址
+    # save path
     parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
-    # 若需要接着上次训练，则指定上次训练保存权重文件地址
+    # resume path
     parser.add_argument('--resume', default='', type=str, help='resume from checkpoint')
-    # 指定接着从哪个epoch数开始训练
+    # start epoch(if set resume path)
     parser.add_argument('--start_epoch', default=0, type=int, help='start epoch')
-    # 训练的总epoch数
-    parser.add_argument('--epochs', default=15, type=int, metavar='N',
+    # epochs in total
+    parser.add_argument('--epochs', default=1, type=int, metavar='N',
                         help='number of total epochs to run')
-    # 训练的batch size
-    parser.add_argument('--batch_size', default=8, type=int, metavar='N',
+    # batch size
+    parser.add_argument('--batch_size', default=1, type=int, metavar='N',
                         help='batch size when training.')
     parser.add_argument('--aspect-ratio-group-factor', default=3, type=int)
-    # 是否使用混合精度训练(需要GPU支持混合精度)
+    # mixed precision training
     parser.add_argument("--amp", default=False, help="Use torch.cuda.amp for mixed precision training")
 
     args = parser.parse_args()
     print(args)
 
-    # 检查保存权重文件夹是否存在，不存在则创建
+    # Check if the save weights folder exists, and create it if it does not.
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
 

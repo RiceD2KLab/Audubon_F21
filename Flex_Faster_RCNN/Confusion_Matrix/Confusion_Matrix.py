@@ -18,7 +18,7 @@ class ConfusionMatrix(object):
         self.num_classes = num_classes
         self.labels = labels
     
-    # Update Matrix
+    # Update Matrix.
     def update(self, preds, labels):
         for p, t in zip(preds, labels):
             self.matrix[p, t] += 1

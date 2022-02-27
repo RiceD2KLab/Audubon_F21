@@ -38,29 +38,26 @@ class BalancedPositiveNegativeSampler(object):
         """
         pos_idx = []
         neg_idx = []
-        # 遍历每张图像的matched_idxs
+        # iterate matched_idxs
         for matched_idxs_per_image in matched_idxs:
-            # >= 1的为正样本, nonzero返回非零元素索引
+            # >= 1: positive
             # positive = torch.nonzero(matched_idxs_per_image >= 1).squeeze(1)
             positive = torch.where(torch.ge(matched_idxs_per_image, 1))[0]
-            # = 0的为负样本
+            # = 0: negative
             # negative = torch.nonzero(matched_idxs_per_image == 0).squeeze(1)
             negative = torch.where(torch.eq(matched_idxs_per_image, 0))[0]
 
-            # 指定正样本的数量
+            # assign positive sample number
             num_pos = int(self.batch_size_per_image * self.positive_fraction)
             # protect against not enough positive examples
-            # 如果正样本数量不够就直接采用所有正样本
             num_pos = min(positive.numel(), num_pos)
-            # 指定负样本数量
+            # assign negative sample number
             num_neg = self.batch_size_per_image - num_pos
             # protect against not enough negative examples
-            # 如果负样本数量不够就直接采用所有负样本
             num_neg = min(negative.numel(), num_neg)
 
             # randomly select positive and negative examples
             # Returns a random permutation of integers from 0 to n - 1.
-            # 随机选择指定数量的正负样本
             perm1 = torch.randperm(positive.numel(), device=positive.device)[:num_pos]
             perm2 = torch.randperm(negative.numel(), device=negative.device)[:num_neg]
 
@@ -156,7 +153,8 @@ class BoxCoder(object):
     def encode(self, reference_boxes, proposals):
         # type: (List[Tensor], List[Tensor]) -> List[Tensor]
         """
-        结合anchors和与之对应的gt计算regression参数
+        Calculate the regression parameter by combining the anchors and their corresponding gt
+
         Args:
             reference_boxes: List[Tensor] 每个proposal/anchor对应的gt_boxes
             proposals: List[Tensor] anchors/proposals
@@ -164,8 +162,8 @@ class BoxCoder(object):
         Returns: regression parameters
 
         """
-        # 统计每张图像的anchors个数，方便后面拼接在一起处理后在分开
-        # reference_boxes和proposal数据结构相同
+        # Count the number of anchors for each image,
+        # so that it is easy to stitch them together and separate them after processing.
         boxes_per_image = [len(b) for b in reference_boxes]
         reference_boxes = torch.cat(reference_boxes, dim=0)
         proposals = torch.cat(proposals, dim=0)
@@ -210,12 +208,13 @@ class BoxCoder(object):
         for val in boxes_per_image:
             box_sum += val
 
-        # 将预测的bbox回归参数应用到对应anchors上得到预测bbox的坐标
+        # Apply the predicted bbox regression parameters to the corresponding anchors
+        # to get the coordinates of the predicted bbox
         pred_boxes = self.decode_single(
             rel_codes, concat_boxes
         )
 
-        # 防止pred_boxes为空时导致reshape报错
+        # Prevent reshape errors when pred_boxes are empty
         if box_sum > 0:
             pred_boxes = pred_boxes.reshape(box_sum, -1, 4)
 
@@ -233,16 +232,16 @@ class BoxCoder(object):
         boxes = boxes.to(rel_codes.dtype)
 
         # xmin, ymin, xmax, ymax
-        widths = boxes[:, 2] - boxes[:, 0]   # anchor/proposal宽度
-        heights = boxes[:, 3] - boxes[:, 1]  # anchor/proposal高度
-        ctr_x = boxes[:, 0] + 0.5 * widths   # anchor/proposal中心x坐标
-        ctr_y = boxes[:, 1] + 0.5 * heights  # anchor/proposal中心y坐标
+        widths = boxes[:, 2] - boxes[:, 0]   # anchor/proposal w
+        heights = boxes[:, 3] - boxes[:, 1]  # anchor/proposal h
+        ctr_x = boxes[:, 0] + 0.5 * widths   # anchor/proposal x
+        ctr_y = boxes[:, 1] + 0.5 * heights  # anchor/proposal y
 
-        wx, wy, ww, wh = self.weights  # RPN中为[1,1,1,1], fastrcnn中为[10,10,5,5]
-        dx = rel_codes[:, 0::4] / wx   # 预测anchors/proposals的中心坐标x回归参数
-        dy = rel_codes[:, 1::4] / wy   # 预测anchors/proposals的中心坐标y回归参数
-        dw = rel_codes[:, 2::4] / ww   # 预测anchors/proposals的宽度回归参数
-        dh = rel_codes[:, 3::4] / wh   # 预测anchors/proposals的高度回归参数
+        wx, wy, ww, wh = self.weights  # RPN[1,1,1,1], fastrcnn[10,10,5,5]
+        dx = rel_codes[:, 0::4] / wx   # predict anchors/proposals x
+        dy = rel_codes[:, 1::4] / wy   # predict anchors/proposals y
+        dw = rel_codes[:, 2::4] / ww   # predict anchors/proposals w
+        dh = rel_codes[:, 3::4] / wh   # predict anchors/proposals h
 
         # limit max value, prevent sending too large values into torch.exp()
         # self.bbox_xform_clip=math.log(1000. / 16)   4.135
@@ -300,8 +299,9 @@ class Matcher(object):
 
     def __call__(self, match_quality_matrix):
         """
-        计算anchors与每个gtboxes匹配的iou最大值，并记录索引，
-        iou<low_threshold索引值为-1， low_threshold<=iou<high_threshold索引值为-2
+        Calculate the maximum value of iou for anchors matching each gtboxes, and record the index
+        iou<low_threshold, index = -1，
+        low_threshold<=iou<high_threshold, index = -2
         Args:
             match_quality_matrix (Tensor[float]): an MxN tensor, containing the
             pairwise quality between M ground-truth elements and N predicted elements.
@@ -324,9 +324,6 @@ class Matcher(object):
 
         # match_quality_matrix is M (gt) x N (predicted)
         # Max over gt elements (dim 0) to find best gt candidate for each prediction
-        # M x N 的每一列代表一个anchors与所有gt的匹配iou值
-        # matched_vals代表每列的最大值，即每个anchors与所有gt匹配的最大iou值
-        # matches对应最大值所在的索引
         matched_vals, matches = match_quality_matrix.max(dim=0)  # the dimension to reduce.
         if self.allow_low_quality_matches:
             all_matches = matches.clone()
@@ -334,16 +331,16 @@ class Matcher(object):
             all_matches = None
 
         # Assign candidate matches with low quality to negative (unassigned) values
-        # 计算iou小于low_threshold的索引
+        # get iou < low_threshold and get index
         below_low_threshold = matched_vals < self.low_threshold
-        # 计算iou在low_threshold与high_threshold之间的索引值
+        # get iou in [low_threshold, high_threshold] and get index
         between_thresholds = (matched_vals >= self.low_threshold) & (
             matched_vals < self.high_threshold
         )
-        # iou小于low_threshold的matches索引置为-1
+        # iou < low_threshold的matches, index = -1
         matches[below_low_threshold] = self.BELOW_LOW_THRESHOLD  # -1
 
-        # iou在[low_threshold, high_threshold]之间的matches索引置为-2
+        # iou in [low_threshold, high_threshold], index = -2
         matches[between_thresholds] = self.BETWEEN_THRESHOLDS    # -2
 
         if self.allow_low_quality_matches:
@@ -361,12 +358,9 @@ class Matcher(object):
         quality value.
         """
         # For each gt, find the prediction with which it has highest quality
-        # 对于每个gt boxes寻找与其iou最大的anchor，
-        # highest_quality_foreach_gt为匹配到的最大iou值
         highest_quality_foreach_gt, _ = match_quality_matrix.max(dim=1)  # the dimension to reduce.
 
         # Find highest quality match available, even if it is low, including ties
-        # 寻找每个gt boxes与其iou最大的anchor索引，一个gt匹配到的最大iou可能有多个anchor
         # gt_pred_pairs_of_highest_quality = torch.nonzero(
         #     match_quality_matrix == highest_quality_foreach_gt[:, None]
         # )
@@ -387,17 +381,17 @@ class Matcher(object):
         # Each row is a (gt index, prediction index)
         # Note how gt items 1, 2, 3, and 5 each have two ties
 
-        # gt_pred_pairs_of_highest_quality[:, 0]代表是对应的gt index(不需要)
+        # gt_pred_pairs_of_highest_quality[:, 0]
         # pre_inds_to_update = gt_pred_pairs_of_highest_quality[:, 1]
         pre_inds_to_update = gt_pred_pairs_of_highest_quality[1]
-        # 保留该anchor匹配gt最大iou的索引，即使iou低于设定的阈值
+        # preserve the index of the anchor matching gt maximum iou, even if iou is below the set threshold
         matches[pre_inds_to_update] = all_matches[pre_inds_to_update]
 
 
 def smooth_l1_loss(input, target, beta: float = 1. / 9, size_average: bool = True):
     """
     very similar to the smooth_l1_loss from pytorch, but with
-    the extra beta parameter
+    the extra beta parameter.
     """
     n = torch.abs(input - target)
     # cond = n < beta

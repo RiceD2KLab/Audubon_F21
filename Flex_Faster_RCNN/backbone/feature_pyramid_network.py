@@ -14,7 +14,7 @@ class FeaturePyramidNetwork(nn.Module):
     Module that adds a FPN from on top of a set of feature maps. This is based on
     `"Feature Pyramid Network for Object Detection" <https://arxiv.org/abs/1612.03144>`_.
     The feature maps are currently supposed to be in increasing depth
-    order.
+    order..
     The input to the model is expected to be an OrderedDict[Tensor], containing
     the feature maps on top of which the FPN will be added.
     Arguments:

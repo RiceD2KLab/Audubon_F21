@@ -16,7 +16,7 @@ from draw_box_utils import draw_box
 
 def create_model(num_classes):
     # resNet50+fpn+faster_RCNN
-    # norm_layer要和训练脚本中保持一致
+    # norm_layer should be consistent with training.
     backbone = resnet50_fpn_backbone(norm_layer=torch.nn.BatchNorm2d)
     model = FasterRCNN(backbone=backbone, num_classes=num_classes, rpn_score_thresh=0.5)
 
@@ -59,7 +59,7 @@ def main():
     # expand batch dimension
     img = torch.unsqueeze(img, dim=0)
 
-    model.eval()  # 进入验证模式
+    model.eval()
     with torch.no_grad():
         # init
         img_height, img_width = img.shape[-2:]
@@ -76,7 +76,7 @@ def main():
         predict_scores = predictions["scores"].to("cpu").numpy()
 
         if len(predict_boxes) == 0:
-            print("没有检测到任何目标!")
+            print("No object!")
 
         draw_box(original_img,
                  predict_boxes,
@@ -87,7 +87,7 @@ def main():
                  line_thickness=3)
         plt.imshow(original_img)
         plt.show()
-        # 保存预测的图片结果
+        # save result
         original_img.save("test_result.jpg")
 
 
