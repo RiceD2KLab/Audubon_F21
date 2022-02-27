@@ -39,9 +39,6 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
   #Load the image
   image = Image.open(image_file)
 
-  # Plot the Bounding Box
-  # print("Raw image with bounding boxes")
-  # plotting.plot_img_bbx(image, annotation_lst)
 
   minors = []
   for dic in annot_dict['bbox']:
@@ -68,7 +65,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
     minor_dict = {}
     minor_dict["bbox"] = [instance_dict]
     minor_dict["file_name"] = file_name+"_"+str(i+1).zfill(2)+ ".JPG"
-    minor_dict["img_size"] = (crop_width,crop_height,3)                     # maybe (crop_height,crop_width,3) 
+    minor_dict["img_size"] = (crop_width,crop_height,3)                     
     
     dict_to_csv(minor_dict, empty=False, output_path=output_dir)
 
