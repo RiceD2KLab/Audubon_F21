@@ -13,7 +13,7 @@ def flip_img(img, info_dict, output_path):
 
   transform = transforms.Compose([transforms.RandomHorizontalFlip(p=1)])
   flipped = transform(img)
-  flipped.save(output_dir+"/"+name)
+  flipped.save(output_path+"/"+name)
 
 
   img_height, img_width, img_depth = info_dict['img_size']
@@ -32,7 +32,7 @@ def flip_img(img, info_dict, output_path):
   flipped_dict["file_name"] = name
   flipped_dict["img_size"] = info_dict["img_size"]
 
-  dict_to_csv(flipped_dict, empty=False, output_path=output_dir)
+  dict_to_csv(flipped_dict, empty=False, output_path=output_path)
   
   
   
