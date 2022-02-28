@@ -177,7 +177,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     annot_file_ext -- annotation file extension
     """
     info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
-    img_height, img_width, img_depth = info_dict['img_size']
+    img_height, img_width, _ = info_dict['img_size']
     im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
     file_name = os.path.split(csv_file)[-1][:-4]
     # go through the image from top left corner
@@ -250,8 +250,10 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
     # Load CSV files
     if annot_file_ext == 'csv':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
+        # TODO: only pass CSV files whose images are in the folder too
     if annot_file_ext == 'bbx':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'bbx']
+        # TODO: only pass BBX files whose images are in the folder too
     for f in tqdm(files, desc='Cropping files'):
         crop_img(csv_file=f, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir, class_map=class_map,
                  annot_file_ext=annot_file_ext)
@@ -267,7 +269,7 @@ def crop_img_only(img_file_path, output_path, crop_height, crop_width, sliding_s
     """
     # append width, height, depth
     im = cv2.imread(img_file_path)
-    img_height, img_width, img_depth = im.shape
+    img_height, img_width, _ = im.shape
     im = Image.open(img_file_path, 'r')
     _, file_name_full = os.path.split(img_file_path)
     file_name, _ = os.path.splitext(file_name_full)
@@ -402,8 +404,10 @@ def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_
         for b in info_dict['bbox']:
             if b['xmax'] - b['xmin'] > max_w:
                 max_w = b['xmax'] - b['xmin']
+                print("max_w: ", max_w, "\nxmax: ", b['xmax'], "\nxmin: ", b['xmin'])
             if b['ymax'] - b['ymin'] > max_h:
                 max_h = b['ymax'] - b['ymin']
+                print("max_h: ", max_h, "\nymax: ", b['ymax'], "\nymin: ", b['ymin'])
         if max_w > 0 and max_h > 0:
             sliding_size_x = crop_width - max_w
             sliding_size_y = crop_height - max_h
@@ -486,8 +490,10 @@ def crop_dataset_trainer(data_dir, output_dir, annot_file_ext='csv', class_map={
     # Load CSV files
     if annot_file_ext == 'csv':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
+        # TODO: only pass CSV files whose images are in the folder too (update original function too)
     if annot_file_ext == 'bbx':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'bbx']
+        # TODO: only pass BBX files whose images are in the folder too (update original function too)
     for f in tqdm(files, desc='Cropping files'):
         crop_img_trainer(csv_file=f, crop_height=crop_height, crop_width=crop_width, sliding_size_x=sliding_size_x,
                          sliding_size_y=sliding_size_y, output_dir=output_dir, class_map=class_map, 
