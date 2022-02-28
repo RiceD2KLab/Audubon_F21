@@ -49,10 +49,9 @@ def filter_low_thresh(boxes, scores, classes, category_index, thresh, box_to_dis
 
 def draw_text(draw, box_to_display_str_map, box, left, right, top, bottom, color):
     try:
-        font = ImageFont.truetype('arial.ttf', 24)
+        font = ImageFont.truetype('/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/arial.ttf', 40)
     except IOError:
         font = ImageFont.load_default()
-
     # If the total height of the display strings added to the top of the bounding
     # box exceeds the top of the image, stack the strings below the bounding box
     # instead of above.
