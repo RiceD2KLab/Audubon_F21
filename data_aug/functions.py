@@ -18,24 +18,26 @@ def flip_img(img, info_dict, output_dir):
 
   img_height, img_width, img_depth = info_dict['img_size']
 
-  instance_dict = info_dict["bbox"][0]
-  instancef_dict = {}
-  instancef_dict['class'] = instance_dict['class']
-  instancef_dict['desc'] = instance_dict['desc']
-  instancef_dict['xmin'] = max(img_width - instance_dict['xmax'], 0)               # Horizontal Flip
-  instancef_dict['ymin'] = instance_dict['ymin']
-  instancef_dict['xmax'] = min(img_width - instance_dict['xmin'], img_width)       # Horizontal Flip
-  instancef_dict['ymax'] = instance_dict['ymax']
-
   flipped_dict = {}
-  flipped_dict["bbox"] = [instancef_dict]
+  flipped_dict["bbox"] = []
   flipped_dict["file_name"] = name
   flipped_dict["img_size"] = info_dict["img_size"]
+
+  for bbx in info_dict['bbox']:
+    instancef_dict = {}
+    instancef_dict['class'] = bbx['class']
+    instancef_dict['desc'] = bbx['desc']
+    instancef_dict['xmin'] = max(img_width - bbx['xmax'], 0)               # Horizontal Flip
+    instancef_dict['ymin'] = bbx['ymin']
+    instancef_dict['xmax'] = min(img_width - bbx['xmin'], img_width)       # Horizontal Flip
+    instancef_dict['ymax'] = bbx['ymax']
+      
+    flipped_dict['bbox'].append(instancef_dict)
 
   dict_to_csv(flipped_dict, empty=False, output_path=output_dir)
   
 
-def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, annot_file_ext='bbx'):
+def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, annot_file_ext='bbx'):
   file_name = os.path.split(csv_file)[-1][:-4]
 
   annot_dict = csv_to_dict(csv_path = csv_file, annot_file_ext=annot_file_ext)
@@ -44,11 +46,11 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
   image_file = csv_file.replace(annot_file_ext, 'JPG')
   assert os.path.exists(image_file)
 
-  #Load the image
   image = Image.open(image_file)
   width, height = image.size
 
   minors = []
+  valid_i = 0
   for dic in annot_dict['bbox']:
     if dic["desc"] in minor_species:
       minors.append(dic)
@@ -66,31 +68,54 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, anno
       top, bottom = 0, crop_height
     if bottom > height:
       top, bottom = height - crop_height, height
-    
+      
     cropped = image.crop((left, top, right, bottom)) 
-    cropped.save(output_dir+"/"+file_name+"_"+str(i+1).zfill(2)+ ".JPG")
 
-    instance_dict = {}
-    instance_dict['class'] = minor['class']
-    instance_dict['desc'] = minor['desc']
-    instance_dict['xmin'] = max(minor['xmin'] - left, 0)
-    instance_dict['ymin'] = max(minor['ymin'] - top, 0)
-    instance_dict['xmax'] = min(minor['xmax'] - left, crop_width)
-    instance_dict['ymax'] = min(minor['ymax'] - top, crop_height)
+    file_dict = {}
+    file_dict["bbox"] = []
+    file_dict["img_size"] = (crop_width,crop_height,3)  
 
-    minor_dict = {}
-    minor_dict["bbox"] = [instance_dict]
-    minor_dict["file_name"] = file_name+"_"+str(i+1).zfill(2)+ ".JPG"
-    minor_dict["img_size"] = (crop_width,crop_height,3)                     
+    for bbx in annot_dict['bbox']:
+      ymin = max(bbx['ymin'] - top, 0)
+      ymax = min(bbx['ymax'] - top, crop_height)
+      xmin = max(bbx['xmin'] - left, 0)
+      xmax = min(bbx['xmax'] - left, crop_width)
+      # if the bird is not in this patch, pass
+      if xmin > crop_width or xmax < 0 or ymin > crop_height or ymax < 0:         # >=
+          continue
+      else:
+          if (xmax - xmin) * (ymax - ymin) > overlap * (bbx['xmax'] - bbx['xmin']) * (bbx['ymax'] - bbx['ymin']):
+
+            instance_dict = {}
+            instance_dict['class'] = bbx['class']
+            instance_dict['desc'] = bbx['desc']
+            instance_dict['xmin'] = max(bbx['xmin'] - left, 0)
+            instance_dict['ymin'] = max(bbx['ymin'] - top, 0)
+            instance_dict['xmax'] = min(bbx['xmax'] - left, crop_width)
+            instance_dict['ymax'] = min(bbx['ymax'] - top, crop_height)
     
-    dict_to_csv(minor_dict, empty=False, output_path=output_dir)
+            file_dict['bbox'].append(instance_dict)
+    
+    non_minor = 0
+    for bbx in file_dict['bbox']:
+      if bbx['desc'] not in minor_species:
+        non_minor += 1
+    
+    if non_minor > thres:
+      continue
+    else:
+      valid_i += 1
+      file_dict["file_name"] = file_name+"_"+str(valid_i).zfill(2)+ ".JPG"
+      cropped.save(output_dir+"/"+file_name+"_"+str(valid_i).zfill(2)+ ".JPG")
 
-    flip_img(img = cropped, info_dict = minor_dict, output_dir = output_dir)
+      dict_to_csv(file_dict, empty=False, output_path=output_dir)
+  
+      flip_img(img = cropped, info_dict = file_dict, output_dir = output_dir)
 
 
-def dataset_aug(input_dir, output_dir, minor_species, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640):
+def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640):
 
   if annot_file_ext == 'bbx':
     files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == 'bbx']
   for file in tqdm(files, desc='Cropping files'):
-    aug_minor(csv_file = file,crop_height = crop_height,crop_width = crop_width, output_dir = output_dir,minor_species = minor_species)
+    aug_minor(csv_file = file, crop_height = crop_height,crop_width = crop_width, output_dir = output_dir, minor_species = minor_species, overlap = overlap, thres = thres)
