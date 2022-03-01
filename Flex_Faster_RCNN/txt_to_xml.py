@@ -1,117 +1,157 @@
-import xml.dom.minidom
+import pandas as pd
+import numpy as np
 import os
+import xml.dom.minidom
 
 
-# print(os.getcwd())
-# path = Extract_Txt.Extract('/Users/maojietang/Downloads')
-# print('P', path)
-# path.print_()
-# # path.get_path()
-# i = path.Get_Info()
-# print('I', i[1])
-# #
-def txt_convert_to_xml(filename, Image_shape, name, position):
-    # get an empty doc
-    doc = xml.dom.minidom.Document()
-    # set a root node: annotation
 
-    # Fisrt Layer
-    root = doc.createElement('annotation')
-    doc.appendChild(root)
-    # End First
+class Extract(object):
+    def __init__(self, txt_path):
+        # txt_path = '/Users/maojietang/Downloads'
+        self.txt_path = txt_path
+        # print(self.txt_path)
 
-    ## Second Layer
-    nodeFolder = doc.createElement('folder')
-    nodeFileName = doc.createElement('filename')
+    def get_path(self):
+        if os.path.exists(os.path.join(self.txt_path, "Annotation")) is False:
+            raise FileNotFoundError("Annotation dose not in path:'{}'.".format(self.txt_path))
+        self.File_path = self.txt_path + '/Annotation'
 
-    nodeFolder.appendChild(doc.createTextNode('VOC2012'))
-    nodeFileName.appendChild(doc.createTextNode(filename))
-    root.appendChild(nodeFolder)
-    root.appendChild(nodeFileName)
+        self.xml_list = [os.path.join(self.File_path, line.strip())
+                         for line in os.listdir(self.File_path) if (line.strip()[-3:]) == 'bbx']
 
-    ### Third Layer
-    nodeSource = doc.createElement('source')
-    nodeDatabase = doc.createElement('database')
-    nodeDatabase.appendChild(doc.createTextNode('The VOC2007 Database'))
+    def txt_convert_to_xml(self, filename, name, position):
+        # get an empty doc
+        doc = xml.dom.minidom.Document()
+        # set a root node: annotation
 
-    nodeAnnotation = doc.createElement('annotation')
-    nodeAnnotation.appendChild(doc.createTextNode('PASCAL VOC2007'))
+        # Fisrt Layer
+        root = doc.createElement('annotation')
+        doc.appendChild(root)
+        # End First
 
-    nodeImage = doc.createElement('image')
-    nodeImage.appendChild(doc.createTextNode('flickr'))
+        ## Second Layer
+        nodeFolder = doc.createElement('folder')
+        nodeFileName = doc.createElement('filename')
 
-    nodeSource.appendChild(nodeDatabase)
-    nodeSource.appendChild(nodeAnnotation)
-    nodeSource.appendChild(nodeImage)
-    ### End Third Layer
+        nodeFolder.appendChild(doc.createTextNode('Audubon2022'))
+        nodeFileName.appendChild(doc.createTextNode(filename))
+        root.appendChild(nodeFolder)
+        root.appendChild(nodeFileName)
 
-    root.appendChild(nodeSource)
-    ## End Second Layer
+        ### Third Layer
+        nodeSource = doc.createElement('source')
+        nodeDatabase = doc.createElement('database')
+        nodeDatabase.appendChild(doc.createTextNode('The Audubon2022 Database'))
 
-    ## Second Layer
-    nodeSize = doc.createElement('size')
-    nodeWidth = doc.createElement('width')
-    nodeHeight = doc.createElement('height')
-    nodeDepth = doc.createElement('depth')
+        nodeAnnotation = doc.createElement('annotation')
+        nodeAnnotation.appendChild(doc.createTextNode('Audubon2022 Spring'))
 
-    ### Third Layer
-    nodeWidth.appendChild(doc.createTextNode('231'))
-    nodeHeight.appendChild(doc.createTextNode('321'))
-    nodeDepth.appendChild(doc.createTextNode('3'))
+        nodeImage = doc.createElement('image')
+        nodeImage.appendChild(doc.createTextNode('None'))
 
-    nodeSize.appendChild(nodeWidth)
-    nodeSize.appendChild(nodeHeight)
-    nodeSize.appendChild(nodeDepth)
-    ### End Third Layer
-    root.appendChild(nodeSize)
-    ## End Second Layer
+        nodeSource.appendChild(nodeDatabase)
+        nodeSource.appendChild(nodeAnnotation)
+        nodeSource.appendChild(nodeImage)
+        ### End Third Layer
 
-    ## Second Layer
-    nodeSegmentedLayer = doc.createElement('segmented')
-    nodeSegmentedLayer.appendChild(doc.createTextNode('0'))
-    root.appendChild(nodeSegmentedLayer)
-    ## End Second Layer
+        root.appendChild(nodeSource)
+        ## End Second Layer
 
-    for i in range(len(name)):
-        nodeObject = doc.createElement('object')
-        nodeName = doc.createElement('name')
-        nodePose = doc.createElement('pose')
-        nodeTruncated = doc.createElement('truncated')
-        nodeDifficult = doc.createElement('difficult')
-        nodeBndbox = doc.createElement('bndbox')
+        ## Second Layer
+        nodeSize = doc.createElement('size')
+        nodeWidth = doc.createElement('width')
+        nodeHeight = doc.createElement('height')
+        nodeDepth = doc.createElement('depth')
 
-        nodeName.appendChild(doc.createTextNode(str(name[i])))
-        nodePose.appendChild(doc.createTextNode('0'))
-        nodeTruncated.appendChild(doc.createTextNode('1'))
-        nodeDifficult.appendChild(doc.createTextNode('2'))
+        ### Third Layer
+        nodeWidth.appendChild(doc.createTextNode('231'))
+        nodeHeight.appendChild(doc.createTextNode('321'))
+        nodeDepth.appendChild(doc.createTextNode('3'))
 
-        nodeX_min = doc.createElement('xmin')
-        nodeY_min = doc.createElement('ymin')
-        nodeX_max = doc.createElement('xmax')
-        nodeY_max = doc.createElement('ymax')
+        nodeSize.appendChild(nodeWidth)
+        nodeSize.appendChild(nodeHeight)
+        nodeSize.appendChild(nodeDepth)
+        ### End Third Layer
+        root.appendChild(nodeSize)
+        ## End Second Layer
 
-        nodeX_min.appendChild(doc.createTextNode(str(position[i][0])))
-        nodeY_min.appendChild(doc.createTextNode(str(position[i][1])))
-        nodeX_max.appendChild(doc.createTextNode(str(position[i][2])))
-        nodeY_max.appendChild(doc.createTextNode(str(position[i][3])))
+        ## Second Layer
+        nodeSegmentedLayer = doc.createElement('segmented')
+        nodeSegmentedLayer.appendChild(doc.createTextNode('0'))
+        root.appendChild(nodeSegmentedLayer)
+        ## End Second Layer
 
-        nodeBndbox.appendChild(nodeX_min)
-        nodeBndbox.appendChild(nodeY_min)
-        nodeBndbox.appendChild(nodeX_max)
-        nodeBndbox.appendChild(nodeY_max)
+        for i in range(len(name)):
+            nodeObject = doc.createElement('object')
+            nodeName = doc.createElement('name')
+            nodePose = doc.createElement('pose')
+            nodeTruncated = doc.createElement('truncated')
+            nodeDifficult = doc.createElement('difficult')
+            nodeBndbox = doc.createElement('bndbox')
 
-        nodeObject.appendChild(nodeName)
-        nodeObject.appendChild(nodePose)
-        nodeObject.appendChild(nodeTruncated)
-        nodeObject.appendChild(nodeDifficult)
-        nodeObject.appendChild(nodeBndbox)
-        root.appendChild(nodeObject)
+            nodeName.appendChild(doc.createTextNode(str(name[i])))
+            nodePose.appendChild(doc.createTextNode('0'))
+            nodeTruncated.appendChild(doc.createTextNode('1'))
+            nodeDifficult.appendChild(doc.createTextNode('2'))
 
-    # write xml
-    arg_output_dir = './Annotation_xml'
-    if not os.path.exists(arg_output_dir):
-        os.makedirs(arg_output_dir)
-    fp = open(os.path.join(arg_output_dir, filename), 'w')
-    doc.writexml(fp, addindent='\t', newl='\n', encoding='utf-8')
+            nodeX_min = doc.createElement('xmin')
+            nodeY_min = doc.createElement('ymin')
+            nodeX_max = doc.createElement('xmax')
+            nodeY_max = doc.createElement('ymax')
 
-txt_convert_to_xml('File1.xml',[224,224],['Bird1'],[[1,2,3,4]])
+            nodeX_min.appendChild(doc.createTextNode(str(position[i][0])))
+            nodeY_min.appendChild(doc.createTextNode(str(position[i][1])))
+            nodeX_max.appendChild(doc.createTextNode(str(position[i][2])))
+            nodeY_max.appendChild(doc.createTextNode(str(position[i][3])))
+
+            nodeBndbox.appendChild(nodeX_min)
+            nodeBndbox.appendChild(nodeY_min)
+            nodeBndbox.appendChild(nodeX_max)
+            nodeBndbox.appendChild(nodeY_max)
+
+            nodeObject.appendChild(nodeName)
+            nodeObject.appendChild(nodePose)
+            nodeObject.appendChild(nodeTruncated)
+            nodeObject.appendChild(nodeDifficult)
+            nodeObject.appendChild(nodeBndbox)
+            root.appendChild(nodeObject)
+
+        # write xml
+        path = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN'
+        filename = filename.split('.')[0] + '.xml'
+        filename = filename.split('/')[-1]
+        arg_output_dir = os.path.join(path, 'Annotation_xml')
+        print(os.path.join(arg_output_dir, filename))
+        if not os.path.exists(arg_output_dir):
+            os.makedirs(arg_output_dir)
+        fp = open(os.path.join(arg_output_dir, filename), 'w')
+        doc.writexml(fp, addindent='\t', newl='\n', encoding='utf-8')
+
+    def Get_Info(self):
+        self.get_path()
+        for i in self.xml_list:
+            file = pd.read_csv(i)
+            # get AI Class
+            name = file.iloc[:, 0].values
+
+            # get Species
+            species = file.iloc[:, 1].values
+
+            # get position info
+            position = file.iloc[:, 2:].values
+
+            # Need X_min, Y_min, X_max, Y_max
+            X_min = position[:, 0:1]
+            Y_min = position[:, 1:2]
+            X_max = position[:, 0:1] + position[:, 2:3]
+            Y_max = position[:, 1:2] + position[:, 3:4]
+            Position = np.hstack((X_min, Y_min, X_max, Y_max))
+            filename = i.split('.')[0]
+            filename = filename.split('/')[-1]
+
+            self.txt_convert_to_xml(filename, name, Position)
+
+A = Extract('/Users/maojietang/Downloads')
+A.Get_Info()
+
+

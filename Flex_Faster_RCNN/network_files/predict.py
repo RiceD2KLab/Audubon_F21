@@ -51,7 +51,7 @@ def main():
     category_index = {v: k for k, v in class_dict.items()}
 
     # load image
-    original_img = Image.open("/Users/maojietang/Downloads/test2.jpg")
+    original_img = Image.open("/Users/maojietang/Downloads/test_.jpeg")
 
     # from pil image to tensor, do not normalize image
     data_transform = transforms.Compose([transforms.ToTensor()])

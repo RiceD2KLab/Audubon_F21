@@ -1,0 +1,51 @@
+<annotation>
+	<folder>VOC2012</folder>
+	<filename>2007_000027.jpg</filename>
+	<source>
+		<database>The VOC2007 Database</database>
+		<annotation>PASCAL VOC2007</annotation>
+		<image>flickr</image>
+	</source>
+	<size>
+		<width>231</width>
+		<height>321</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>bird1</name>
+		<pose>0</pose>
+		<truncated>1</truncated>
+		<difficult>2</difficult>
+		<bndbox>
+			<xmin>1</xmin>
+			<ymin>2</ymin>
+			<xmax>3</xmax>
+			<ymax>4</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>bird2</name>
+		<pose>0</pose>
+		<truncated>1</truncated>
+		<difficult>2</difficult>
+		<bndbox>
+			<xmin>2</xmin>
+			<ymin>3</ymin>
+			<xmax>4</xmax>
+			<ymax>1</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>bird3</name>
+		<pose>0</pose>
+		<truncated>1</truncated>
+		<difficult>2</difficult>
+		<bndbox>
+			<xmin>1</xmin>
+			<ymin>3</ymin>
+			<xmax>2</xmax>
+			<ymax>4</ymax>
+		</bndbox>
+	</object>
+</annotation>
