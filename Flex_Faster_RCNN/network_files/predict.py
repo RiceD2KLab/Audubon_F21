@@ -51,7 +51,7 @@ def main():
     category_index = {v: k for k, v in class_dict.items()}
 
     # load image
-    original_img = Image.open("/Users/maojietang/Downloads/test_.jpeg")
+    original_img = Image.open("/Users/maojietang/Downloads/test13.jpeg")
 
     # from pil image to tensor, do not normalize image
     data_transform = transforms.Compose([transforms.ToTensor()])
@@ -83,7 +83,7 @@ def main():
                  predict_classes,
                  predict_scores,
                  category_index,
-                 thresh=0.1,
+                 thresh=0.36,
                  line_thickness=3)
         plt.imshow(original_img)
         plt.show()

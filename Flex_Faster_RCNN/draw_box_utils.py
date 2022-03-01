@@ -47,9 +47,12 @@ def filter_low_thresh(boxes, scores, classes, category_index, thresh, box_to_dis
             break
 
 
-def draw_text(draw, box_to_display_str_map, box, left, right, top, bottom, color):
+def draw_text(draw, box_to_display_str_map, box, left, right, top, bottom, color, selfcolor):
     try:
-        font = ImageFont.truetype('/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/arial.ttf', 40)
+        if selfcolor == True:
+            font = ImageFont.truetype('/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/arial.ttf', 30)
+        else:
+            font = ImageFont.load_default()
     except IOError:
         font = ImageFont.load_default()
     # If the total height of the display strings added to the top of the bounding
@@ -76,7 +79,7 @@ def draw_text(draw, box_to_display_str_map, box, left, right, top, bottom, color
         text_bottom -= text_height - 2 * margin
 
 
-def draw_box(image, boxes, classes, scores, category_index, thresh=0.5, line_thickness=8):
+def draw_box(image, boxes, classes, scores, category_index, thresh=0.5, line_thickness=8, selfcolor = True):
     box_to_display_str_map = collections.defaultdict(list)
     box_to_color_map = collections.defaultdict(str)
 
@@ -91,4 +94,4 @@ def draw_box(image, boxes, classes, scores, category_index, thresh=0.5, line_thi
                                       ymin * 1, ymax * 1)
         draw.line([(left, top), (left, bottom), (right, bottom),
                    (right, top), (left, top)], width=line_thickness, fill=color)
-        draw_text(draw, box_to_display_str_map, box, left, right, top, bottom, color)
+        draw_text(draw, box_to_display_str_map, box, left, right, top, bottom, color, selfcolor)

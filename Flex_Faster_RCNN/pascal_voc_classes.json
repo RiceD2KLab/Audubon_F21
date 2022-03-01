@@ -18,5 +18,8 @@
     "sheep": 17,
     "sofa": 18,
     "train": 19,
-    "tvmonitor": 20
+    "tvmonitor": 20,
+    "LAGUA": 21,
+    "LAGUF": 22,
+    "BRPEA": 23
 }

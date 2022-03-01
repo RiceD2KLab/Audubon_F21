@@ -5,10 +5,11 @@ import random
 def main():
     random.seed(0)  # random seeds
 
-    files_path = "./VOCdevkit/VOC2012/Annotations"
+    files_path = "/Users/maojietang/Downloads/Test/Annotations"
+    # files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
     assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
 
-    val_rate = 0.5
+    val_rate = 0.25
 
     files_name = sorted([file.split(".")[0] for file in os.listdir(files_path)])
     files_num = len(files_name)
@@ -22,6 +23,7 @@ def main():
             train_files.append(file_name)
 
     try:
+
         train_f = open("train.txt", "x")
         eval_f = open("val.txt", "x")
         train_f.write("\n".join(train_files))

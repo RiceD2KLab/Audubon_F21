@@ -7,16 +7,16 @@ from lxml import etree
 
 
 class VOCDataSet(Dataset):
-    """Parse PASCAL VOC2007/2012 datasets"""
+    """Parse Audubon Birds datasets"""
 
-    def __init__(self, voc_root, year="2012", transforms=None, txt_name: str = "train.txt"):
-        assert year in ["2007", "2012"], "year must be in ['2007', '2012']"
-        self.root = os.path.join(voc_root, "VOCdevkit", f"VOC{year}")
+    def __init__(self, voc_root, year="2022", transforms=None, txt_name: str = "train.txt"):
+        self.root = os.path.join(voc_root, "Test")
         self.img_root = os.path.join(self.root, "JPEGImages")
         self.annotations_root = os.path.join(self.root, "Annotations")
 
         # read train.txt or val.txt file
-        txt_path = os.path.join(self.root, "ImageSets", "Main", txt_name)
+        # txt_path = os.path.join(self.root, "ImageSets", "Main", txt_name)
+        txt_path = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/train.txt'
         assert os.path.exists(txt_path), "not found {} file.".format(txt_name)
 
         with open(txt_path) as read:
@@ -49,8 +49,9 @@ class VOCDataSet(Dataset):
         data = self.parse_xml_to_dict(xml)["annotation"]
         img_path = os.path.join(self.img_root, data["filename"])
         image = Image.open(img_path)
-        if image.format != "JPEG":
-            raise ValueError("Image '{}' format not JPEG".format(img_path))
+        # if image.format != "JPEG":
+        #     print(image.format)
+        #     raise ValueError("Image '{}' format not JPEG".format(img_path))
 
         boxes = []
         labels = []
@@ -210,7 +211,7 @@ data_transform = {
 # load train data set
 train_data_set = VOCDataSet('/Users/maojietang/Downloads', "2012", data_transform["train"], "train.txt")
 print(len(train_data_set))
-for index in random.sample(range(0, len(train_data_set)), k=5):
+for index in random.sample(range(0, len(train_data_set)), k=1):
     img, target = train_data_set[index]
     img = ts.ToPILImage()(img)
     draw_box(img,
