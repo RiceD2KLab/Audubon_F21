@@ -2,7 +2,6 @@ import os, sys, shutil, glob, csv, cv2
 import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd 
-import random
 from tqdm import tqdm
 from pathlib import Path
 from PIL import Image, ImageDraw
@@ -105,7 +104,7 @@ def flip_img(img, info_dict, output_dir):
       
     flipped_dict['bbox'].append(instancef_dict)
 
-  dict_to_csv(flipped_dict, empty=False, output_path=output_dir)
+  dict_to_csv(flipped_dict, empty=False, output_path=output_dir, test=True)
   
 
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, annot_file_ext='bbx'):
@@ -179,7 +178,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
       file_dict["file_name"] = file_name+"_"+str(valid_i).zfill(2)+ ".JPG"
       cropped.save(output_dir+"/"+file_name+"_"+str(valid_i).zfill(2)+ ".JPG")
 
-      dict_to_csv(file_dict, empty=False, output_path=output_dir)
+      dict_to_csv(file_dict, empty=False, output_path=output_dir, test=True)
   
       flip_img(img = cropped, info_dict = file_dict, output_dir = output_dir)
 
