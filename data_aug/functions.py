@@ -101,7 +101,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
       if bbx['desc'] not in minor_species:
         non_minor += 1
     
-    if non_minor > thres:
+    if non_minor/(len(file_dict['bbox'])) > thres:
       continue
     else:
       valid_i += 1
