@@ -6,7 +6,6 @@ from tqdm import tqdm
 from pathlib import Path
 from PIL import Image, ImageDraw
 from torchvision import transforms
-from Audubon_F21.utils.cropping import csv_to_dict, dict_to_csv
 
 
 def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
