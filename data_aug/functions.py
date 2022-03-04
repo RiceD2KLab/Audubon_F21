@@ -85,6 +85,7 @@ def flip_img(img, info_dict, output_dir):
   flipped = transform(img)
   flipped.save(output_dir+"/"+name)
 
+
   img_height, img_width, img_depth = info_dict['img_size']
 
   flipped_dict = {}
@@ -103,6 +104,7 @@ def flip_img(img, info_dict, output_dir):
       
     flipped_dict['bbox'].append(instancef_dict)
 
+
   dict_to_csv(flipped_dict, empty=False, output_path=output_dir, test=True)
   
 
@@ -115,6 +117,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
   image_file = csv_file.replace(annot_file_ext, 'JPG')
   assert os.path.exists(image_file)
 
+  #Load the image
   image = Image.open(image_file)
   width, height = image.size
 
@@ -127,6 +130,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
   for i in range(len(minors)):
     minor = minors[i]
     center_w, center_h = (minor["xmin"] + minor["xmax"]) // 2, (minor["ymin"] + minor["ymax"]) // 2
+
     
     left, top, right, bottom = center_w-0.5*crop_width, center_h-0.5*crop_width, center_w+0.5*crop_width, center_h+0.5*crop_height
     if left < 0:
@@ -171,6 +175,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
         non_minor += 1
     
     if non_minor/(len(file_dict['bbox'])) > thres:
+    # if non_minor > thres:
       continue
     else:
       valid_i += 1
@@ -178,7 +183,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
       cropped.save(output_dir+"/"+file_name+"_"+str(valid_i).zfill(2)+ ".JPEG")
 
       dict_to_csv(file_dict, empty=False, output_path=output_dir, test=True)
-  
+
       flip_img(img = cropped, info_dict = file_dict, output_dir = output_dir)
 
 
