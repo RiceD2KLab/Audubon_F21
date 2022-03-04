@@ -175,8 +175,8 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
       continue
     else:
       valid_i += 1
-      file_dict["file_name"] = file_name+"_"+str(valid_i).zfill(2)+ ".JPG"
-      cropped.save(output_dir+"/"+file_name+"_"+str(valid_i).zfill(2)+ ".JPG")
+      file_dict["file_name"] = file_name+"_"+str(valid_i).zfill(2)+ ".JPEG"
+      cropped.save(output_dir+"/"+file_name+"_"+str(valid_i).zfill(2)+ ".JPEG")
 
       dict_to_csv(file_dict, empty=False, output_path=output_dir, test=True)
   
