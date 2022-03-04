@@ -2,6 +2,7 @@ import os, sys, shutil, glob, csv, cv2
 import numpy as np
 import matplotlib.pyplot as plt 
 import pandas as pd 
+import random
 from tqdm import tqdm
 from pathlib import Path
 from PIL import Image, ImageDraw
