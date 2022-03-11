@@ -29,7 +29,7 @@ class VOCDataSet(Dataset):
             assert os.path.exists(xml_path), "not found '{}' file.".format(xml_path)
 
         # read class_indict
-        json_file = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/pascal_voc_classes.json'
+        json_file = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/Birds_classes.json'
         assert os.path.exists(json_file), "{} file not exist.".format(json_file)
         json_file = open(json_file, 'r')
         self.class_dict = json.load(json_file)
@@ -184,42 +184,42 @@ class VOCDataSet(Dataset):
         return tuple(zip(*batch))
 
 
-import transforms
-from draw_box_utils import draw_box
-from PIL import Image
-import json
-import matplotlib.pyplot as plt
-import torchvision.transforms as ts
-import random
-
-# read class_indict
-category_index = {}
-try:
-    json_file = open('/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/pascal_voc_classes.json', 'r')
-    class_dict = json.load(json_file)
-    category_index = {v: k for k, v in class_dict.items()}
-except Exception as e:
-    print(e)
-    exit(-1)
-
-data_transform = {
-    "train": transforms.Compose([transforms.ToTensor(),
-                                 transforms.RandomHorizontalFlip(0.5)]),
-    "val": transforms.Compose([transforms.ToTensor()])
-}
-
-# load train data set
-train_data_set = VOCDataSet('/Users/maojietang/Downloads', "2012", data_transform["train"], "train.txt")
-print(len(train_data_set))
-for index in random.sample(range(0, len(train_data_set)), k=1):
-    img, target = train_data_set[index]
-    img = ts.ToPILImage()(img)
-    draw_box(img,
-             target["boxes"].numpy(),
-             target["labels"].numpy(),
-             [1 for i in range(len(target["labels"].numpy()))],
-             category_index,
-             thresh=0.5,
-             line_thickness=5)
-    plt.imshow(img)
-    plt.show()
+# import transforms
+# from draw_box_utils import draw_box
+# from PIL import Image
+# import json
+# import matplotlib.pyplot as plt
+# import torchvision.transforms as ts
+# import random
+#
+# # read class_indict
+# category_index = {}
+# try:
+#     json_file = open('/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/Birds_classes.json', 'r')
+#     class_dict = json.load(json_file)
+#     category_index = {v: k for k, v in class_dict.items()}
+# except Exception as e:
+#     print(e)
+#     exit(-1)
+#
+# data_transform = {
+#     "train": transforms.Compose([transforms.ToTensor(),
+#                                  transforms.RandomHorizontalFlip(0.5)]),
+#     "val": transforms.Compose([transforms.ToTensor()])
+# }
+#
+# # load train data set
+# train_data_set = VOCDataSet('/Users/maojietang/Downloads', "2012", data_transform["train"], "train.txt")
+# print(len(train_data_set))
+# for index in random.sample(range(0, len(train_data_set)), k=5):
+#     img, target = train_data_set[index]
+#     img = ts.ToPILImage()(img)
+#     draw_box(img,
+#              target["boxes"].numpy(),
+#              target["labels"].numpy(),
+#              [1 for i in range(len(target["labels"].numpy()))],
+#              category_index,
+#              thresh=0.5,
+#              line_thickness=5)
+#     plt.imshow(img)
+#     plt.show()

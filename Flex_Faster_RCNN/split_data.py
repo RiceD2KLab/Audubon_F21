@@ -9,9 +9,9 @@ def main():
     # files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
     assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
 
-    val_rate = 0.25
+    val_rate = 0.1
 
-    files_name = sorted([file.split(".")[0] for file in os.listdir(files_path)])
+    files_name = sorted([file.split(".")[0] for file in os.listdir(files_path) if file.split(".")[0] != ''])
     files_num = len(files_name)
     val_index = random.sample(range(0, files_num), k=int(files_num*val_rate))
     train_files = []

@@ -5,6 +5,15 @@ import xml.dom.minidom
 
 
 def txt_convert_to_xml(filename, name, position):
+    """
+        Convert txt to xml and save，
+        Args:
+            filename: txt_file's path
+            name: txt_file's name
+            position: each bird's position Inf
+        Returns:
+
+    """
     # get an empty doc
     doc = xml.dom.minidom.Document()
     # set a root node: annotation
@@ -121,7 +130,7 @@ class Extract(object):
         self.txt_path = txt_path
 
     def get_path(self):
-        if os.path.exists(os.path.join(self.txt_path, "Annotation")) is False:
+        if os.path.exists(os.path.join(self.txt_path, "Annotations")) is False:
             raise FileNotFoundError("Annotation dose not in path:'{}'.".format(self.txt_path))
         self.File_path = self.txt_path + '/Annotation'
 
@@ -151,6 +160,6 @@ class Extract(object):
             filename = filename.split('/')[-1] + '.jpg'
 
             txt_convert_to_xml(filename, name, Position)
-
-A = Extract('/Users/maojietang/Downloads')
-A.get_info()
+if __name__ == '__main__':
+    A = Extract('/Users/maojietang/Downloads/Test')
+    A.get_info()

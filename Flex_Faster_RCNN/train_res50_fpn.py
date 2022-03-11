@@ -6,7 +6,8 @@ import torch
 import transforms
 from network_files.faster_rcnn_framework import FasterRCNN, FastRCNNPredictor
 from backbone.resnet50_fpn_model import resnet50_fpn_backbone
-from my_dataset import VOCDataSet
+# from my_dataset import VOCDataSet
+from my_dataset_for_bird import VOCDataSet
 from train_utils.group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_groups
 from train_utils import train_eval_utils as utils
 
@@ -21,7 +22,7 @@ def create_model(num_classes):
     model = FasterRCNN(backbone=backbone, num_classes=91)
     # load weight
     # https://download.pytorch.org/models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth
-    weights_dict = torch.load("/Users/maojietang/Downloads/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth", map_location='cpu')
+    weights_dict = torch.load("/Users/maojietang/Downloads/fasterrcnn_20220225.pth", map_location='cpu')
     missing_keys, unexpected_keys = model.load_state_dict(weights_dict, strict=False)
     if len(missing_keys) != 0 or len(unexpected_keys) != 0:
         print("missing_keys: ", missing_keys)
@@ -187,7 +188,7 @@ if __name__ == "__main__":
     # root path(VOCdevkit)
     parser.add_argument('--data-path', default='/Users/maojietang/Downloads', help='dataset')
     # num_class(without considering bg)
-    parser.add_argument('--num-classes', default=20, type=int, help='num_classes')
+    parser.add_argument('--num-classes', default=5, type=int, help='num_classes')
     # save path
     parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
     # resume path
@@ -195,7 +196,7 @@ if __name__ == "__main__":
     # start epoch(if set resume path)
     parser.add_argument('--start_epoch', default=0, type=int, help='start epoch')
     # epochs in total
-    parser.add_argument('--epochs', default=1, type=int, metavar='N',
+    parser.add_argument('--epochs', default=3, type=int, metavar='N',
                         help='number of total epochs to run')
     # batch size
     parser.add_argument('--batch_size', default=1, type=int, metavar='N',
