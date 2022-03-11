@@ -11,7 +11,6 @@ from detectron2.evaluation.fast_eval_api import COCOeval_opt
 from detectron2.evaluation import inference_on_dataset
 from detectron2.evaluation.coco_evaluation import COCOEvaluator
 from detectron2.data import build_detection_test_loader
-from prettytable import PrettyTable
 
 
 class PrecisionRecallEvaluator(COCOEvaluator):
@@ -138,6 +137,7 @@ def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
         ax.plot(max_recall, avg_precision, color=class_colors[c_indx])
         precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
         ax_iou50.plot(recall, precisions_iou50, color=class_colors[c_indx])
+        # precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
         precisions_iou75 = np.squeeze(precisions[5, :, c_indx, 0, -1])
         ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
 
@@ -202,7 +202,6 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
 
     obj_dict = {'cnt_id': [], 'file_name': [], 'xmin': [], 'ymin': [], 'xmax': [], 'ymax': [], 'score': [],
                 'pred_cls': []}
-
     idx = 1
     for f in tqdm(eval_file_lst):
         im = cv2.imread(f)
@@ -227,8 +226,7 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
         obj_dict['pred_cls'] = obj_dict['pred_cls'] + class_for_file
         obj_dict['file_name'] = obj_dict['file_name'] + [f] * len(score_for_file)
 
-
-    output_df = pd.DataFrame(obj_dict)   # Need it to be a DataFrame
+    output_df = pd.DataFrame(obj_dict)
     output_df['pred_cls'] = output_df['pred_cls'].map(species_map)
 
     # convert the tiled coordinates to original coordinates
@@ -279,64 +277,4 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
     return output_df
 
 
-# TODO: Describe this code
-class ConfusionMatrix(object):
-    def __init__(self, num_classes: int, labels: list):
-        self.matrix = np.zeros((num_classes, num_classes))
-        self.num_classes = num_classes
-        self.labels = labels
-    
-    # Update Matrix
-    def update(self, preds, labels):
-        for p, t in zip(preds, labels):
-            self.matrix[p, t] += 1
-    # Show Result(Words)
-    def summary(self):
-        # calculate accuracy
-        sum_TP = 0
-        for i in range(self.num_classes):
-            sum_TP += self.matrix[i, i]
-        acc = sum_TP / np.sum(self.matrix)
-        print("the model accuracy is ", acc)
 
-        # precision, recall, specificity
-        table = PrettyTable()
-        table.field_names = ["", "Precision", "Recall", "Specificity"]
-        for i in range(self.num_classes):
-            TP = self.matrix[i, i]
-            FP = np.sum(self.matrix[i, :]) - TP
-            FN = np.sum(self.matrix[:, i]) - TP
-            TN = np.sum(self.matrix) - TP - FP - FN
-            Precision = round(TP / (TP + FP), 3) if TP + FP != 0 else 0.
-            Recall = round(TP / (TP + FN), 3) if TP + FN != 0 else 0.
-            Specificity = round(TN / (TN + FP), 3) if TN + FP != 0 else 0.
-            table.add_row([self.labels[i], Precision, Recall, Specificity])
-        print(table)
-
-    # Plot
-    def plot(self):
-        matrix = self.matrix
-        # print(matrix)
-        plt.imshow(matrix, cmap=plt.cm.Blues)
-
-        # Set Xlabel
-        plt.xticks(range(self.num_classes), self.labels, rotation=45)
-        # Set Ylabel
-        plt.yticks(range(self.num_classes), self.labels)
-        # Colorbar
-        plt.colorbar()
-        plt.xlabel('True Labels')
-        plt.ylabel('Predicted Labels')
-        plt.title('Confusion matrix')
-
-        # Add classification results into matrix
-        thresh = matrix.max() / 2
-        for x in range(self.num_classes):
-            for y in range(self.num_classes):
-                info = int(matrix[y, x])
-                plt.text(x, y, info,
-                         verticalalignment='center',
-                         horizontalalignment='center',
-                         color="white" if info > thresh else "black")
-        plt.tight_layout()
-        plt.show()

@@ -30,12 +30,15 @@ from utils.dataloader import get_bird_only_dicts, get_bird_species_dicts, regist
 from utils.trainer import Trainer
 from utils.evaluation import PrecisionRecallEvaluator, get_precisions_recalls, plot_precision_recall
 
+import optuna
+
 BIRD_SPECIES = ["Brown Pelican", "Laughing Gull", "Mixed Tern",
                 "Great Blue Heron", "Great Egret/White Morph"]
 
 BIRD_SPECIES_COLORS = [(255, 0, 0), (255, 153, 51), (0, 255, 0),
                        (0, 0, 255), (255, 51, 255)]
 
+args_cpy = None
 
 def get_parser():
     parser = default_argument_parser()  # Create a parser with some common arguments used by detectron2 users.
@@ -156,11 +159,46 @@ def eval(cfg, args):
             cv2.imshow(f'{d} prediction {i}',out.get_image()[:, :, ::-1])
             cv2.waitKey(1)
 
+    return sum(val_precisions) / len(val_precisions)
+
+def build_model_for_hp(params, args):
+    args.scheduler_gamma = params['gamma']
+    args.learning_rate = params['base_learning_rate']
+    cfg = setup(args)
+    return cfg
+
+def objective(trial):
+    params = {
+        'base_learning_rate': trial.suggest_loguniform('base_learning_rate', 1e-5, 1e-1),
+        'gamma': trial.suggest_loguniform('gamma', 0.01, 0.3)
+    }
+
+    model_cfg = build_model_for_hp(params, args_cpy)
+
+    # train on bird species
+    train(model_cfg)
+
+    precision = eval(model_cfg, args_cpy)
+
+    return precision
+
+def hp_tune():
+    # create study for hyper paramter tuning
+    study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler())
+    study.optimize(objective, n_trials=50)
+
+    return study
+
 
 def main(args):
+    global args_cpy
+    args_cpy = args
     cfg = setup(args)
     train(cfg)
     eval(cfg, args)
+    study = hp_tune()
+    trial = study.best_trial
+    print(trial.value, "when params are", trial.params)
     cv2.waitkey(0)
     print("Press any key to continue...")
     cv2.destroyAllWindows()
