@@ -78,34 +78,64 @@ def dict_to_csv(info_dict, output_path, empty, test=False):
     # print(save_file_name)
 
 
-def flip_img(img, info_dict, output_dir):
-  name = ("_flipped.").join(info_dict["file_name"].split("."))
+def flip_img(img, info_dict, output_dir, is_v_flip = True, is_h_flip = True):
+  if is_h_flip:
+    # Read info
+    img_height, img_width, img_depth = info_dict['img_size']
+    name = ("_hflip.").join(info_dict["file_name"].split("."))
 
-  transform = transforms.Compose([transforms.RandomHorizontalFlip(p=1)])
-  flipped = transform(img)
-  flipped.save(output_dir+"/"+name)
+    # Flip image
+    hflipped = transforms.functional.hflip(img)
+    hflipped.save(output_dir+"/"+name)
 
+    # Annotate
+    hflip_dict = {}
+    hflip_dict["bbox"] = []
+    hflip_dict["file_name"] = name
+    hflip_dict["img_size"] = info_dict["img_size"]
 
-  img_height, img_width, img_depth = info_dict['img_size']
+    # Horizontal Flip
+    for bbx in info_dict['bbox']:
+      instancef_dict = {}
+      instancef_dict['class'] = bbx['class']
+      instancef_dict['desc'] = bbx['desc']
+      instancef_dict['xmin'] = max(img_width - bbx['xmax'], 0)               
+      instancef_dict['ymin'] = bbx['ymin']
+      instancef_dict['xmax'] = min(img_width - bbx['xmin'], img_width)       
+      instancef_dict['ymax'] = bbx['ymax']
+        
+      hflip_dict['bbox'].append(instancef_dict)
 
-  flipped_dict = {}
-  flipped_dict["bbox"] = []
-  flipped_dict["file_name"] = name
-  flipped_dict["img_size"] = info_dict["img_size"]
+    dict_to_csv(hflip_dict, empty=False, output_path=output_dir, test=True)
+    
+  if is_v_flip:
+      # Read info
+      img_height, img_width, img_depth = info_dict['img_size']
+      name = ("_vflip.").join(info_dict["file_name"].split("."))
 
-  for bbx in info_dict['bbox']:
-    instancef_dict = {}
-    instancef_dict['class'] = bbx['class']
-    instancef_dict['desc'] = bbx['desc']
-    instancef_dict['xmin'] = max(img_width - bbx['xmax'], 0)               # Horizontal Flip
-    instancef_dict['ymin'] = bbx['ymin']
-    instancef_dict['xmax'] = min(img_width - bbx['xmin'], img_width)       # Horizontal Flip
-    instancef_dict['ymax'] = bbx['ymax']
-      
-    flipped_dict['bbox'].append(instancef_dict)
+      # Flip image
+      vflipped = transforms.functional.vflip(img)
+      vflipped.save(output_dir+"/"+name)
 
+      # Annotate
+      vflip_dict = {}
+      vflip_dict["bbox"] = []
+      vflip_dict["file_name"] = name
+      vflip_dict["img_size"] = info_dict["img_size"]
 
-  dict_to_csv(flipped_dict, empty=False, output_path=output_dir, test=True)
+      # Vertical Flip
+      for bbx in info_dict['bbox']:
+        instancef_dict = {}
+        instancef_dict['class'] = bbx['class']
+        instancef_dict['desc'] = bbx['desc']
+        instancef_dict['xmin'] = bbx['xmin']              
+        instancef_dict['ymin'] = max(img_height - bbx['ymax'], 0)
+        instancef_dict['xmax'] = bbx['xmax']      
+        instancef_dict['ymax'] = min(img_height - bbx['ymin'], img_height)
+          
+        vflip_dict['bbox'].append(instancef_dict)
+
+      dict_to_csv(vflip_dict, empty=False, output_path=output_dir, test=True)
   
 
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, annot_file_ext='bbx'):
