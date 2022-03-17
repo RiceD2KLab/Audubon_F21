@@ -156,7 +156,7 @@ def eval(cfg, args):
                            scale=0.5,
                            instance_mode=ColorMode.SEGMENTATION)
             out = v.draw_instance_predictions(outputs)
-            cv2.imshow(f'{d} prediction {i}',out.get_image()[:, :, ::-1])
+            cv2.imshow(f'{d} prediction {k}',out.get_image()[:, :, ::-1])
             cv2.waitKey(1)
 
     return sum(val_precisions) / len(val_precisions)
