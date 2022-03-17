@@ -146,7 +146,8 @@ def eval(cfg, args):
     for d in ["val", "test"]:
         dataset_dicts = DatasetCatalog.get(f"birds_species_{d}")
         print(f'\n {d} examples:')
-        for k in random.sample(dataset_dicts, 3):
+        # for k in random.sample(dataset_dicts, 3):
+        for i, k in enumerate(random.sample(dataset_dicts, 3)):
             im = cv2.imread(k["file_name"])
             outputs = predictor(im)
             outputs = outputs["instances"].to("cpu")
@@ -156,7 +157,7 @@ def eval(cfg, args):
                            scale=0.5,
                            instance_mode=ColorMode.SEGMENTATION)
             out = v.draw_instance_predictions(outputs)
-            cv2.imshow(f'{d} prediction {k}',out.get_image()[:, :, ::-1])
+            cv2.imshow(f'{d} prediction {i}',out.get_image()[:, :, ::-1])
             cv2.waitKey(1)
 
     return sum(val_precisions) / len(val_precisions)
