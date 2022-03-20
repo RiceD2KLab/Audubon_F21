@@ -5,7 +5,7 @@ import random
 def main():
     random.seed(0)  # random seeds
 
-    files_path = "/Users/maojietang/Downloads/Test/Annotations"
+    files_path = "/Users/maojietang/Downloads/Test/Annotations_xml"
     # files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
     assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
 

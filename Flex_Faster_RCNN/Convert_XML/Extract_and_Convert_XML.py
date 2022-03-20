@@ -130,7 +130,7 @@ class Extract(object):
         self.txt_path = txt_path
 
     def get_path(self):
-        if os.path.exists(os.path.join(self.txt_path, "Annotations")) is False:
+        if os.path.exists(os.path.join(self.txt_path, "Annotation")) is False:
             raise FileNotFoundError("Annotation dose not in path:'{}'.".format(self.txt_path))
         self.File_path = self.txt_path + '/Annotation'
 
