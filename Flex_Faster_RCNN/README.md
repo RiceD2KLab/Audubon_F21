@@ -6,7 +6,7 @@
 ## Env：
 * Python3.6/3.7/3.8
 * Pytorch1.7.1
-* pycocotools(Linux:```pip install pycocotools```; Windows:```pip install pycocotools-windows```(不需要额外安装vs))
+* pycocotools(Linux:```pip install pycocotools```; Windows:```pip install pycocotools-windows```)
 * Ubuntu / Centos
 * GPU for Training
 * see requirements.txt for more details
