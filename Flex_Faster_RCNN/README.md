@@ -16,6 +16,8 @@
   ├── backbone: extract feature maps (we provide classical backbone and feature pyramid backbone)
   ├── network_files: Faster R-CNN network（including Fast R-CNN module and RPN module and etc）
   ├── train_utils: modules for training and testing（including cocotools）
+  ├── Confusion_Matrix: compare test results using confusion matrix (with an easy guide example)
+  ├── convert_XML: get corresponding annotation xml files from a csv.file
   ├── my_dataset.py: Customized data sets
   ├── train_mobilenet.py: Use MobileNetV2 as the backbone for training
   ├── train_resnet50_fpn.py: Use resnet50+FPN as the backbone for training
