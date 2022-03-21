@@ -15,9 +15,9 @@
 ```
   ├── backbone: extract feature maps (we provide classical backbone and feature pyramid backbone)
   ├── network_files: Faster R-CNN network（including Fast R-CNN module and RPN module and etc）
-  ├── train_utils: modules for training and testing（包括cocotools）
+  ├── train_utils: modules for training and testing（including cocotools）
   ├── my_dataset.py: Customized data sets
-  ├── train_mobilenet.py: 以MobileNetV2做为backbone进行训练
+  ├── train_mobilenet.py: Use MobileNetV2 as the backbone for training
   ├── train_resnet50_fpn.py: Use resnet50+FPN as the backbone for training
   ├── predict.py: Simple prediction script for prediction testing using trained weights
   ├── validation.py: Validate/test the COCO metrics of the data using the trained weights and generate record_mAP.txt file
