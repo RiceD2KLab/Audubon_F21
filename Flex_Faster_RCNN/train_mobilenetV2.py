@@ -6,7 +6,6 @@ import torchvision
 
 import transforms
 from network_files.faster_rcnn_framework import FasterRCNN, AnchorsGenerator
-from backbone.vgg_net import vgg
 from mobile_net_v2 import MobileNetV2
 from my_dataset import VOCDataSet
 from train_utils import GroupedBatchSampler, create_aspect_ratio_groups

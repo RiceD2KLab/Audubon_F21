@@ -5,7 +5,8 @@ import random
 def main():
     random.seed(0)  # random seeds
 
-    files_path = "/Users/maojietang/Downloads/Test/Annotations_xml"
+    # input: annotation xml files
+    files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
     # files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
     assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
 
@@ -35,3 +36,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    print('Data processing completed')

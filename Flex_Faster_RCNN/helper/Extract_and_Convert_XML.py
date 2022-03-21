@@ -111,7 +111,7 @@ def txt_convert_to_xml(filename, name, position):
         root.appendChild(nodeObject)
 
     # write xml
-    path = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN'
+    path = '/'
     filename = filename.split('.')[0] + '.xml'
     filename = filename.split('/')[-1]
     arg_output_dir = os.path.join(path, 'Annotation_xml')

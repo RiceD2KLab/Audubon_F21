@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 import torchvision.datasets as dsets 
 import torchvision.transforms as transforms
 
+# Example to show how to use confusion_matrix
 batch_size = 100
 # MNIST dataset.
 train_dataset = dsets.MNIST(root='./pymnist', train=True, transform=transforms.ToTensor(), download=True)

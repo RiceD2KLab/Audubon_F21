@@ -6,8 +6,8 @@ import torch
 import transforms
 from network_files.faster_rcnn_framework import FasterRCNN, FastRCNNPredictor
 from backbone.resnet50_fpn_model import resnet50_fpn_backbone
-# from my_dataset import VOCDataSet
-from my_dataset_for_bird import VOCDataSet
+from my_dataset import VOCDataSet
+# from my_dataset_for_bird import VOCDataSet
 from train_utils.group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_groups
 from train_utils import train_eval_utils as utils
 
@@ -71,7 +71,7 @@ def main(parser_data):
     # because the read data includes images and targets, and cannot be directly
     # synthesized into a batch using the default method
     batch_size = parser_data.batch_size
-    nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
+    nw = 0  #min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
     print('Using %g dataloader workers' % nw)
     if train_sampler:
         # If the image is sampled according to the image aspect ratio, the dataloader needs to use batch_sampler
