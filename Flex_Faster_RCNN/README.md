@@ -16,11 +16,11 @@
   ├── backbone: extract feature maps (we provide classical backbone and feature pyramid backbone)
   ├── network_files: Faster R-CNN network（including Fast R-CNN module and RPN module and etc）
   ├── train_utils: modules for training and testing（including cocotools）
-  ├── convert_XML: get corresponding annotation xml files from a csv.file
   ├── helper: includes Customized data sets, plot bounding boxes, confusion matrix and other auxiliary functions
   ├── train_mobilenet.py: Use MobileNetV2 as the backbone for training
   ├── train_resnet50_fpn.py: Use resnet50+FPN as the backbone for training
-  ├── predict.py: Simple prediction script for prediction testing using trained weights
+  ├── predict.py: Predict one image
+  ├── batch_predict.py: Predict all images in one file
   └── pascal_voc_classes.json: pascal_voc tag file
 ```
 
