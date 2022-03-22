@@ -1,7 +1,7 @@
 # Adapted from PyTorch's DenseNet source code
 
 from detectron2.modeling import BACKBONE_REGISTRY, Backbone, ShapeSpec # FPN
-# from detectron2.layers import ShapeSpec
+# from detectron2.layers import FrozenBatchNorm2d
 
 import re
 import torch
@@ -17,13 +17,21 @@ from torch.jit.annotations import List
 # from detectron2.layers import FrozenBatchNorm2d, get_norm
 
 
-__all__ = ['DenseNetBackbone', 'densenet121', 'densenet169', 'densenet201', 'densenet161']
+__all__ = ['DenseNetBackbone', 'densenet121', 'densenet161', 
+            'densenet169', 'densenet201', 'build_densenet_backbone']
 
 model_urls = {
     'densenet121': 'https://download.pytorch.org/models/densenet121-a639ec97.pth',
     'densenet169': 'https://download.pytorch.org/models/densenet169-b2777c0a.pth',
     'densenet201': 'https://download.pytorch.org/models/densenet201-c1103571.pth',
     'densenet161': 'https://download.pytorch.org/models/densenet161-8d451a50.pth',
+}
+
+model_channels = {
+    'densenet121': 1024,
+    'densenet161': 2208,
+    'densenet169': 1664,
+    'densenet201': 1920,
 }
 
 class _DenseLayer(nn.Module):
@@ -145,27 +153,13 @@ class DenseNetBackbone(Backbone):
         memory_efficient (bool) - If True, uses checkpointing. Much more memory efficient,
           but slower. Default: *False*. See `"paper" <https://arxiv.org/pdf/1707.06990.pdf>`_
     """
-    # DETECTRON2 REGISTRY EXAMPLE
-    # class ToyBackbone(Backbone):
-    #   def __init__(self, cfg, input_shape):
-    #     super().__init__()
-    #     # create your own backbone
-    #     self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=16, padding=3)
-
-    #   def forward(self, image):
-    #     return {"conv1": self.conv1(image)}    # dictionary
-
-    #   def output_shape(self):
-    #     return {"conv1": ShapeSpec(channels=64, stride=16)}    # dictionary
 
     def __init__(self, cfg, growth_rate=32, block_config=(6, 12, 24, 16),
-                 num_init_features=64, bn_size=4, drop_rate=0, num_classes=1000, memory_efficient=False):
-                #  pretrained = True, arch = 'densenet161', progress=True):    
-                # added cfg, pretrained, arch, progress
-                # Currently not using cfg
+                 num_init_features=64, bn_size=4, drop_rate=0, memory_efficient=False):
+                # added cfg
+                # removed num_classes=1000
 
         super(DenseNetBackbone, self).__init__()
-        # super().__init__()
 
         # First convolution
         self.features = nn.Sequential(OrderedDict([
@@ -199,7 +193,7 @@ class DenseNetBackbone(Backbone):
         self.features.add_module('norm5', nn.BatchNorm2d(num_features))
 
         # Linear layer
-        self.classifier = nn.Linear(num_features, num_classes)   # need to keep for preloading weights
+        # self.classifier = nn.Linear(num_features, num_classes)   # don't need
 
         # Official init from torch repo.
         for m in self.modules():
@@ -208,22 +202,21 @@ class DenseNetBackbone(Backbone):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.constant_(m.bias, 0)
+            # elif isinstance(m, nn.Linear):
+            #     nn.init.constant_(m.bias, 0)
 
     def forward(self, x):   # x is the input image
         features = self.features(x)
-        # MIGHT WANT THESE TWO
+        # Might want these two
         # out = F.relu(features, inplace=True)
         # out = F.adaptive_avg_pool2d(out, (1, 1))
-        # return features
         return {"SoleStage": features}
         # out = torch.flatten(out, 1)
         # out = self.classifier(out)
         # return out
 
     def output_shape(self):
-        return {"SoleStage": ShapeSpec(channels=1024)}
+        return {"SoleStage": ShapeSpec(channels=cfg.MODEL.DENSENET.OUT_CHANNELS)}
 
 
 def _load_state_dict(model, model_url, progress):
@@ -235,6 +228,9 @@ def _load_state_dict(model, model_url, progress):
         r'^(.*denselayer\d+\.(?:norm|relu|conv))\.((?:[12])\.(?:weight|bias|running_mean|running_var))$')
 
     state_dict = load_state_dict_from_url(model_url, progress=progress)
+    # Delete these two since classifier is removed from the network
+    del state_dict["classifier.weight"]
+    del state_dict["classifier.bias"]
     for key in list(state_dict.keys()):
         res = pattern.match(key)
         if res:
@@ -244,7 +240,7 @@ def _load_state_dict(model, model_url, progress):
     model.load_state_dict(state_dict)
 
 
-# Added cfg to the follwing functions
+# Added cgf to the following functions
 def _densenet(cfg, arch, growth_rate, block_config, num_init_features, pretrained, progress,
               **kwargs):
     model = DenseNetBackbone(cfg, growth_rate, block_config, num_init_features, **kwargs)
@@ -252,8 +248,7 @@ def _densenet(cfg, arch, growth_rate, block_config, num_init_features, pretraine
         _load_state_dict(model, model_urls[arch], progress)
     return model
 
-
-@BACKBONE_REGISTRY.register()   # only registering this one for now
+# @BACKBONE_REGISTRY.register()   # only registering this one for now
 def densenet121(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-121 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
@@ -269,7 +264,7 @@ def densenet121(cfg, pretrained=True, progress=True, **kwargs):
 
 
 # @BACKBONE_REGISTRY.register()
-def densenet161(cfg, pretrained=False, progress=True, **kwargs):
+def densenet161(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-161 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
 
@@ -284,7 +279,7 @@ def densenet161(cfg, pretrained=False, progress=True, **kwargs):
 
 
 # @BACKBONE_REGISTRY.register()
-def densenet169(cfg, pretrained=False, progress=True, **kwargs):
+def densenet169(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-169 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
 
@@ -299,7 +294,7 @@ def densenet169(cfg, pretrained=False, progress=True, **kwargs):
 
 
 # @BACKBONE_REGISTRY.register()
-def densenet201(cfg, pretrained=False, progress=True, **kwargs):
+def densenet201(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-201 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
 
@@ -311,3 +306,24 @@ def densenet201(cfg, pretrained=False, progress=True, **kwargs):
     """
     return _densenet(cfg, 'densenet201', 32, (6, 12, 48, 32), 64, pretrained, progress,
                      **kwargs)
+
+
+@BACKBONE_REGISTRY.register()
+def build_densenet_backbone(cfg):
+    """
+    Create a DenseNetBackbone instance from config.
+    Returns:
+        DenseNetBackbone: a :class:`DenseNetBackbone` instance.
+    """
+    conv_body = cfg.MODEL.DENSENET.CONV_BODY
+    pretrained = cfg.MODEL.DENSENET.PRETRAINED
+    if conv_body == "densenet121":
+      return densenet121(cfg, pretrained=pretrained)
+    elif conv_body == "densenet161":
+      return densenet161(cfg, pretrained=pretrained)
+    elif conv_body == "densenet169":
+      return densenet169(cfg, pretrained=pretrained)
+    elif conv_body == "densenet201":
+      return densenet201(cfg, pretrained=pretrained)
+    else:
+      return densenet121(cfg, pretrained=pretrained)

@@ -1,18 +1,15 @@
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
   BACKBONE:
-    NAME: "build_vovnet_fpn_backbone" # TODO: FIX THIS
-    FREEZE_AT: 0
+    NAME: "build_densenet_backbone"
+    FREEZE_AT: 0   # layer in denseblock4
   DENSENET:
-    # OUT_FEATURES: ["stage2", "stage3", "stage4", "stage5"]
     OUT_FEATURES: ["SoleStage"]
-  # FPN:
-  #   IN_FEATURES: ["stage2", "stage3", "stage4", "stage5"]
+    CONV_BODY: "densenet121"   # default model
   ANCHOR_GENERATOR:
-    SIZES: [[32], [64], [128], [256], [512]]  # One size for each in feature map
-    ASPECT_RATIOS: [[0.5, 1.0, 2.0]]  # Three aspect ratios (same for all in feature maps)
+    SIZES: [32, 64, 128, 256, 512]  # Five sizes for one feature map
+    ASPECT_RATIOS: [0.5, 1.0, 2.0]  # Three aspect ratios
   RPN:
-    # IN_FEATURES: ["p2", "p3", "p4", "p5", "p6"]
     IN_FEATURES: ["SoleStage"]
     PRE_NMS_TOPK_TRAIN: 2000  # Per FPN level
     PRE_NMS_TOPK_TEST: 1000  # Per FPN level
@@ -37,9 +34,9 @@ DATASETS:
   TRAIN: ("coco_2017_train",)
   TEST: ("coco_2017_val",)
 SOLVER:
-  IMS_PER_BATCH: 16
-  BASE_LR: 0.02
-  STEPS: (60000, 80000)
-  MAX_ITER: 90000
+  IMS_PER_BATCH: 8
+  BASE_LR: 0.001   # 0.02
+  STEPS: (60000, 80000)   # [500,] used by AudubonF21
+  MAX_ITER: 1000   # 90000 in example
 INPUT:
-  MIN_SIZE_TRAIN: (640, 672, 704, 736, 768, 800)
+  MIN_SIZE_TRAIN: (640,)
