@@ -111,7 +111,7 @@ def txt_convert_to_xml(filename, name, position):
         root.appendChild(nodeObject)
 
     # write xml
-    path = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN'
+    path = '/'
     filename = filename.split('.')[0] + '.xml'
     filename = filename.split('/')[-1]
     arg_output_dir = os.path.join(path, 'Annotation_xml')
@@ -124,13 +124,12 @@ def txt_convert_to_xml(filename, name, position):
 
 class Extract(object):
     def __init__(self, txt_path):
-        # txt_path = '/Users/maojietang/Downloads'
         self.File_path = None
         self.xml_list = None
         self.txt_path = txt_path
 
     def get_path(self):
-        if os.path.exists(os.path.join(self.txt_path, "Annotation")) is False:
+        if os.path.exists(os.path.join(self.txt_path, "Annotations")) is False:
             raise FileNotFoundError("Annotation dose not in path:'{}'.".format(self.txt_path))
         self.File_path = self.txt_path + '/Annotation'
 
