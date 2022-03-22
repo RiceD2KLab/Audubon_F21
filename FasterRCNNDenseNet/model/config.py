@@ -10,21 +10,25 @@ def add_densenet_config(cfg):
     """
     Add config for DenseNet.
     """
+
+    model_channels = {
+    'densenet121': 1024,
+    'densenet161': 2208,
+    'densenet169': 1664,
+    'densenet201': 1920,
+    }
+
     _C = cfg
 
+    # This will allow us to add custom attributes, which can be overwritten
+    # in sub
     _C.MODEL.DENSENET = CN()
 
     _C.MODEL.DENSENET.OUT_FEATURES = ["SoleStage"]
 
-    _C.MODEL.DENSENET.OUT_CHANNELS = 1024
-    _C.MODEL.DENSENET.BACKBONE_OUT_CHANNELS = 1024
-
-    # I'M GUESSING THIS A DEFAULT SETTING
-    # _C.MODEL.DENSENET.CONV_BODY = "densenet121"
-    # _C.MODEL.VOVNET.CONV_BODY = "V-39-eSE"
-
-    # # Options: FrozenBN, GN, "SyncBN", "BN"
-    # _C.MODEL.VOVNET.NORM = "FrozenBN"
+    _C.MODEL.DENSENET.CONV_BODY = "densenet121"
+    _C.MODEL.DENSENET.OUT_CHANNELS = model_channels["densenet121"]
+    _C.MODEL.DENSENET.PRETRAINED = True
 
     ####################### FROM AUDUBON_F21 ########################
     # # WOULDN'T WORK HERE BECAUSE THIS LOADS CONFIG SETTINGS USING RESNET
