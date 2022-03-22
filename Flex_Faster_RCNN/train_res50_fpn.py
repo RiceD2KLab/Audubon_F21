@@ -101,6 +101,11 @@ def main(parser_data):
     # create model num_classes equal background + 20 classes
     model = create_model(num_classes=parser_data.num_classes + 1)
     # print(model)
+    count = 0
+    for m in model.parameters():
+        count += m.numel()
+    print(count)
+    print('Finish')
 
     model.to(device)
 

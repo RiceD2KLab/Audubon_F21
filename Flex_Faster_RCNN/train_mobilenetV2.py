@@ -11,7 +11,8 @@ from my_dataset import VOCDataSet
 from train_utils import GroupedBatchSampler, create_aspect_ratio_groups
 from train_utils import train_eval_utils as utils
 
-
+import torchvision.models as models
+dense = models.densenet121()
 def create_model(num_classes):
 
     # vgg model pretrain weights
@@ -109,6 +110,11 @@ def main():
     # create model num_classes equal background + 20 classes
     model = create_model(num_classes=21)
     # print(model)
+    count = 0
+    # for m in model.parameters():
+    #     count += m.numel()
+    # print(count)
+    # print('Finish')
 
     model.to(device)
 

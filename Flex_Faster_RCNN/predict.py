@@ -43,7 +43,7 @@ def main():
 
     # read class_indict
     # label_json_path = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/Birds_classes.json'
-    label_json_path = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/pascal_voc_classes.json'
+    label_json_path = './pascal_voc_classes.json'
     assert os.path.exists(label_json_path), "json file {} dose not exist.".format(label_json_path)
     json_file = open(label_json_path, 'r')
     class_dict = json.load(json_file)
@@ -51,8 +51,7 @@ def main():
     category_index = {v: k for k, v in class_dict.items()}
 
     # load image
-    original_img = Image.open("/Users/maojietang/Downloads/Test/JPEGImages/102775 00001.JPG")
-
+    original_img = Image.open("/Users/maojietang/Downloads/file.jpg")
     # from pil image to tensor, do not normalize image
     data_transform = transforms.Compose([transforms.ToTensor()])
     img = data_transform(original_img)
