@@ -27,13 +27,6 @@ model_urls = {
     'densenet161': 'https://download.pytorch.org/models/densenet161-8d451a50.pth',
 }
 
-model_channels = {
-    'densenet121': 1024,
-    'densenet161': 2208,
-    'densenet169': 1664,
-    'densenet201': 1920,
-}
-
 class _DenseLayer(nn.Module):
     def __init__(self, num_input_features, growth_rate, bn_size, drop_rate, memory_efficient=False):
         super(_DenseLayer, self).__init__()
@@ -205,6 +198,46 @@ class DenseNetBackbone(Backbone):
             # elif isinstance(m, nn.Linear):
             #     nn.init.constant_(m.bias, 0)
 
+    #     _freeze_backbone(self, cfg.MODEL.BACKBONE.FREEZE_AT)
+
+    # # See this function for resnets to see how they access parameters in submodules, etc
+    # def _freeze_backbone(self, freeze_at):
+    #     if freeze_at < 0:
+    #         return
+
+    #     # APPROACH 1
+    #     for name, m in self.named_modules():
+    #         if 'denseblock4' in name:
+    #             # NEED TO ITERATE THROUGH FIRST FEW LAYERS
+    #             # cnt = 0
+    #             # Something with -> for child in model.children() and child.parameters
+    #             for layer_index in range(freeze_at):
+    #                 for p in m.parameters():
+    #                     p.requires_grad = False
+    #                     FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
+
+    #             break   # only want to train parameters starting at least in denseblock4
+    #         else:
+    #             for p in m.parameters():
+    #                 p.requires_grad = False
+    #                 FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
+
+
+    #     # APPROACH 2
+    #     for m in self.modules():
+    #         if m.name == 'denseblock4':   # may not be able to access name like this
+    #             for layer_index in range(freeze_at):
+    #                 for p in m.parameters():
+    #                     p.requires_grad = False
+    #                     FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
+
+    #             break   # only want to train parameters starting at least in denseblock4
+    #         else:
+    #             for p in m.parameters():
+    #                 p.requires_grad = False
+    #                 FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
+
+        
     def forward(self, x):   # x is the input image
         features = self.features(x)
         # Might want these two
@@ -216,7 +249,8 @@ class DenseNetBackbone(Backbone):
         # return out
 
     def output_shape(self):
-        return {"SoleStage": ShapeSpec(channels=cfg.MODEL.DENSENET.OUT_CHANNELS)}
+        # Change stride to 16?
+        return {"SoleStage": ShapeSpec(channels=cfg.MODEL.DENSENET.OUT_CHANNELS, stride=4)}
 
 
 def _load_state_dict(model, model_url, progress):
@@ -240,7 +274,6 @@ def _load_state_dict(model, model_url, progress):
     model.load_state_dict(state_dict)
 
 
-# Added cgf to the following functions
 def _densenet(cfg, arch, growth_rate, block_config, num_init_features, pretrained, progress,
               **kwargs):
     model = DenseNetBackbone(cfg, growth_rate, block_config, num_init_features, **kwargs)
@@ -248,7 +281,6 @@ def _densenet(cfg, arch, growth_rate, block_config, num_init_features, pretraine
         _load_state_dict(model, model_urls[arch], progress)
     return model
 
-# @BACKBONE_REGISTRY.register()   # only registering this one for now
 def densenet121(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-121 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
@@ -263,7 +295,6 @@ def densenet121(cfg, pretrained=True, progress=True, **kwargs):
                      **kwargs)
 
 
-# @BACKBONE_REGISTRY.register()
 def densenet161(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-161 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
@@ -278,7 +309,6 @@ def densenet161(cfg, pretrained=True, progress=True, **kwargs):
                      **kwargs)
 
 
-# @BACKBONE_REGISTRY.register()
 def densenet169(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-169 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
@@ -293,7 +323,6 @@ def densenet169(cfg, pretrained=True, progress=True, **kwargs):
                      **kwargs)
 
 
-# @BACKBONE_REGISTRY.register()
 def densenet201(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-201 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
@@ -309,7 +338,7 @@ def densenet201(cfg, pretrained=True, progress=True, **kwargs):
 
 
 @BACKBONE_REGISTRY.register()
-def build_densenet_backbone(cfg):
+def build_densenet_backbone(cfg, input_shape: ShapeSpec):
     """
     Create a DenseNetBackbone instance from config.
     Returns:
