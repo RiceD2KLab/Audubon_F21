@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 import os
 import xml.dom.minidom
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+from sklearn.metrics import silhouette_score
 
 
 def txt_convert_to_xml(filename, name, position):
@@ -111,10 +114,9 @@ def txt_convert_to_xml(filename, name, position):
         root.appendChild(nodeObject)
 
     # write xml
-    path = '/'
     filename = filename.split('.')[0] + '.xml'
     filename = filename.split('/')[-1]
-    arg_output_dir = os.path.join(path, 'Annotation_xml')
+    arg_output_dir = './Annotation_xml'
     print(os.path.join(arg_output_dir, filename))
     if not os.path.exists(arg_output_dir):
         os.makedirs(arg_output_dir)
@@ -131,13 +133,14 @@ class Extract(object):
     def get_path(self):
         if os.path.exists(os.path.join(self.txt_path, "Annotations")) is False:
             raise FileNotFoundError("Annotation dose not in path:'{}'.".format(self.txt_path))
-        self.File_path = self.txt_path + '/Annotation'
+        self.File_path = os.path.join(self.txt_path, 'Annotations')
 
         self.xml_list = [os.path.join(self.File_path, line.strip())
                          for line in os.listdir(self.File_path) if (line.strip()[-3:]) == 'bbx']
 
-    def get_info(self):
+    def get_info(self, size_feature_all=None):
         self.get_path()
+        count = 0
         for i in self.xml_list:
             file = pd.read_csv(i)
             # get AI Class
@@ -158,7 +161,33 @@ class Extract(object):
             filename = i.split('.')[0]
             filename = filename.split('/')[-1] + '.jpg'
 
+            size_feature = np.hstack((X_max - X_min, Y_max - Y_min))
+            if count == 0:
+                size_feature_all = size_feature
+            else:
+                size_feature_all = np.vstack((size_feature_all, size_feature))
+            count += 1
+
             txt_convert_to_xml(filename, name, Position)
+        return size_feature_all
+
+
 if __name__ == '__main__':
     A = Extract('/Users/maojietang/Downloads/Test')
-    A.get_info()
+    feature = A.get_info()
+    # SSE = []  # Sum Square Error
+    # Scores = []
+    # for k in range(1, 9):
+    #     estimator = KMeans(n_clusters=k)  # K means clustering
+    #     estimator.fit(feature)
+    #     SSE.append(estimator.inertia_)
+    # X = range(1, 9)
+    # plt.xlabel('k')
+    # plt.ylabel('SSE')
+    # plt.plot(X, SSE, 'o-')
+    # plt.show()
+
+    estimator = KMeans(n_clusters=3)
+    estimator.fit(feature)
+    print(estimator.cluster_centers_)
+
