@@ -10,12 +10,15 @@ from torchvision import transforms
 from network_files.faster_rcnn_framework import FasterRCNN
 from backbone.resnet50_fpn_model import resnet50_fpn_backbone
 from draw_box_utils import draw_box
+from backbone.mobile_net_v2 import MobileNetV2
 
 
 def create_model(num_classes):
     # resNet50+fpn+faster_RCNN
     # norm_layer should be consistent with training.
     backbone = resnet50_fpn_backbone(norm_layer=torch.nn.BatchNorm2d)
+    # backbone = MobileNetV2(norm_layer=torch.nn.BatchNorm2d).features
+    # backbone.out_channels = 1280  # num_classes
     model = FasterRCNN(backbone=backbone, num_classes=num_classes, rpn_score_thresh=0.5)
 
     return model
@@ -36,9 +39,10 @@ def main():
 
     # load train weights
     train_weights = "/Users/maojietang/Downloads/fasterrcnn_20220225.pth"
-    # train_weights = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/save_weights/resNetFpn-model-2.pth'
+    # train_weights = "/Users/maojietang/Downloads/mobilenet_v2-b0353104.pth"
     assert os.path.exists(train_weights), "{} file dose not exist.".format(train_weights)
     model.load_state_dict(torch.load(train_weights, map_location=device)["model"])
+    # model.load_state_dict(torch.load(train_weights, map_location=device), strict = False)
     model.to(device)
 
     # read class_indict
@@ -51,7 +55,7 @@ def main():
     category_index = {v: k for k, v in class_dict.items()}
 
     # load image
-    original_img = Image.open("/Users/maojietang/Downloads/file.jpg")
+    original_img = Image.open("/Users/maojietang/Downloads/VOCdevkit/VOC2012/JPEGImages/2007_000027.jpg")
     # from pil image to tensor, do not normalize image
     data_transform = transforms.Compose([transforms.ToTensor()])
     img = data_transform(original_img)

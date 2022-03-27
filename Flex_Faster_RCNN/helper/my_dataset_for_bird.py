@@ -183,6 +183,27 @@ class VOCDataSet(Dataset):
     def collate_fn(batch):
         return tuple(zip(*batch))
 
+# computer train_set mean / std for normalization
+def getNormalize(train_data):
+    """
+    Compute mean and variance for training data
+    :param train_data: Dataset(or ImageFolder)
+    :return: (mean, std)
+    """
+    print('Compute mean and variance for training data.')
+    train_loader = torch.utils.data.DataLoader(
+        train_data, batch_size=1, shuffle=False, num_workers=0,
+        pin_memory=True)
+    mean_value = torch.zeros(3)
+    std_value = torch.zeros(3)
+    for X, _ in train_loader:
+        for d in range(3):
+            mean_value[d] += X[:, d, :, :].mean()
+            std_value[d] += X[:, d, :, :].std()
+    mean_value.div_(len(train_data))
+    std_value.div_(len(train_data))
+    print('Computing Complete')
+    return list(mean_value.numpy()), list(std_value.numpy())
 
 # import transforms
 # from draw_box_utils import draw_box
@@ -210,6 +231,7 @@ class VOCDataSet(Dataset):
 #
 # # load train data set
 # train_data_set = VOCDataSet('/Users/maojietang/Downloads', "2012", data_transform["train"], "train.txt")
+# print(getNormalize(train_data_set))
 # print(len(train_data_set))
 # for index in random.sample(range(0, len(train_data_set)), k=5):
 #     img, target = train_data_set[index]
