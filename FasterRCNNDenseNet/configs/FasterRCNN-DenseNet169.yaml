@@ -1,0 +1,12 @@
+_BASE_: "Base-FasterRCNN-DenseNet.yaml"
+MODEL:
+  # WEIGHTS: "https://www.dropbox.com/s/q98pypf96rhtd8y/vovnet39_ese_detectron2.pth?dl=1"
+  DENSENET:
+    CONV_BODY : "densenet169"
+    OUT_CHANNELS: 1664
+  ROI_BOX_HEAD:
+    FC_DIM: 1664
+SOLVER:
+  STEPS: (60000, 80000) # (210000, 250000)
+  MAX_ITER: 90000 # 270000
+OUTPUT_DIR: "checkpoints/densenet169"

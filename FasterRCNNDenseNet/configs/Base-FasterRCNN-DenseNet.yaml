@@ -2,7 +2,7 @@ MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
   BACKBONE:
     NAME: "build_densenet_backbone"
-    FREEZE_AT: 4   # train layers from 4th denseblack onward
+    FREEZE_AT: 4   # train layers from 4th denseblock onward
   DENSENET:
     OUT_FEATURES: ["SoleStage"]
     CONV_BODY: "densenet121"   # default
@@ -50,8 +50,8 @@ DATASETS:
 SOLVER:
   IMS_PER_BATCH: 8
   BASE_LR: 0.001   # 0.02
-  STEPS: (60000, 80000)   # [500,] used by AudubonF21
-  MAX_ITER: 1000   # 90000 in example
+  STEPS: (60000, 80000)   # (500,) AudubonF21
+  MAX_ITER: 90000   # 1000 AudubonF21
 INPUT:
   MIN_SIZE_TRAIN: (640,)
   MIN_SIZE_TEST: (640,)
