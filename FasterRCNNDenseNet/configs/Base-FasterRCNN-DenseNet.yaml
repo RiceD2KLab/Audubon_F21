@@ -5,8 +5,8 @@ MODEL:
     FREEZE_AT: 4   # train layers from 4th denseblock onward
   DENSENET:
     OUT_FEATURES: ["SoleStage"]
-    CONV_BODY: "densenet121"   # default
-    OUT_CHANNELS: 1024   # default
+    # CONV_BODY: "densenet121"   # default
+    # OUT_CHANNELS: 1024   # default
     PRETRAINED: True
   ANCHOR_GENERATOR:
     NAME: "DefaultAnchorGenerator"
@@ -18,7 +18,7 @@ MODEL:
     IN_FEATURES: ["SoleStage"]
     IOU_THRESHOLDS: [0.3, 0.7]
     IOU_LABELS: [0, -1, 1]
-    BATCH_SIZE_PER_IMAGE: 256
+    BATCH_SIZE_PER_IMAGE: 256   # 128:128
     POSITIVE_FRACTION: 0.5
     PRE_NMS_TOPK_TRAIN: 2000  # Per FPN level
     PRE_NMS_TOPK_TEST: 1000  # Per FPN level
@@ -32,16 +32,16 @@ MODEL:
     IOU_THRESHOLDS: [0.5]
     IOU_LABELS: [0, 1]
     BATCH_SIZE_PER_IMAGE: 512
-    POSITIVE_FRACTION: 0.25
+    POSITIVE_FRACTION: 0.25   # 128:384
     SCORE_THRESH_TEST: 0.05
-    NMS_THRESH_TEST: 0.7   # 0.5
+    NMS_THRESH_TEST: 0.7   # 0.5 default
   ROI_BOX_HEAD:
     NAME: "FastRCNNConvFCHead"
     NUM_FC: 2
-    FC_DIM: 1024
+    # FC_DIM: 1024
     POOLER_TYPE: "ROIAlignV2"
     POOLER_RESOLUTION: 7
-    POOLER_SAMPLING_RATIO: 2   # 0
+    POOLER_SAMPLING_RATIO: 2   # 0 default
   PIXEL_MEAN: [103.530, 116.280, 123.675]
   PIXEL_STD: [1.0, 1.0, 1.0]
 DATASETS:
@@ -49,15 +49,12 @@ DATASETS:
   TEST: ("coco_2017_val",)
 SOLVER:
   IMS_PER_BATCH: 8
-  BASE_LR: 0.001   # 0.02
+  BASE_LR: 0.02   # 0.001 AudubonF1
   STEPS: (60000, 80000)   # (500,) AudubonF21
   MAX_ITER: 90000   # 1000 AudubonF21
 INPUT:
-  MIN_SIZE_TRAIN: (640,)
+  MIN_SIZE_TRAIN: (640,)   # use list or number?
   MIN_SIZE_TEST: (640,)
   FORMAT: "BGR"
 
-# cfg.INPUT.MAX_SIZE_TRAIN = 640
-# cfg.INPUT.MAX_SIZE_TEST = 640
-# cfg.DATALOADER.NUM_WORKERS = 4
 # cfg.MODEL.PROPOSAL_GENERATOR.NAME = "RPN"   # don't think it's needed
