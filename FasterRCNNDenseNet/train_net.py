@@ -8,7 +8,7 @@ from datetime import datetime
 from detectron2.engine import DefaultPredictor, default_argument_parser, launch
 
 from detectron2.config import get_cfg
-from FasterRCNNDenseNet.model import add_densenet_config
+from FasterRCNNDenseNet.densenet import add_densenet_config
 
 from utils.dataloader import register_datasets
 from utils.trainer import Trainer
