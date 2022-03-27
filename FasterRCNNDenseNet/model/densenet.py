@@ -202,7 +202,7 @@ class DenseNetBackbone(Backbone):
 
     # # See this function for resnets to see how they access parameters in submodules, etc
     # def _freeze_backbone(self, freeze_at):
-    #     if freeze_at < 0:
+    #     if freeze_at < 1:
     #         return
 
     #     # APPROACH 1
@@ -249,7 +249,7 @@ class DenseNetBackbone(Backbone):
         # return out
 
     def output_shape(self):
-        # Change stride to 16?
+        # Change stride to 16? Udpate all other places if so
         return {"SoleStage": ShapeSpec(channels=cfg.MODEL.DENSENET.OUT_CHANNELS, stride=4)}
 
 
@@ -347,12 +347,12 @@ def build_densenet_backbone(cfg, input_shape: ShapeSpec):
     conv_body = cfg.MODEL.DENSENET.CONV_BODY
     pretrained = cfg.MODEL.DENSENET.PRETRAINED
     if conv_body == "densenet121":
-      return densenet121(cfg, pretrained=pretrained)
+        return densenet121(cfg, pretrained=pretrained)
     elif conv_body == "densenet161":
-      return densenet161(cfg, pretrained=pretrained)
+        return densenet161(cfg, pretrained=pretrained)
     elif conv_body == "densenet169":
-      return densenet169(cfg, pretrained=pretrained)
+        return densenet169(cfg, pretrained=pretrained)
     elif conv_body == "densenet201":
-      return densenet201(cfg, pretrained=pretrained)
+        return densenet201(cfg, pretrained=pretrained)
     else:
-      return densenet121(cfg, pretrained=pretrained)
+        return densenet121(cfg, pretrained=pretrained)
