@@ -18,6 +18,17 @@ def create_model(num_classes):
     backbone = resnet50_fpn_backbone(norm_layer=torch.nn.BatchNorm2d)
     model = FasterRCNN(backbone=backbone, num_classes=num_classes, rpn_score_thresh=0.5)
 
+    # one feature map model
+    # backbone = MobileNetV2(norm_layer=torch.nn.BatchNorm2d).features
+    # backbone.out_channels = 1280  # num_classes
+    #
+    # anchor_generator = AnchorsGenerator(sizes=((32, 64, 128, 256, 512),),
+    #                                     aspect_ratios=((0.5, 1.0, 2.0),))
+    #
+    # model = FasterRCNN(backbone=backbone,
+    #                    num_classes=num_classes,
+    #                    rpn_anchor_generator=anchor_generator)
+
     return model
 
 
@@ -35,7 +46,10 @@ def main():
     model = create_model(num_classes=21)
 
     # load train weights
+    # fpn weight
     train_weights = "/Users/maojietang/Downloads/fasterrcnn_20220225.pth"
+
+    # one feature map weight
     # train_weights = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/save_weights/resNetFpn-model-2.pth'
     assert os.path.exists(train_weights), "{} file dose not exist.".format(train_weights)
     model.load_state_dict(torch.load(train_weights, map_location=device)["model"])
