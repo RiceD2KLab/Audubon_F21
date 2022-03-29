@@ -10,7 +10,8 @@ MODEL:
     PRETRAINED: True
   ANCHOR_GENERATOR:
     NAME: "DefaultAnchorGenerator"
-    SIZES: [[32, 64, 128, 256, 512]]  # Five sizes for one feature map
+    # SIZES: [[32, 64, 128, 256, 512]]  # Corresponding FPN strides: 1/4, 1/8, 1/16, 1/32, 1/64
+    SIZES: [[128, 256, 512]]   # Faster R-CNN paper used this on images with shorter side 600
     ASPECT_RATIOS: [[0.5, 1.0, 2.0]]  # Three aspect ratios
     OFFSET: 0.0   # recommended to use 0.5
   RPN:
@@ -31,7 +32,7 @@ MODEL:
     NUM_CLASSES: 10
     IOU_THRESHOLDS: [0.5]
     IOU_LABELS: [0, 1]
-    BATCH_SIZE_PER_IMAGE: 512
+    BATCH_SIZE_PER_IMAGE: 512   # use 128 or 256?
     POSITIVE_FRACTION: 0.25   # 128:384
     SCORE_THRESH_TEST: 0.05
     NMS_THRESH_TEST: 0.7   # 0.5 default
@@ -40,9 +41,9 @@ MODEL:
     NUM_FC: 2
     # FC_DIM: 1024
     POOLER_TYPE: "ROIAlignV2"
-    POOLER_RESOLUTION: 7
+    POOLER_RESOLUTION: 7   # can use 14 if our images are 640 (spatial size of features 20x20)
     POOLER_SAMPLING_RATIO: 2   # 0 default
-  PIXEL_MEAN: [103.530, 116.280, 123.675]
+  PIXEL_MEAN: [103.530, 116.280, 123.675]   # change to our dataset
   PIXEL_STD: [1.0, 1.0, 1.0]
 DATASETS:
   TRAIN: ("coco_2017_train",)

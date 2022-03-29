@@ -249,8 +249,9 @@ class DenseNetBackbone(Backbone):
         # return out
 
     def output_shape(self):
-        # Change stride to 16? Udpate all other places if so
-        return {"SoleStage": ShapeSpec(channels=cfg.MODEL.DENSENET.OUT_CHANNELS, stride=4)}
+        # Changed stride to 32 because input image's h and w is divided by
+        # 32, corresponding to an over stride of 32 applied to the input image
+        return {"SoleStage": ShapeSpec(channels=cfg.MODEL.DENSENET.OUT_CHANNELS, stride=32)}
 
 
 def _load_state_dict(model, model_url, progress):
