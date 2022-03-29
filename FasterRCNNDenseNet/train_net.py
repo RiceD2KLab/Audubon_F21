@@ -85,8 +85,8 @@ def setup(args):
 def train(cfg):
     cfg.DATASETS.TRAIN = ("birds_species_train",)
     cfg.DATASETS.TEST = ("birds_species_val",)   # "birds_test"
-    cfg.INPUT.MIN_SIZE_TRAIN = (640,)
-    cfg.INPUT.MIN_SIZE_TEST = (640,)
+    cfg.INPUT.MIN_SIZE_TRAIN = 640   # [640,]
+    cfg.INPUT.MIN_SIZE_TEST = 640
 
     trainer = Trainer(cfg)
     trainer.resume_or_load(resume=False)   # add args.resume to arguments?

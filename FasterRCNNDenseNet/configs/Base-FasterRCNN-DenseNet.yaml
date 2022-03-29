@@ -54,8 +54,8 @@ SOLVER:
   STEPS: (60000, 80000)   # (500,) AudubonF21
   MAX_ITER: 90000   # 1000 AudubonF21
 INPUT:
-  MIN_SIZE_TRAIN: (640,)   # use list or number?
-  MIN_SIZE_TEST: (640,)
+  MIN_SIZE_TRAIN: 640 # [640,]   # use list or number?
+  MIN_SIZE_TEST: 640 # [640,]
   FORMAT: "BGR"
 
 # cfg.MODEL.PROPOSAL_GENERATOR.NAME = "RPN"   # don't think it's needed
