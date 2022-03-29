@@ -6,8 +6,9 @@ import torch
 from PIL import Image
 import matplotlib.pyplot as plt
 
+import torchvision
 from torchvision import transforms
-from network_files.faster_rcnn_framework import FasterRCNN
+from network_files.faster_rcnn_framework import FasterRCNN, AnchorsGenerator
 from backbone.resnet50_fpn_model import resnet50_fpn_backbone
 from draw_box_utils import draw_box
 from backbone.mobile_net_v2 import MobileNetV2
@@ -17,10 +18,18 @@ def create_model(num_classes):
     # resNet50+fpn+faster_RCNN
     # norm_layer should be consistent with training.
     backbone = resnet50_fpn_backbone(norm_layer=torch.nn.BatchNorm2d)
-    # backbone = MobileNetV2(norm_layer=torch.nn.BatchNorm2d).features
-    # backbone.out_channels = 1280  # num_classes
     model = FasterRCNN(backbone=backbone, num_classes=num_classes, rpn_score_thresh=0.5)
 
+    # one feature map model
+    # backbone = MobileNetV2(norm_layer=torch.nn.BatchNorm2d).features
+    # backbone.out_channels = 1280  # num_classes
+    #
+    # anchor_generator = AnchorsGenerator(sizes=((32, 64, 128, 256, 512),),
+    #                                     aspect_ratios=((0.5, 1.0, 2.0),))
+    #
+    # model = FasterRCNN(backbone=backbone,
+    #                    num_classes=num_classes,
+    #                    rpn_anchor_generator=anchor_generator)
     return model
 
 
@@ -39,10 +48,9 @@ def main():
 
     # load train weights
     train_weights = "/Users/maojietang/Downloads/fasterrcnn_20220225.pth"
-    # train_weights = "/Users/maojietang/Downloads/mobilenet_v2-b0353104.pth"
+    # train_weights = "/Users/maojietang/Downloads/mobile-model-10.pth"
     assert os.path.exists(train_weights), "{} file dose not exist.".format(train_weights)
     model.load_state_dict(torch.load(train_weights, map_location=device)["model"])
-    # model.load_state_dict(torch.load(train_weights, map_location=device), strict = False)
     model.to(device)
 
     # read class_indict
@@ -86,7 +94,7 @@ def main():
                  predict_classes,
                  predict_scores,
                  category_index,
-                 thresh=0.01,
+                 thresh=0.5,
                  line_thickness=3)
         plt.imshow(original_img)
         plt.show()
