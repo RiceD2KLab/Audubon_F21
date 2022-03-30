@@ -1,7 +1,7 @@
 # Adapted from PyTorch's DenseNet source code
 
 from detectron2.modeling import BACKBONE_REGISTRY, Backbone, ShapeSpec # FPN
-# from detectron2.layers import FrozenBatchNorm2d
+from detectron2.layers import FrozenBatchNorm2d
 
 import re
 import torch
@@ -198,44 +198,60 @@ class DenseNetBackbone(Backbone):
             # elif isinstance(m, nn.Linear):
             #     nn.init.constant_(m.bias, 0)
 
-    #     _freeze_backbone(self, cfg.MODEL.BACKBONE.FREEZE_AT)
+        self._freeze_backbone(cfg.MODEL.BACKBONE.FREEZE_AT, max_layer=block_config[3])
 
-    # # See this function for resnets to see how they access parameters in submodules, etc
+    def _freeze_backbone(self, freeze_at, max_layer):
+        if freeze_at < 0:
+            return
+        elif freeze_at > max_layer:
+            freeze_at = max_layer
+
+        for name, m in self.named_modules():
+            # print(f"{name}")
+            if 'denseblock4' in name and f'denselayer{freeze_at}' in name:
+                print(f"{name}")
+                break   # only want to train parameters starting at least in denseblock4
+            else:
+                print(f"{name}")
+                for p in m.parameters():
+                    # print(f"{p}")
+                    p.requires_grad = False
+                    FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
+
+
     # def _freeze_backbone(self, freeze_at):
-    #     if freeze_at < 1:
+    #     if freeze_at < 0:
     #         return
 
-    #     # APPROACH 1
-    #     for name, m in self.named_modules():
-    #         if 'denseblock4' in name:
-    #             # NEED TO ITERATE THROUGH FIRST FEW LAYERS
-    #             # cnt = 0
-    #             # Something with -> for child in model.children() and child.parameters
-    #             for layer_index in range(freeze_at):
-    #                 for p in m.parameters():
-    #                     p.requires_grad = False
-    #                     FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
-
-    #             break   # only want to train parameters starting at least in denseblock4
+    #     for stage_index in range(freeze_at):
+    #         if stage_index == 0:
+    #             m = self.stem  # stage 0 is the stem
     #         else:
-    #             for p in m.parameters():
-    #                 p.requires_grad = False
-    #                 FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
+    #             m = getattr(self, "stage" + str(stage_index + 1))
+    #         for p in m.parameters():
+    #             p.requires_grad = False
+    #             FrozenBatchNorm2d.convert_frozen_batchnorm(self)
 
-
-    #     # APPROACH 2
-    #     for m in self.modules():
-    #         if m.name == 'denseblock4':   # may not be able to access name like this
-    #             for layer_index in range(freeze_at):
-    #                 for p in m.parameters():
-    #                     p.requires_grad = False
-    #                     FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
-
-    #             break   # only want to train parameters starting at least in denseblock4
-    #         else:
-    #             for p in m.parameters():
-    #                 p.requires_grad = False
-    #                 FrozenBatchNorm2d.convert_frozen_batchnorm(self)   # arguments correct?
+    # def _freeze_backbone(self, freeze_at=8):
+    #     """
+    #     Freeze the first several stages of the DenseNet. Commonly used in
+    #     fine-tuning.
+    #     Layers that produce the same feature map spatial size are defined as one
+    #     "stage" by :paper:`FPN`.
+    #     Args:
+    #         freeze_at (int): number of stages to freeze.
+    #             `1` means freezing the stem. `2` means freezing the stem and
+    #             one residual stage, etc.
+    #     Returns:
+    #         nn.Module: this ResNet itself
+    #     """
+    #     if freeze_at >= 1:
+    #         self.stem.freeze()
+    #     for idx, stage in enumerate(self.stages, start=2):
+    #         if freeze_at >= idx:
+    #             for block in stage.children():
+    #                 block.freeze()
+    #     return 
 
         
     def forward(self, x):   # x is the input image
