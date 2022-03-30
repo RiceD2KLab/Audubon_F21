@@ -261,7 +261,11 @@ class FasterRCNN(FasterRCNNBase):
                  # Box parameters
                  box_roi_pool=None, box_head=None, box_predictor=None,
                  # remove small box     nsm in fast rcnn    get top-100 box sorted by scores
+<<<<<<< HEAD
+                 box_score_thresh=0.05, box_nms_thresh=0.48, box_detections_per_img=100,
+=======
                  box_score_thresh=0.05, box_nms_thresh=0.5, box_detections_per_img=100,
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
                  box_fg_iou_thresh=0.5, box_bg_iou_thresh=0.5,   # threshold for sampling positive/negative samples (fast rcnn)
                  box_batch_size_per_image=512, box_positive_fraction=0.25,  # positive ration (fast rcnn)
                  bbox_reg_weights=None):

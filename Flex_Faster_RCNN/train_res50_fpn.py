@@ -6,8 +6,13 @@ import torch
 import transforms
 from network_files.faster_rcnn_framework import FasterRCNN, FastRCNNPredictor
 from backbone.resnet50_fpn_model import resnet50_fpn_backbone
+<<<<<<< HEAD
+# from my_dataset import VOCDataSet
+from my_dataset_for_bird import VOCDataSet
+=======
 from my_dataset import VOCDataSet
 # from my_dataset_for_bird import VOCDataSet
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
 from train_utils.group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_groups
 from train_utils import train_eval_utils as utils
 
@@ -19,10 +24,20 @@ def create_model(num_classes):
     backbone = resnet50_fpn_backbone(norm_layer=torch.nn.BatchNorm2d,
                                      trainable_layers=3)
     # do not change num_classes = 91
+<<<<<<< HEAD
+    model = FasterRCNN(backbone=backbone, num_classes=91,
+                       image_mean=[0.48119384, 0.46555066, 0.39456555],
+                       image_std=[0.17753279, 0.16947103, 0.1736244])
+    # load weight
+    # https://download.pytorch.org/models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth
+
+    weights_dict = torch.load("./fasterrcnn_20220225.pth", map_location='cpu')
+=======
     model = FasterRCNN(backbone=backbone, num_classes=91)
     # load weight
     # https://download.pytorch.org/models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth
     weights_dict = torch.load("/Users/maojietang/Downloads/fasterrcnn_20220225.pth", map_location='cpu')
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
     missing_keys, unexpected_keys = model.load_state_dict(weights_dict, strict=False)
     if len(missing_keys) != 0 or len(unexpected_keys) != 0:
         print("missing_keys: ", missing_keys)
@@ -51,8 +66,13 @@ def main(parser_data):
 
     VOC_root = parser_data.data_path
     # check voc root
+<<<<<<< HEAD
+    # if os.path.exists(os.path.join(VOC_root, "VOCdevkit")) is False:
+    #     raise FileNotFoundError("VOCdevkit dose not in path:'{}'.".format(VOC_root))
+=======
     if os.path.exists(os.path.join(VOC_root, "VOCdevkit")) is False:
         raise FileNotFoundError("VOCdevkit dose not in path:'{}'.".format(VOC_root))
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
 
     # load train data set
     # VOCdevkit -> VOC2012 -> ImageSets -> Main -> train.txt
@@ -92,7 +112,11 @@ def main(parser_data):
     # VOCdevkit -> VOC2012 -> ImageSets -> Main -> val.txt
     val_dataset = VOCDataSet(VOC_root, "2012", data_transform["val"], "val.txt")
     val_data_set_loader = torch.utils.data.DataLoader(val_dataset,
+<<<<<<< HEAD
+                                                      batch_size=8,
+=======
                                                       batch_size=1,
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
                                                       shuffle=False,
                                                       pin_memory=True,
                                                       num_workers=nw,
@@ -191,6 +215,22 @@ if __name__ == "__main__":
     # device
     parser.add_argument('--device', default='cuda:0', help='device')
     # root path(VOCdevkit)
+<<<<<<< HEAD
+    parser.add_argument('--data-path', default='C://Users\\VelocityUser\\Documents\\D2K TDS A\\6_class_combine', help='dataset')
+    # num_class(without considering bg)
+    parser.add_argument('--num-classes', default=6, type=int, help='num_classes')
+    # save path
+    parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
+    # resume path
+    parser.add_argument('--resume', default="C://Users//VelocityUser//Documents//Audubon_F21//Flex_Faster_RCNN//save_weights//resNetFpn-model-99.pth", type=str, help='resume from checkpoint')
+    # start epoch(if set resume path)
+    parser.add_argument('--start_epoch', default=99, type=int, help='start epoch')
+    # epochs in total
+    parser.add_argument('--epochs', default=200, type=int, metavar='N',
+                        help='number of total epochs to run')
+    # batch size
+    parser.add_argument('--batch_size', default=8, type=int, metavar='N',
+=======
     parser.add_argument('--data-path', default='/Users/maojietang/Downloads', help='dataset')
     # num_class(without considering bg)
     parser.add_argument('--num-classes', default=5, type=int, help='num_classes')
@@ -205,6 +245,7 @@ if __name__ == "__main__":
                         help='number of total epochs to run')
     # batch size
     parser.add_argument('--batch_size', default=1, type=int, metavar='N',
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
                         help='batch size when training.')
     parser.add_argument('--aspect-ratio-group-factor', default=3, type=int)
     # mixed precision training

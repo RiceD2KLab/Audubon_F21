@@ -114,12 +114,23 @@ def txt_convert_to_xml(filename, name, position):
         root.appendChild(nodeObject)
 
     # write xml
+<<<<<<< HEAD
+    filename =  'C:/' + filename.split('.')[0] + '.xml'
+    # filename = filename.split('/')[-1]
+    # arg_output_dir = '.\\Annotation_xml'
+    # print(os.path.join(arg_output_dir, filename))
+    # print('C://'+ filename)
+    arg_output_dir = filename.split('.')[0]
+    # if not os.path.exists(arg_output_dir):
+    #     os.makedirs(arg_output_dir)
+=======
     filename = filename.split('.')[0] + '.xml'
     filename = filename.split('/')[-1]
     arg_output_dir = './Annotation_xml'
     print(os.path.join(arg_output_dir, filename))
     if not os.path.exists(arg_output_dir):
         os.makedirs(arg_output_dir)
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
     fp = open(os.path.join(arg_output_dir, filename), 'w')
     doc.writexml(fp, addindent='\t', newl='\n', encoding='utf-8')
 
@@ -173,7 +184,12 @@ class Extract(object):
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
+    # the path for both the image and annotation folder (put Annotations)
+    A = Extract('C://Users\\VelocityUser\\Documents\\D2K TDS A\\6_class_combine')
+=======
     A = Extract('/Users/maojietang/Downloads/Test')
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
     feature = A.get_info()
     # SSE = []  # Sum Square Error
     # Scores = []

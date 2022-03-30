@@ -50,7 +50,11 @@ def filter_low_thresh(boxes, scores, classes, category_index, thresh, box_to_dis
 def draw_text(draw, box_to_display_str_map, box, left, right, top, bottom, color, selfcolor):
     try:
         if selfcolor == True:
+<<<<<<< HEAD
+            font = ImageFont.truetype('./arial.ttf', 15)
+=======
             font = ImageFont.truetype('/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/arial.ttf', 30)
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
         else:
             font = ImageFont.load_default()
     except IOError:

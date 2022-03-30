@@ -6,9 +6,15 @@ def main():
     random.seed(0)  # random seeds
 
     # input: annotation xml files
+<<<<<<< HEAD
+    files_path = 'C://Users\\VelocityUser\\Documents\\D2K TDS A\\6_class_combine\\images'
+    # files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
+    # assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
+=======
     files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
     # files_path = "/Users/maojietang/Downloads/VOCdevkit/VOC2012/Annotations"
     assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
+>>>>>>> e55d678011589736c57c1965d915317b7a449b1f
 
     val_rate = 0.1
 
