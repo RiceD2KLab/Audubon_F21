@@ -7,49 +7,6 @@ import os
 import shutil
 from pathlib import Path
 import random
-from PIL import Image
-import numpy as np
-
-
-def csv_to_dict_AWS(bucket_name, key,  im_fold, AWS_storage = 's3',annot_file_ext='bbx'):
-    """
-    Function to extract an info dictionary from an xml file
-    INPUT:
-      csv_path -- path for an csv file, format of bndbox should be xmin, ymin,
-                  xmax, ymax
-    OUTPUT:
-      info_dict -- an info dictionary
-    """
-    # all the data should be in this data placement
-    s3client = boto3.client(AWS_storage)
-    
-    response = s3client.get_object(Bucket=bucket_name, Key=key)
-    body = response['Body']
-    
-    df = pd.read_csv(body, header=0, names=["class_id", "class_name", "x", "y", "width", "height"])
-    info_dict = {}
-    info_dict['bbox'] = []
-    
-    # get the file name for the annotation
-    info_dict['file_name'] = key.split('/')[-1]
-    
-    imre = s3client.get_object(Bucket = bucket_name, Key= im_fold + info_dict['file_name'].replace(annot_file_ext,'JPG'))
-    im = Image.open(imre['Body'])
-    im = np.array(im)
-
-    # append width, height, depth
-    info_dict['img_size'] = im.shape
-    # bndbox info
-    for i in range(len(df)):
-        # store bbx info for one object
-        bbox = {}
-        bbox['class'], bbox['desc'], bbox['xmin'], bbox['ymin'], w, h = df.iloc[i,]
-        
-        bbox['xmax'] = bbox['xmin'] + w
-        bbox['ymax'] = bbox['ymin'] + h
-        info_dict['bbox'].append(bbox)
-        
-    return info_dict
 
 
 def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
@@ -179,7 +136,8 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
     img_height, img_width, _ = info_dict['img_size']
     im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
-    file_name = os.path.split(csv_file)[-1][:-4]
+    file_name = csv_file.split('/')[-1][:-4]
+    print(file_name)
     # go through the image from top left corner
     for i in range(img_height // crop_height + 1):
 
@@ -213,8 +171,6 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
             # even if no birds in cropped img, keep the cropped image
             # however this only saves cropped images that contain birds
             if tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
-                # print('Generating segmentation at position: ', left, top, right, bottom)
-
                 c_img = im.crop((left, top, right, bottom))
                 c_img.save(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
                 image = Image.open(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
@@ -381,7 +337,6 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
             shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'test'))
             shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'test'))
 
-
 # Added by SP22 to avoid harsh cropping of birds at boundaries
 def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_size_y, output_dir, class_map={}, overlap=0.8, annot_file_ext='csv', file_dict={}, compute_sliding_size=False):
     """
@@ -411,7 +366,7 @@ def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_
         if max_w > 0 and max_h > 0:
             sliding_size_x = crop_width - max_w
             sliding_size_y = crop_height - max_h
-    
+
     # go through the image from top left corner
     for i in range((img_height - crop_height) // sliding_size_y + 2):
         for j in range((img_width - crop_width) // sliding_size_x + 2):
@@ -496,7 +451,7 @@ def crop_dataset_trainer(data_dir, output_dir, annot_file_ext='csv', class_map={
         # TODO: only pass BBX files whose images are in the folder too (update original function too)
     for f in tqdm(files, desc='Cropping files'):
         crop_img_trainer(csv_file=f, crop_height=crop_height, crop_width=crop_width, sliding_size_x=sliding_size_x,
-                         sliding_size_y=sliding_size_y, output_dir=output_dir, class_map=class_map, 
+                         sliding_size_y=sliding_size_y, output_dir=output_dir, class_map=class_map,
                          annot_file_ext=annot_file_ext, compute_sliding_size=compute_sliding_size)
 
     # Remove intermediate directory

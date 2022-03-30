@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm.autonotebook import tqdm
 import cv2
@@ -11,6 +10,14 @@ from detectron2.evaluation.fast_eval_api import COCOeval_opt
 from detectron2.evaluation import inference_on_dataset
 from detectron2.evaluation.coco_evaluation import COCOEvaluator
 from detectron2.data import build_detection_test_loader
+import pandas as pd
+
+# import json
+# import torch
+# from torchvision import transforms, datasets
+# from tqdm import tqdm
+# from torch import nn
+# import torch.nn.functional as F
 
 
 class PrecisionRecallEvaluator(COCOEvaluator):
@@ -266,12 +273,13 @@ def evaluate_full_pipeline(eval_file_lst, predictor, species_map, raw_img_width,
 
     output_df['height_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-2])))
     output_df['width_idx'] = output_df['file_name'].map(lambda x: int((os.path.split(x)[1].split('.')[0].split('_')[-1])))
-    output_df['orig_xmin'] = output_df.apply(convert_xmin, axis=1, result_type='reduce')
-    output_df['orig_xmax'] = output_df.apply(convert_xmax, axis=1, result_type='reduce')
-    output_df['orig_ymin'] = output_df.apply(convert_ymin, axis=1, result_type='reduce')
-    output_df['orig_ymax'] = output_df.apply(convert_ymax, axis=1, result_type='reduce')
+    output_df['orig_xmin'] = output_df.apply(convert_xmin, axis=1) # result_type='reduce')
+    output_df['orig_xmax'] = output_df.apply(convert_xmax, axis=1) # result_type='reduce')
+    output_df['orig_ymin'] = output_df.apply(convert_ymin, axis=1) # result_type='reduce')
+    output_df['orig_ymax'] = output_df.apply(convert_ymax, axis=1) # result_type='reduce')
 
     output_df['boxes'] = output_df[['orig_xmin', 'orig_xmax', 'orig_ymin', 'orig_ymax']].values.tolist()
+    
     output_df = output_df.groupby('orig_name').apply(non_max_suppression_fast)
 
     return output_df

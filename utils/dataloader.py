@@ -39,7 +39,7 @@ def get_bird_only_dicts(data_dir,img_ext='.JPG'):
     imgs_anns_df = imgs_anns_df[imgs_anns_df["class_name"]!="Trash/Debris"]
     
     objs = []
-    for _, row in imgs_anns_df.iterrows():  
+    for _, row in imgs_anns_df.iterrows():
       obj = {
           "bbox": [row["x"], row["y"], row["width"], row["height"]],      
           "bbox_mode": BoxMode.XYWH_ABS,
@@ -53,7 +53,7 @@ def get_bird_only_dicts(data_dir,img_ext='.JPG'):
   return dataset_dicts
 
 
-def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_category=True,skip_empty_imgs=True):
+def get_bird_species_dicts(data_dir,class_names,unknown_bird_category, img_ext, skip_empty_imgs=True):
   """
   Format dataset to detectron2 standard format. 
   INPUTS: 
@@ -69,11 +69,15 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_cate
 
   for idx,file_csv in enumerate(glob.glob(os.path.join(data_dir,'*.csv'))):
 
+
     record = {}
 
     # image attributes
     root, ext = os.path.splitext(file_csv)
+    # root = str(root)
+    # print(img_ext)
     file_img = root + img_ext
+
     height, width = imread(file_img).shape[:2]
     record["file_name"] = file_img
     record["image_id"] = idx
@@ -87,6 +91,11 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_cate
       continue
     # remove annotations for trash
     imgs_anns_df = imgs_anns_df[imgs_anns_df["class_name"]!="Trash/Debris"]
+
+    # removing the nest/egg and the categorizing the flying into one class
+    imgs_anns_df['class_name'] = imgs_anns_df['class_name'].apply(lambda x: 'fly' if('Flying' in x)or('Wings Spread' in x)or('Flight' in x) else x)
+    imgs_anns_df.drop(index = (imgs_anns_df.loc[(imgs_anns_df['class_name'].apply(lambda x: 'Egg' in x or 'Nest' in x))].index))
+
 
     objs = []
     for _, row in imgs_anns_df.iterrows():
@@ -117,7 +126,7 @@ def get_bird_species_dicts(data_dir,class_names,img_ext='.JPG',unknown_bird_cate
   return dataset_dicts
 
 
-def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colors=None):
+def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colors=None, unknown_bird_category=True):
   """
   Register dataset as part of Detectron2's dataset and metadataset catalogs
   For each dataset directory to be registered, a "bird-only" and "bird-species" dataset will be registered
@@ -135,7 +144,7 @@ def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colo
     # birds only
     if f"birds_only_{d}" in DatasetCatalog.list():
       DatasetCatalog.remove(f"birds_only_{d}")
-    DatasetCatalog.register(f"birds_only_{d}", lambda d=d: get_bird_only_dicts(data_dir, img_ext))
+    DatasetCatalog.register(f"birds_only_{d}", lambda d=d: get_bird_only_dicts(data_dir, img_ext = img_ext))
     if f"birds_only_{d}" in MetadataCatalog.list():
       MetadataCatalog.remove(f"birds_only_{d}")
     MetadataCatalog.get(f"birds_only_{d}").set(thing_classes=["Bird"])
@@ -145,8 +154,8 @@ def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colo
       DatasetCatalog.remove(f"birds_species_{d}")
     DatasetCatalog.register(f"birds_species_{d}", lambda d=d: get_bird_species_dicts(data_dir,
                                                                                      birds_species_names,
-                                                                                     img_ext,
-                                                                                     unknown_bird_category=True))
+                                                                                     unknown_bird_category = unknown_bird_category,
+                                                                                     img_ext = img_ext))
     if f"birds_species_{d}" in MetadataCatalog.list():
       MetadataCatalog.remove(f"birds_species_{d}")
     MetadataCatalog.get(f"birds_species_{d}").set(thing_classes=birds_species_names + ["Unknown Bird"])

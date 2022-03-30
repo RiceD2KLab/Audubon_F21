@@ -13,14 +13,18 @@ import numpy as np
 
 
 def csv_to_dict_AWS(bucket_name, key,  im_fold, AWS_storage = 's3',annot_file_ext='bbx'):
-    """
-    Function to extract an info dictionary from an xml file
-    INPUT:
-      csv_path -- path for an csv file, format of bndbox should be xmin, ymin,
-                  xmax, ymax
-    OUTPUT:
-      info_dict -- an info dictionary
-    """
+    '''
+    This function has the same functionality as the non-AWS version.
+    Args:
+        bucket_name: The bucket at which the data exist
+        key: main folder inside the bucket
+        im_fold:
+        AWS_storage:
+        annot_file_ext:
+
+    Returns:
+
+    '''
     # all the data should be in this data placement
     s3client = boto3.client(AWS_storage)
     
@@ -53,8 +57,9 @@ def csv_to_dict_AWS(bucket_name, key,  im_fold, AWS_storage = 's3',annot_file_ex
     return info_dict
 
 def dict_to_csv_AWS(info_dict, output_path, empty):
+
     """
-    Function to convert (cropped images') info_dicts to annoatation csv files
+    AWS version of converting (cropped images') info_dicts to annoatation csv files
     INPUT:
      info_dict -- output from the csv_to_dict function, containing bbox, filename, img_size
      output_path -- folder path to store the converted csv files
@@ -135,16 +140,25 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
 # this function generates all the cropped images and all corresponding label txt files for a single file
 # file_dict stores cropped images info dict in one dictionary.
 def crop_img_AWS(s3client, my_bucket, annot_key, img_key, output_key, crop_height, crop_width, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}):
-    """
-    This function crops one image and output corresponding labels.
-    Currently, this function generates the cropped images AND the corresponding csv files to output_dir
-    INPUT:
-    crop_height, crop_weight -- desired patch size.
-    overlap -- threshold for keeping bbx.
-    annot_file_ext -- annotation file extension
-    """
-    print(img_key)
-    print(annot_key)
+    '''
+
+    Args:
+        s3client:
+        my_bucket:
+        annot_key:
+        img_key:
+        output_key:
+        crop_height:
+        crop_width:
+        class_map:
+        overlap:
+        annot_file_ext:
+        file_dict:
+
+    Returns:
+
+    '''
+
     info_dict = csv_to_dict_AWS(bucket_name= my_bucket,key = annot_key, im_fold = img_key)
     
     img_height, img_width, img_depth = info_dict['img_size']
@@ -192,14 +206,12 @@ def crop_img_AWS(s3client, my_bucket, annot_key, img_key, output_key, crop_heigh
                 
                 c_img = im.crop((left, top, right, bottom))
                 c_img_name = file_name + '_' + str(i) + '_' + str(j) +'.JPEG'
-                
+
                 # write all this is the temporary folder in the current working directory
                 c_img.save('./temp'+'/'+c_img_name)
                 
                 #uploading it to the bucket storage
                 s3client.upload_file(Filename = './temp'+'/'+c_img_name, Bucket = my_bucket, Key = output_key +'/'+c_img_name)
-                
-                
 
     # output the file_dict to a folder of csv files containing labels for each cropped file
     for b in file_dict:
@@ -214,17 +226,21 @@ def crop_img_AWS(s3client, my_bucket, annot_key, img_key, output_key, crop_heigh
 
 
 def crop_dataset_AWS(bucket, data_key, output_key, annot_key, annot_file_ext = 'csv', class_map = {}, crop_height=640, crop_width=640):
-    """
-    :param data_dir: image set directory
-    :param output_dir: output directory
-    :param annot_file_ext: annotation file extension
-    :param crop_height: image height after tiling, default 640
-    :param crop_width: image width after tiling, default 640
-    """
-    s3client = boto3.client('s3') # start grabbing or makign directory in S3 bucket
-    
-    
-    if not key_exist(my_bucket = bucket, my_key = output_key): # this function works only for S3 bucket, will change if we need to modularize this
+    '''
+    To make the oroig
+    Args:
+        bucket: Current bucket
+        data_key: Current folder in which the data exist
+        output_key: returning a directory of cropped images (crop_height x crop_width)
+        annot_key: Current existence of annotations
+        annot_file_ext: folder in which the annotations exist
+        class_map: funciton to double check
+    '''
+
+    s3client = boto3.client('s3')
+
+    # if the key does not exist in the S3 bucket, make a new folder
+    if not key_exist(my_bucket = bucket, my_key = output_key):
         print(f"Creating output directory at in S3 bucket called: {output_key}")
         s3client.put_object(Bucket = bucket, Key = output_key)
         
@@ -232,8 +248,6 @@ def crop_dataset_AWS(bucket, data_key, output_key, annot_key, annot_file_ext = '
     if not os.path.exists('./temp'):
         print(f"Creating temp folder")
         os.makedirs('./temp')
-
-                            
 
     # find all the files inside the annotated folders                            
     if annot_file_ext == 'csv':
@@ -248,7 +262,6 @@ def crop_dataset_AWS(bucket, data_key, output_key, annot_key, annot_file_ext = '
                      crop_height=crop_height, crop_width=crop_width, class_map=class_map, annot_file_ext=annot_file_ext)
     
     shutil.rmtree('./temp')
-    return None
 
 def train_val_test_split_AWS(s3client, my_bucket, file_key, train_key, val_key, test_key, train_frac=0.8, val_frac=0.1):
     """

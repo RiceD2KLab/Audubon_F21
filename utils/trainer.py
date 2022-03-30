@@ -68,12 +68,19 @@ class ValidationLossHook(HookBase):
         }
         total_losses_reduced = sum(loss for loss in metrics_dict.values())
         return total_losses_reduced
-      
+
     def after_step(self):
         next_iter = self.trainer.iter + 1
         is_final = next_iter == self.trainer.max_iter
         if is_final or (self._period > 0 and next_iter % self._period == 0):
             self._do_loss_eval()
+          # mean_loss = self._do_loss_eval()
+          # storage = get_event_storage()
+          # storage.put_scalar('val_loss', np.mean(mean_loss) )
+          # with open('val_iter.txt', 'a+') as f:
+          #     f.write('min val loss: ' + str(np.mean(mean_loss)) + ' at iter: ' + str(self.trainer.iter) + '\n')
+        #
+        self.trainer.storage.put_scalars(timetest=12) 
 
 
 class Trainer(DefaultTrainer):
@@ -96,6 +103,27 @@ class Trainer(DefaultTrainer):
                                   eval_period = 20,
                                   )
         )
+        return hooks
+
+
+class MyTrainer(DefaultTrainer):
+    @classmethod
+    def build_evaluator(cls, cfg, dataset_name, output_folder=None):
+        if output_folder is None:
+            return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=cfg.OUTPUT_DIR)])
+        else:
+            return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=output_folder)])
+
+    def build_hooks(self):
+        hooks = super().build_hooks()
+        hooks.insert(-1, ValidationLossHook(
+            self.model,
+            build_detection_test_loader(
+                self.cfg,
+                self.cfg.DATASETS.TEST[0],
+                DatasetMapper(self.cfg, True)
+            )
+        ))
         return hooks
 
 
