@@ -69,7 +69,7 @@ def setup(args):
     # cfg.merge_from_list(args.opts)
     cfg.MODEL.DENSENET.NUM_CLASSES = len(BIRD_SPECIES)
     cfg.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
-    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 256   # 512 default
+    # cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 256   # 512 default
     # cfg.freeze()   # what does this do?
     # default_setup(cfg, args)   # doubt I need this
 

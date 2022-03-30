@@ -201,18 +201,21 @@ class DenseNetBackbone(Backbone):
         self._freeze_backbone(cfg.MODEL.BACKBONE.FREEZE_AT, max_layer=block_config[3])
 
     def _freeze_backbone(self, freeze_at, max_layer):
+        freeze_all = False
         if freeze_at < 0:
             return
-        elif freeze_at > max_layer:
-            freeze_at = max_layer
+        elif freeze_at >= max_layer:
+            freeze_all = True
+        else:
+            freeze_at += 1   # don't freeze from this layer onward
 
         for name, m in self.named_modules():
             # print(f"{name}")
-            if 'denseblock4' in name and f'denselayer{freeze_at}' in name:
-                print(f"{name}")
+            if 'denseblock4' in name and f'denselayer{freeze_at}' in name and not freeze_all:
+                # print(f"{name}")
                 break   # only want to train parameters starting at least in denseblock4
             else:
-                print(f"{name}")
+                # print(f"{name}")
                 for p in m.parameters():
                     # print(f"{p}")
                     p.requires_grad = False

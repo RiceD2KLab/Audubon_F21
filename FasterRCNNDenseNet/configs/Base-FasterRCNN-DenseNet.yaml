@@ -2,7 +2,7 @@ MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
   BACKBONE:
     NAME: "build_densenet_backbone"
-    FREEZE_AT: 8   # layer in last denseblock
+    FREEZE_AT: 8   # last layer to freeze in last denseblock
   DENSENET:
     OUT_FEATURES: ["SoleStage"]
     # CONV_BODY: "densenet121"   # default
@@ -34,7 +34,7 @@ MODEL:
     IOU_LABELS: [0, 1]
     BATCH_SIZE_PER_IMAGE: 512   # use 128 or 256?
     POSITIVE_FRACTION: 0.25   # 128:384
-    SCORE_THRESH_TEST: 0.05
+    SCORE_THRESH_TEST: 0.5   # default 0.05, Audubon said 0.5
     NMS_THRESH_TEST: 0.7   # 0.5 default
   ROI_BOX_HEAD:
     NAME: "FastRCNNConvFCHead"

@@ -381,8 +381,8 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
             shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'test'))
             shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'test'))
 
-#####################################################################################
 
+# Added by SP22 to avoid harsh cropping of birds at boundaries
 def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_size_y, output_dir, class_map={}, overlap=0.8, annot_file_ext='csv', file_dict={}, compute_sliding_size=False):
     """
     Function description.
