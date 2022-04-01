@@ -9,7 +9,7 @@ from torchvision import transforms
 from utils.cropping_hank import csv_to_dict, dict_to_csv, crop_img_trainer
 
 #
-def flip_img(img, info_dict, output_dir):
+def flip_img(img, info_dict, output_dir, img_ext):
     name = ("_flipped.").join(info_dict["file_name"].split("."))
 
     transform = transforms.Compose([transforms.RandomHorizontalFlip(p=1)])
@@ -34,7 +34,7 @@ def flip_img(img, info_dict, output_dir):
 
         flipped_dict['bbox'].append(instancef_dict)
 
-    dict_to_csv(flipped_dict, empty=False, test = True, output_path=output_dir)
+    dict_to_csv(flipped_dict, empty=False, output_path=output_dir, img_ext =img_ext)
 
 
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, annot_file_ext='bbx'):
@@ -131,14 +131,20 @@ def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, annot_file
 # def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, annot_file_ext='csv'):
 #
 
-def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres, annot_file_ext='csv'):
+def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres,img_ext, annot_file_ext='csv'):
+
+
     file_name = os.path.split(csv_file)[-1][:-4]
+
     # annotation
     annot_dict = csv_to_dict(csv_path=csv_file, annot_file_ext=annot_file_ext)
     annotation_lst = [list(x.values()) for x in annot_dict['bbox']]
 
-    image_file = csv_file.replace(annot_file_ext, 'JPEG')
+    # print(annot_dict)
+    # print(annotation_lst)
+    image_file = csv_file.replace(annot_file_ext, img_ext)
     assert os.path.exists(image_file)
+
     crop_width = 640
     crop_height = 640
     image = Image.open(image_file)
@@ -149,6 +155,7 @@ def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres, annot_f
     for dic in annot_dict['bbox']:
         if dic["desc"] in minor_species:
             minors.append(dic)
+
 
     for i in range(len(minors)):
         minor = minors[i]
@@ -198,22 +205,23 @@ def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres, annot_f
             continue
         else:
             valid_i += 1
-            file_dict["file_name"] = file_name + "_" + str(valid_i).zfill(2) + ".JPEG"
-            image.save(output_dir + "/" + file_name + "_" + str(valid_i).zfill(2) + ".JPEG")
+            file_dict["file_name"] = file_name + "_" + str(valid_i).zfill(2) + "."+img_ext
+            image.save(output_dir + "/" + file_name + "_" + str(valid_i).zfill(2) + "."+img_ext)
 
-            dict_to_csv(file_dict, empty=False, output_path=output_dir, test = True)
+            # dict_to_csv(file_dict, empty=False, output_path=output_dir, test = True)
+            # print(file_dict)
+            flip_img(img=image, info_dict=file_dict, output_dir=output_dir, img_ext = img_ext)
 
-            flip_img(img=image, info_dict=file_dict, output_dir=output_dir)
 
 
+def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, img_ext, annot_file_ext='csv'):
+    # if annot_file_ext == 'csv'
 
-def AugTrainingSet(input_dir, output_dir, minor_species, overlap,
-                   thres, annot_file_ext='csv'):
-    if annot_file_ext == 'csv':
-        Train_files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == 'csv']
+    Train_files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == annot_file_ext]
 
+    # print(Train_files)
     # perform both data augmentation and data cropping need for training
-    for file in Train_files:#tqdm(Train_files, desc='Cropping files'):
+    for file in tqdm(Train_files, desc='Augmenting data'):
         # data augmentation
-        Test_aug_minor(csv_file=file, output_dir=output_dir,
-                  minor_species=minor_species, overlap=overlap, thres=thres)
+        Test_aug_minor(csv_file=file, output_dir=output_dir, minor_species=minor_species, overlap=overlap, thres=thres,
+                       img_ext = img_ext)
