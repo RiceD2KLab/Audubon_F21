@@ -208,21 +208,24 @@ cfg.merge_from_file("C://Users\\VelocityUser\\Documents\\Audubon_F21\\FasterRCNN
 # loss parameters
 #cfg.SOLVER.WEIGHT_DECAY = 0.0001
 # solver parameters
-cfg.SOLVER.IMS_PER_BATCH = 6
+cfg.SOLVER.IMS_PER_BATCH = 8   # first try 6
 cfg.SOLVER.BASE_LR = 0.001
 # cfg.SOLVER.WARMUP_FACTOR = 0.001
 cfg.SOLVER.WARMUP_ITERS = 1
 cfg.SOLVER.GAMMA = 0.01
-cfg.SOLVER.STEPS = [499]
-cfg.SOLVER.MAX_ITER = 500 # 1000
+cfg.SOLVER.STEPS = [400]
+cfg.SOLVER.MAX_ITER = 500 # first try 1000
 # other
-cfg.SOLVER.CHECKPOINT_PERIOD = 500
+cfg.SOLVER.CHECKPOINT_PERIOD = 501  # larger than max iter to only save final model?
 #cfg.TEST.EVAL_PERIOD = 0  # set to non-zero integer to get evaluation metric results
 cfg.DATALOADER.NUM_WORKERS = 0
 
 # classes
 cfg.MODEL.DENSENET.NUM_CLASSES = len(BIRD_SPECIES)
 cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
+
+# freeze at
+# cfg.MODEL.BACKBONE.FREEZE_AT = 0   # layer in last denseblock; first try 8
 
 # add datasets used for training and validation
 cfg.DATASETS.TRAIN = ("birds_species_Train",)
@@ -247,8 +250,8 @@ from detectron2.utils.logger import setup_logger
 # tuned_cfg_params['MAX_ITER'] = tuned_cfg_params['MAX_ITER']+100
 # tune_weight_dir, loss = main_fit(tuned_cfg_params)
 
-cfg.OUTPUT_DIR = f"./output/3_31_6class_{model_name}"
-# os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+cfg.OUTPUT_DIR = f"./output/4_1_6class_{model_name}"
+os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
 # train on bird species
 # trainer = DefaultTrainer(cfg)
@@ -322,7 +325,6 @@ from detectron2.engine import DefaultPredictor
 from utils.evaluation import evaluate_full_pipeline
 
 # # create list of tiled images to be run predictor on
-# output_dir = "C://Users\\VelocityUser\\Documents\\D2K TDS A\\TDS A-06\\Test"
 eval_file_lst = []
 eval_file_lst = eval_file_lst + glob.glob(os.path.join(output_dir,'*.JPEG'))
 
@@ -335,7 +337,7 @@ cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
 # #location of the trained weights
 # # cfg.MODEL.WEIGHTS = f"./D2K_TDS_A_5_classes/multibirds_{model_name}/model_final.pth"
 
-cfg.MODEL.WEIGHTS = f"./output/3_31_6class_{model_name}" + "/model_final.pth"
+cfg.MODEL.WEIGHTS = f"./output/4_1_6class_{model_name}" + "/model_final.pth"
 
 # cfg.DATALOADER.NUM_WORKERS = 0
 # cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
@@ -349,8 +351,8 @@ CROP_HEIGHT = 640
 SLIDING_SIZE = 400
 # # #
 # # # # Run evaluation
-# output_df = evaluate_full_pipeline(eval_file_lst, predictor, SPECIES_MAP, RAW_IMG_WIDTH, RAW_IMG_HEIGHT,CROP_WIDTH, CROP_HEIGHT, SLIDING_SIZE)
-# output_df.to_csv('D2K_TDS_6_species_densenet121.csv')
+output_df = evaluate_full_pipeline(eval_file_lst, predictor, SPECIES_MAP, RAW_IMG_WIDTH, RAW_IMG_HEIGHT,CROP_WIDTH, CROP_HEIGHT, SLIDING_SIZE)
+output_df.to_csv(f'4_1_6class_{model_name}.csv')
 #
 # # # #######################################################################################################################
 # # #confusion matrix output for model evaluation
