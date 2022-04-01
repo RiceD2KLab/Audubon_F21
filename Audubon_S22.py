@@ -59,45 +59,7 @@ from utils.cropping_hank import train_val_test_split
 
 
 # already cropped directory (8 classes)
-crop_dir = 'C://Users\\VelocityUser\\Documents\\D2K TDS A\\TDS A-08'
-
-
-
-#######################################################################################################################
-# # ************** the data augmenation part in this section of the code *************************************
-# # this data augmentation code only works on the training set!!!
-# # the output direction is "aug_dir"
-#
-# import shutil
-# from utils.augmentation import AugTrainingSet
-# # dst_dir is the folder of training data(only after cropping)
-# #dst_dir = data_dir+'/split/train'
-# # aug_dir is where we put image after doing data augmentation
-# os.makedirs('C://Users\\VelocityUser\\Documents\\Audubon_F21\\trainingset_Aug', exist_ok= True)
-# aug_dir = os.getcwd()+'\\trainingset_Aug'
-#
-#
-# # Minimum portion of a bounding box being accepted in a subimage
-# overlap = 0.2
-#
-# # List of species that we want to augment
-# # minor_species = ["Brown Pelican Adult", "Tricolored Heron Adult", "Great Blue Heron Adult"]
-# minor_species = ["Brown Pelican Adult", "Tricolored Heron Adult"]
-#
-# # Threshold of non-minor creatures existing in a subimage
-# thres = .1
-#
-# #dataset_aug(original_dir, aug_dir, minor_species, overlap, thres, annot_file_ext='bbx', crop_height=640,
-# #                 crop_width=640)
-# AugTrainingSet(dst_dir, aug_dir, minor_species, overlap, thres)
-#
-#
-""""""
-# aug_list = glob.glob(os.path.join(aug_dir,'*flipped*'))
-# print(aug_list)
-# #
-# # for i in aug_list:
-# #     shutil.copy2(i,dst_dir)# copy files from aug_list(certain files in aug_dir) to dst_dir (train data set)
+crop_dir = 'C://Users\\VelocityUser\\Documents\\D2K TDS A\\TDS A-09 B'
 
 # ######################################################################################################################
 
@@ -105,7 +67,6 @@ crop_dir = 'C://Users\\VelocityUser\\Documents\\D2K TDS A\\TDS A-08'
 # This is to change to bbx files into csv
 dirs = os.listdir(crop_dir)
 
-print(dirs)
 ##################################write all the bbx files into csv files#################################################
 from utils.cropping_hank import csv_to_dict, dict_to_csv
 
@@ -114,6 +75,46 @@ for d in dirs:
         dict_bird = csv_to_dict(f, annot_file_ext= 'bbx')
         # print(dict_bird)
         dict_to_csv(dict_bird, os.path.split(f)[0], empty= False, img_ext= 'bbx')
+
+
+
+#######################################################################################################################
+# # ************** the data augmenation part in this section of the code *************************************
+# # this data augmentation code only works on the training set!!!
+# # the output direction is "aug_dir"
+#
+import shutil
+from utils.augmentation import AugTrainingSet, dataset_aug
+
+# # dst_dir is the folder of training data(only after cropping)
+dst_dir = crop_dir +'/Train'
+# aug_dir is where we put image after doing data augmentation
+os.makedirs('C://Users\\VelocityUser\\Documents\\Audubon_F21\\temp', exist_ok= True)
+aug_dir = 'C://Users\\VelocityUser\\Documents\\Audubon_F21\\temp'
+#
+#
+# # Minimum portion of a bounding box being accepted in a subimage
+overlap = 0.2
+#
+# # List of species that we want to augment (PLEASE include the full name)
+minor_species = ["Reddish Egret Adult","White Ibis Adult", "Roseate Spoonbill Adult"]
+#
+# # Threshold of non-minor creatures existing in a subimage
+thres = .3
+#
+
+AugTrainingSet(dst_dir, aug_dir, minor_species, overlap, thres, img_ext = 'JPG', annot_file_ext= 'csv')
+#
+#
+""""""
+aug_list = glob.glob(os.path.join(aug_dir,'*flipped*'))
+print(aug_list)
+# #
+print(dst_dir)
+
+for i in aug_list:
+    shutil.copy2(i,dst_dir)# copy files from aug_list(certain files in aug_dir) to dst_dir (train data set)
+    # print(i)
 
 
 #############################Printing the distribution of the birds in each dataset######################################
@@ -142,19 +143,19 @@ dirs = [os.path.join(data_dir, d) for d in os.listdir(data_dir)]
 # Bird species used by object detector. Species contained in dataset that are
 # not contained in this list will be categorized as an "Unknown Bird"
 BIRD_SPECIES = ["Brown Pelican", "Laughing Gull", "Mixed Tern", "Tricolored Heron", "Black Skimmer",
-                'Black-Crowned Night Heron', 'Reddish Egret', 'White Ibis']
+                'Black-Crowned Night Heron', 'Reddish Egret', 'White Ibis','Roseate Spoonbill']
 
 
 birds_species_names = BIRD_SPECIES
 
 SPECIES_MAP = {0: 'Brown Pelican', 1: 'Laughing Gull', 2: 'Mixed Tern',
                3: 'Tricolored Heron', 4: 'Black Skimmer', 5: 'Black Crowed Night Heron',
-               6: 'Reddish Egret', 7: 'White Ibis'}
+               6: 'Reddish Egret', 7: 'White Ibis', 8: 'Roseate Spoonbill'}
 
 # #
 # # # Bounding box colors for bird species (used when plotting images)
 BIRD_SPECIES_COLORS = [(255, 0, 0), (255, 153, 51), (0, 255, 0),
-                       (0, 0, 255), (255, 51, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255)]
+                       (0, 0, 255), (255, 51, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255),(255, 255, 255)]
 #
 register_datasets(dirs, img_ext, BIRD_SPECIES, bird_species_colors=BIRD_SPECIES_COLORS, unknown_bird_category= False)
 # # #
@@ -197,7 +198,7 @@ cfg.DATASETS.TEST = ("birds_species_Validate",)
 from detectron2.utils.logger import setup_logger
 
 
-model_output_dir = './03_24_bay_tune_8class'
+model_output_dir = './03_24_bay_tune_9class_aug'
 
 cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 6, 'BASE_LR': .001, 'GAMMA': 0.01,
              'WARMUP_ITERS': 1, 'MAX_ITER': 500,
@@ -207,7 +208,7 @@ cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 6, 'BASE_LR': .001, 'GAMMA': 0.0
 from utils.hyperparameter import main_hyper, main_fit
 
 # hyperparameter tunning
-tuned_cfg_params = main_hyper(cfg_parms, iterations = 25)
+tuned_cfg_params = main_hyper(cfg_parms, iterations = 30)
 tuned_cfg_params['MAX_ITER'] = tuned_cfg_params['MAX_ITER']+100
 tune_weight_dir, loss = main_fit(tuned_cfg_params)
 
@@ -247,7 +248,7 @@ img_ext = '.JPG'
 CROP_WIDTH = 640
 CROP_HEIGHT = 640
 SLIDING_SIZE = 400
-# crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=CROP_HEIGHT, crop_width=CROP_WIDTH, sliding_size=SLIDING_SIZE)
+crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=CROP_HEIGHT, crop_width=CROP_WIDTH, sliding_size=SLIDING_SIZE)
 # #
 # # #########################################################################################################################
 # #Evaluating the trained detectron2 model
@@ -288,7 +289,7 @@ SLIDING_SIZE = 400
 # # #
 # # # # Run evaluation
 output_df = evaluate_full_pipeline(eval_file_lst, predictor, SPECIES_MAP, RAW_IMG_WIDTH, RAW_IMG_HEIGHT,CROP_WIDTH, CROP_HEIGHT, SLIDING_SIZE)
-output_df.to_csv('D2K_TDS_8_species_hp.csv')
+output_df.to_csv('D2K_TDS_9_species_hp.csv')
 #
 # # #######################################################################################################################
 # #confusion matrix output for model evaluation
