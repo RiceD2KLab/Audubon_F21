@@ -198,6 +198,9 @@ class DenseNetBackbone(Backbone):
             # elif isinstance(m, nn.Linear):
             #     nn.init.constant_(m.bias, 0)
 
+        self.out_features = cfg.MODEL.DENSENET.OUT_CHANNELS
+        self.stride = 32
+
         self._freeze_backbone(cfg.MODEL.BACKBONE.FREEZE_AT, max_layer=block_config[3])
 
     def _freeze_backbone(self, freeze_at, max_layer):
@@ -270,7 +273,7 @@ class DenseNetBackbone(Backbone):
     def output_shape(self):
         # Changed stride to 32 because input image's h and w is divided by
         # 32, corresponding to an over stride of 32 applied to the input image
-        return {"SoleStage": ShapeSpec(channels=cfg.MODEL.DENSENET.OUT_CHANNELS, stride=32)}
+        return {"SoleStage": ShapeSpec(channels=self.out_features, stride=self.stride)}
 
 
 def _load_state_dict(model, model_url, progress):
