@@ -4,17 +4,16 @@ import torch
 import json
 from PIL import Image
 from lxml import etree
-<<<<<<< HEAD
+
 import xml.etree.ElementTree as ET
-=======
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+
 
 
 class VOCDataSet(Dataset):
     """Parse Audubon Birds datasets"""
 
     def __init__(self, voc_root, year="2022", transforms=None, txt_name: str = "train.txt"):
-<<<<<<< HEAD
+
         # self.root = os.path.join(voc_root, "Test")
         self.root = voc_root
         self.img_root = os.path.join(self.root, 'images')
@@ -23,17 +22,10 @@ class VOCDataSet(Dataset):
         # self.annotations_root = os.path.join(self.root, "Annotations_xml")
 
         # read train.txt or val.txt file
-        # txt_path = os.path.join(self.root, "ImageSets", "Main", txt_name)
-        txt_path = 'C://Users//VelocityUser//Documents//Audubon_F21//Flex_Faster_RCNN//helper//train.txt'
-=======
-        self.root = os.path.join(voc_root, "Test")
-        self.img_root = os.path.join(self.root, "JPEGImages")
-        self.annotations_root = os.path.join(self.root, "Annotations_xml")
+        txt_path = os.path.join('C:\\Users\\VelocityUser\\Documents\\Audubon_F21\\Flex_Faster_RCNN', txt_name)
 
-        # read train.txt or val.txt file
-        # txt_path = os.path.join(self.root, "ImageSets", "Main", txt_name)
-        txt_path = '/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/train.txt'
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+        # txt_path = 'C://Users//VelocityUser//Documents//Audubon_F21//Flex_Faster_RCNN//helper//train.txt'
+
         assert os.path.exists(txt_path), "not found {} file.".format(txt_name)
 
         with open(txt_path) as read:
@@ -46,11 +38,9 @@ class VOCDataSet(Dataset):
             assert os.path.exists(xml_path), "not found '{}' file.".format(xml_path)
 
         # read class_indict
-<<<<<<< HEAD
+
         json_file = 'C://Users//VelocityUser//Documents//Audubon_F21//Flex_Faster_RCNN//helper//bird_class.json'
-=======
-        json_file = './pascal_voc_classes.json'
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+
         assert os.path.exists(json_file), "{} file not exist.".format(json_file)
         json_file = open(json_file, 'r')
         self.class_dict = json.load(json_file)
@@ -64,7 +54,7 @@ class VOCDataSet(Dataset):
     def __getitem__(self, idx):
         # read xml
         xml_path = self.xml_list[idx]
-<<<<<<< HEAD
+
         # print(xml_path)
         # with open(xml_path) as fid:
         #     xml_str = fid.read()
@@ -75,13 +65,7 @@ class VOCDataSet(Dataset):
         # img_path = os.path.join(self.img_root, data["filename"])
         # print(self.img_root)
         img_path = os.path.join(self.img_root, data["filename"].split('\\')[-1])
-=======
-        with open(xml_path) as fid:
-            xml_str = fid.read()
-        xml = etree.fromstring(xml_str)
-        data = self.parse_xml_to_dict(xml)["annotation"]
-        img_path = os.path.join(self.img_root, data["filename"])
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+
         image = Image.open(img_path)
         # if image.format != "JPEG":
         #     print(image.format)
@@ -126,16 +110,13 @@ class VOCDataSet(Dataset):
 
         if self.transforms is not None:
             image, target = self.transforms(image, target)
-<<<<<<< HEAD
-=======
 
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
         return image, target
 
     def get_height_and_width(self, idx):
         # read xml
         xml_path = self.xml_list[idx]
-<<<<<<< HEAD
+
         # with open(xml_path) as fid:
         #     xml_str = fid.read()
         # xml = etree.fromstring(xml_str)
@@ -143,11 +124,6 @@ class VOCDataSet(Dataset):
         tree = ET.parse(xml_path)
         xml = tree.getroot()
 
-=======
-        with open(xml_path) as fid:
-            xml_str = fid.read()
-        xml = etree.fromstring(xml_str)
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
         data = self.parse_xml_to_dict(xml)["annotation"]
         data_height = int(data["size"]["height"])
         data_width = int(data["size"]["width"])
@@ -188,18 +164,13 @@ class VOCDataSet(Dataset):
         """
         # read xml
         xml_path = self.xml_list[idx]
-<<<<<<< HEAD
+
         # with open(xml_path) as fid:
         #     xml_str = fid.read()
         # xml = etree.fromstring(xml_str)
         tree = ET.parse(xml_path)
         xml = tree.getroot()
 
-=======
-        with open(xml_path) as fid:
-            xml_str = fid.read()
-        xml = etree.fromstring(xml_str)
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
         data = self.parse_xml_to_dict(xml)["annotation"]
         data_height = int(data["size"]["height"])
         data_width = int(data["size"]["width"])
@@ -260,11 +231,7 @@ def getNormalize(train_data):
     std_value.div_(len(train_data))
     print('Computing Complete')
     return list(mean_value.numpy()), list(std_value.numpy())
-<<<<<<< HEAD
-#
-=======
 
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
 # import transforms
 # from draw_box_utils import draw_box
 # from PIL import Image
@@ -276,11 +243,9 @@ def getNormalize(train_data):
 # # read class_indict
 # category_index = {}
 # try:
-<<<<<<< HEAD
+#
 #     json_file = open('C://Users//VelocityUser//Documents//Audubon_F21//Flex_Faster_RCNN//helper//bird_class.json', 'r')
-=======
-#     json_file = open('/Users/maojietang/Documents/Audubon_F21/Flex_Faster_RCNN/Birds_classes.json', 'r')
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+#
 #     class_dict = json.load(json_file)
 #     category_index = {v: k for k, v in class_dict.items()}
 # except Exception as e:
@@ -294,15 +259,11 @@ def getNormalize(train_data):
 # }
 #
 # # load train data set
-<<<<<<< HEAD
+#
 # train_data_set = VOCDataSet('C://Users\\VelocityUser\\Documents\\D2K TDS A\\6_class_combine', "2012", data_transform["train"], "train.txt")
 # print(getNormalize(train_data_set))
 # print(train_data_set)
-=======
-# train_data_set = VOCDataSet('/Users/maojietang/Downloads', "2012", data_transform["train"], "train.txt")
-# print(getNormalize(train_data_set))
-# print(len(train_data_set))
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+#
 # for index in random.sample(range(0, len(train_data_set)), k=5):
 #     img, target = train_data_set[index]
 #     img = ts.ToPILImage()(img)
@@ -314,8 +275,5 @@ def getNormalize(train_data):
 #              thresh=0.5,
 #              line_thickness=5)
 #     plt.imshow(img)
-<<<<<<< HEAD
 #     plt.show()
-=======
-#     plt.show()
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+

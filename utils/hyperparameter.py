@@ -12,6 +12,7 @@ from detectron2.data import MetadataCatalog, DatasetCatalog, build_detection_tes
 # from detectron2.evaluation import COCOEvaluator, innference_on_dataset
 from detectron2.config import get_cfg
 from detectron2 import model_zoo
+from detectron2.config import CfgNode as CN
 
 # import project utility functions
 from utils.config import add_retinanet_config, add_fasterrcnn_config
@@ -49,12 +50,10 @@ def setup(cfg_parms):
     with open(os.path.join(cfg.OUTPUT_DIR, 'parameters.txt'), 'a+') as f:
         f.write(json.dumps(cfg_parms))
 
-
     # setup training logger
     setup_logger()
 
     return cfg
-
 
 
 def setup1(cfg_parms):
@@ -83,9 +82,54 @@ def setup1(cfg_parms):
     with open(os.path.join(cfg.OUTPUT_DIR, 'parameters.txt'), 'a+') as f:
         f.write(json.dumps(cfg_parms))
 
+    # setup training logger
+    setup_logger()
+
+    return cfg
+
+
+def setup_dense(cfg_parms):
+    import FasterRCNNDenseNet.densenet.densenet
 
     # setup training logger
     setup_logger()
+
+    cfg = get_cfg()
+    cfg.MODEL.DENSENET = CN()
+    cfg.MODEL.DENSENET.OUT_FEATURES = ["SoleStage"]
+    cfg.MODEL.DENSENET.PRETRAINED = True
+    cfg.MODEL.DENSENET.CONV_BODY = "densenet121"
+    cfg.MODEL.DENSENET.OUT_CHANNELS = 1024
+
+    cfg.merge_from_file(
+        "C://Users\\VelocityUser\\Documents\\Audubon_F21\\FasterRCNNDenseNet\\configs\\FasterRCNN-DenseNet121.yaml")
+
+
+
+    cfg.DATALOADER.NUM_WORKERS = cfg_parms['NUM_WORKERS']
+    cfg.SOLVER.IMS_PER_BATCH = cfg_parms['IMS_PER_BATCH']
+    cfg.SOLVER.BASE_LR = cfg_parms['BASE_LR']
+    cfg.SOLVER.GAMMA = cfg_parms['GAMMA']
+    cfg.SOLVER.WARMUP_ITERS = cfg_parms['WARMUP_ITERS']
+    cfg.MODEL.DENSENET.NUM_CLASSES = len(cfg_parms['BIRD_SPECIES'])
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(cfg_parms['BIRD_SPECIES'])
+    cfg.SOLVER.MAX_ITER = cfg_parms['MAX_ITER']
+    cfg.SOLVER.STEPS = cfg_parms['STEPS']
+    cfg.SOLVER.CHECKPOINT_PERIOD = cfg_parms['CHECKPOINT_PERIOD']
+
+    cfg.DATASETS.TRAIN = ("birds_species_Train",)
+    cfg.DATASETS.TEST = ("birds_species_Validate",)
+
+
+    # naming needs to be updated
+    cfg.OUTPUT_DIR = os.path.join(cfg_parms['output_dir'],
+                                  f"{cfg_parms['model_name']}-{datetime.now().strftime('%Y%m%d-%H%M%S')}")
+    os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+    # save the parameters files
+    with open(os.path.join(cfg.OUTPUT_DIR, 'parameters.txt'), 'a+') as f:
+        f.write(json.dumps(cfg_parms))
+
+
 
     return cfg
 
@@ -153,17 +197,23 @@ def eval(cfg, cfg_parms):
     return sum(val_precisions) / len(val_precisions)
 
 
-
-
 def build_model_for_hp(params, cfg_parms):
     cfg_parms['GAMMA'] = params['gamma']
     cfg_parms['BASE_LR'] = params['base_learning_rate']
-    # args.scheduler_gamma = params['gamma']
-    # args.learning_rate = params['base_learning_rate']
 
-    cfg = setup1(cfg_parms)
+    cfg = setup_dense(cfg_parms)
+
+
+    # cfg = setup1(cfg_parms)
+    #
+    # if cfg_parms['dense'] == 'True':
+    #     cfg = setup_dense(cfg_parms)
+    #
+    # else:
+    #     cfg = setup1(cfg_parms)
 
     return cfg
+
 
 def objective(trial):
     params = {
@@ -198,10 +248,10 @@ def hp_tune(iter):
     study.optimize(objective, n_trials=iter)
     return study
 
+
 def main_hyper(cfg_parms, iterations):
     global cfg_parms_cp
     cfg_parms_cp = cfg_parms
-    cfg = setup1(cfg_parms)
     study = hp_tune(iterations)
     trial = study.best_trial
     print(trial.value, "when params are", trial.params)
@@ -215,14 +265,20 @@ def main_hyper(cfg_parms, iterations):
 
     return cfg_parms
 
-
     # cv2.waitkey(0)
     # print("Press any key to continue...")
     # cv2.destroyAllWindows()
 
 
 def main_fit(cfg_parms):
-    cfg = setup1(cfg_parms)
+    # cfg = setup1(cfg_parms)
+    cfg = setup_dense(cfg_parms)
+
+    # if cfg_parms['dense'] == True:
+    #     cfg = setup_dense(cfg_parms)
+    # else:
+    #     cfg = setup1(cfg_parms)
+
     train(cfg)
 
     # find the last validation loss value produced by the model
@@ -235,7 +291,6 @@ def main_fit(cfg_parms):
         if data['iteration'] == cfg.SOLVER.MAX_ITER - 1:
             val_loss = data['validation_loss']
     print(' val loss is: ', val_loss)
-
 
     # val_loss = eval(cfg,cfg_parms)
     return cfg.OUTPUT_DIR, val_loss

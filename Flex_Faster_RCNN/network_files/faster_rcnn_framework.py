@@ -261,14 +261,12 @@ class FasterRCNN(FasterRCNNBase):
                  # Box parameters
                  box_roi_pool=None, box_head=None, box_predictor=None,
                  # remove small box     nsm in fast rcnn    get top-100 box sorted by scores
-<<<<<<< HEAD
-                 box_score_thresh=0.05, box_nms_thresh=0.48, box_detections_per_img=100,
-=======
+
                  box_score_thresh=0.05, box_nms_thresh=0.5, box_detections_per_img=100,
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
                  box_fg_iou_thresh=0.5, box_bg_iou_thresh=0.5,   # threshold for sampling positive/negative samples (fast rcnn)
                  box_batch_size_per_image=512, box_positive_fraction=0.25,  # positive ration (fast rcnn)
-                 bbox_reg_weights=None):
+                 bbox_reg_weights=None,
+                 gamma_weight=1):
         if not hasattr(backbone, "out_channels"):
             raise ValueError(
                 "backbone should contain an attribute out_channels"
@@ -322,7 +320,7 @@ class FasterRCNN(FasterRCNNBase):
         if box_roi_pool is None:
             box_roi_pool = MultiScaleRoIAlign(
                 featmap_names=['0', '1', '2', '3'],  # roi pooling layer
-                output_size=[7, 7],
+                output_size=[14, 14],
                 sampling_ratio=2)
 
         # input roi pooling's return to fc layer
@@ -348,7 +346,7 @@ class FasterRCNN(FasterRCNNBase):
             box_fg_iou_thresh, box_bg_iou_thresh,  # 0.5  0.5
             box_batch_size_per_image, box_positive_fraction,  # 512  0.25
             bbox_reg_weights,
-            box_score_thresh, box_nms_thresh, box_detections_per_img)  # 0.05  0.5  100
+            box_score_thresh, box_nms_thresh, box_detections_per_img, gamma_weight)  # 0.05  0.5  100   1
 
         if image_mean is None:
             image_mean = [0.485, 0.456, 0.406]

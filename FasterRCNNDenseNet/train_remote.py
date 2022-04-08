@@ -186,75 +186,85 @@ from detectron2.utils.registry import Registry
 # # ROI_HEADS_REGISTRY("weight_loss_head")
 #
 # # setup training logger
-setup_logger()
-
-model_name = "densenet121"
-
-# Create detectron2 config
-cfg = get_cfg()
-cfg.MODEL.DENSENET = CN()
-
-cfg.MODEL.DENSENET.OUT_FEATURES = ["SoleStage"]
-cfg.MODEL.DENSENET.PRETRAINED = True
-cfg.MODEL.DENSENET.CONV_BODY = "densenet121"
-cfg.MODEL.DENSENET.OUT_CHANNELS = 1024
-import FasterRCNNDenseNet.densenet.densenet
-# add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
-cfg.merge_from_file("C://Users\\VelocityUser\\Documents\\Audubon_F21\\FasterRCNNDenseNet\\configs\\FasterRCNN-DenseNet121.yaml")
-
-# Get pretrained model from MS COCO
-# cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(f"COCO-Detection/{model_name}.yaml")
-
-# loss parameters
-#cfg.SOLVER.WEIGHT_DECAY = 0.0001
-# solver parameters
-cfg.SOLVER.IMS_PER_BATCH = 8   # first try 6
-cfg.SOLVER.BASE_LR = 0.001
-# cfg.SOLVER.WARMUP_FACTOR = 0.001
-cfg.SOLVER.WARMUP_ITERS = 1
-cfg.SOLVER.GAMMA = 0.01
-cfg.SOLVER.STEPS = [400]
-cfg.SOLVER.MAX_ITER = 500 # first try 1000
-# other
-cfg.SOLVER.CHECKPOINT_PERIOD = 501  # larger than max iter to only save final model?
-#cfg.TEST.EVAL_PERIOD = 0  # set to non-zero integer to get evaluation metric results
-cfg.DATALOADER.NUM_WORKERS = 0
-
-# classes
-cfg.MODEL.DENSENET.NUM_CLASSES = len(BIRD_SPECIES)
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
-
-# freeze at
-# cfg.MODEL.BACKBONE.FREEZE_AT = 0   # layer in last denseblock; first try 8
-
-# add datasets used for training and validation
-cfg.DATASETS.TRAIN = ("birds_species_Train",)
-cfg.DATASETS.TEST = ("birds_species_Validate",)
+# setup_logger()
+#
+# model_name = "densenet121_no_freeze"
+#
+# # Create detectron2 config
+# cfg = get_cfg()
+# cfg.MODEL.DENSENET = CN()
+#
+# cfg.MODEL.DENSENET.OUT_FEATURES = ["SoleStage"]
+# cfg.MODEL.DENSENET.PRETRAINED = True
+# cfg.MODEL.DENSENET.CONV_BODY = "densenet121"
+# cfg.MODEL.DENSENET.OUT_CHANNELS = 1024
+# import FasterRCNNDenseNet.densenet.densenet
+# # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
+# cfg.merge_from_file("C://Users\\VelocityUser\\Documents\\Audubon_F21\\FasterRCNNDenseNet\\configs\\FasterRCNN-DenseNet121.yaml")
+#
+# # Get pretrained model from MS COCO
+# # cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(f"COCO-Detection/{model_name}.yaml")
+#
+# # loss parameters
+# #cfg.SOLVER.WEIGHT_DECAY = 0.0001
+# # solver parameters
+# cfg.SOLVER.IMS_PER_BATCH = 8   # first try 6
+# cfg.SOLVER.BASE_LR = 0.001
+# # cfg.SOLVER.WARMUP_FACTOR = 0.001
+# cfg.SOLVER.WARMUP_ITERS = 1
+# cfg.SOLVER.GAMMA = 0.01
+# cfg.SOLVER.STEPS = [400]
+# cfg.SOLVER.MAX_ITER = 500 # first try 1000
+# # other
+# cfg.SOLVER.CHECKPOINT_PERIOD = 501  # larger than max iter to only save final model?
+# #cfg.TEST.EVAL_PERIOD = 0  # set to non-zero integer to get evaluation metric results
+# cfg.DATALOADER.NUM_WORKERS = 0
+#
+# # classes
+# cfg.MODEL.DENSENET.NUM_CLASSES = len(BIRD_SPECIES)
+# cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
+#
+# # freeze at
+# # cfg.MODEL.BACKBONE.FREEZE_AT = 0   # layer in last denseblock; first try 8
+# cfg.DATASETS.TRAIN = ("birds_species_Train",)
+# cfg.DATASETS.TEST = ("birds_species_Validate",)
 
 
 # # hyperparameters in the cls loss and bbox loss () ## lambd
 from detectron2.utils.logger import setup_logger
 
 
-# model_output_dir = './03_31_densenet_6class'
+model_output_dir = '../Training_models/04_03_densenet_6class'
+
+cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 6, 'BASE_LR': .001, 'GAMMA': 0.01,
+             'WARMUP_ITERS': 1, 'MAX_ITER': 500,
+             'STEPS': [499], 'CHECKPOINT_PERIOD': 501, 'output_dir': model_output_dir,
+             'model_name': "FasterRCNN-DenseNet121", 'BIRD_SPECIES': BIRD_SPECIES, 'dense': True}
 
 # cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 6, 'BASE_LR': .001, 'GAMMA': 0.01,
-#              'WARMUP_ITERS': 1, 'MAX_ITER': 500,
+#              'WARMUP_ITERS': 1, 'MAX_ITER': 550,
 #              'STEPS': [499], 'CHECKPOINT_PERIOD': 499, 'output_dir': model_output_dir,
-#              'model_name': "densenet121", 'BIRD_SPECIES': BIRD_SPECIES}
-#
-# from utils.hyperparameter import main_hyper, main_fit
+#              'model_name': "faster_rcnn_R_50_FPN_1x", 'BIRD_SPECIES': BIRD_SPECIES}
+
+from utils.hyperparameter import main_hyper, main_fit
 #
 # # hyperparameter tunning
 # tuned_cfg_params = main_hyper(cfg_parms, iterations = 30)
-# tuned_cfg_params['MAX_ITER'] = tuned_cfg_params['MAX_ITER']+100
-# tune_weight_dir, loss = main_fit(tuned_cfg_params)
 
-cfg.OUTPUT_DIR = f"./output/4_1_6class_{model_name}"
-os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+# Manually recreating them
+tuned_cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 6, 'BASE_LR': .001, 'GAMMA': 0.01,
+             'WARMUP_ITERS': 1, 'MAX_ITER': 500,
+             'STEPS': [499], 'CHECKPOINT_PERIOD': 501, 'output_dir': model_output_dir,
+             'model_name': "FasterRCNN-DenseNet121", 'BIRD_SPECIES': BIRD_SPECIES, 'dense': True}
+tuned_cfg_parms['GAMMA'] = 0.014498886132230071
+tuned_cfg_parms['BASE_LR'] = 0.01745154814454193
+
+# as before
+tuned_cfg_params['MAX_ITER'] = tuned_cfg_params['MAX_ITER']+100
+tune_weight_dir, loss = main_fit(tuned_cfg_params)
+
 
 # train on bird species
-# trainer = DefaultTrainer(cfg)
 # trainer = Trainer(cfg)
 # trainer.resume_or_load(resume=False)
 # trainer.train()
@@ -337,7 +347,8 @@ cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
 # #location of the trained weights
 # # cfg.MODEL.WEIGHTS = f"./D2K_TDS_A_5_classes/multibirds_{model_name}/model_final.pth"
 
-cfg.MODEL.WEIGHTS = f"./output/4_1_6class_{model_name}" + "/model_final.pth"
+cfg.MODEL.WEIGHTS = f"./output/4_3_6class_{model_name}" + "/model_final.pth"
+
 
 # cfg.DATALOADER.NUM_WORKERS = 0
 # cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
@@ -351,8 +362,8 @@ CROP_HEIGHT = 640
 SLIDING_SIZE = 400
 # # #
 # # # # Run evaluation
-output_df = evaluate_full_pipeline(eval_file_lst, predictor, SPECIES_MAP, RAW_IMG_WIDTH, RAW_IMG_HEIGHT,CROP_WIDTH, CROP_HEIGHT, SLIDING_SIZE)
-output_df.to_csv(f'4_1_6class_{model_name}.csv')
+# output_df = evaluate_full_pipeline(eval_file_lst, predictor, SPECIES_MAP, RAW_IMG_WIDTH, RAW_IMG_HEIGHT,CROP_WIDTH, CROP_HEIGHT, SLIDING_SIZE)
+# output_df.to_csv(f'4_3_6class_{model_name}.csv')
 #
 # # # #######################################################################################################################
 # # #confusion matrix output for model evaluation
@@ -376,3 +387,5 @@ pred_total, truth_total = confusion_matrix_report(data, predictor, birds_species
 from sklearn.metrics import confusion_matrix, classification_report
 print(confusion_matrix(truth_total, pred_total))
 print(classification_report(truth_total, pred_total))
+
+

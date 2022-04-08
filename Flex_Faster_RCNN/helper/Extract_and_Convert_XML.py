@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score
 
 
-def txt_convert_to_xml(filename, name, position):
+def txt_convert_to_xml(filename, name, position, txt_path):
     """
         Convert txt to xml and save，
         Args:
@@ -88,8 +88,8 @@ def txt_convert_to_xml(filename, name, position):
 
         nodeName.appendChild(doc.createTextNode(str(name[i])))
         nodePose.appendChild(doc.createTextNode('0'))
-        nodeTruncated.appendChild(doc.createTextNode('1'))
-        nodeDifficult.appendChild(doc.createTextNode('2'))
+        nodeTruncated.appendChild(doc.createTextNode('0'))
+        nodeDifficult.appendChild(doc.createTextNode('0'))
 
         nodeX_min = doc.createElement('xmin')
         nodeY_min = doc.createElement('ymin')
@@ -114,23 +114,12 @@ def txt_convert_to_xml(filename, name, position):
         root.appendChild(nodeObject)
 
     # write xml
-<<<<<<< HEAD
-    filename =  'C:/' + filename.split('.')[0] + '.xml'
-    # filename = filename.split('/')[-1]
-    # arg_output_dir = '.\\Annotation_xml'
-    # print(os.path.join(arg_output_dir, filename))
-    # print('C://'+ filename)
-    arg_output_dir = filename.split('.')[0]
-    # if not os.path.exists(arg_output_dir):
-    #     os.makedirs(arg_output_dir)
-=======
     filename = filename.split('.')[0] + '.xml'
-    filename = filename.split('/')[-1]
-    arg_output_dir = './Annotation_xml'
+    filename = filename.split('\\')[-1]
+    arg_output_dir = os.path.join(txt_path, 'Annotations')
     print(os.path.join(arg_output_dir, filename))
     if not os.path.exists(arg_output_dir):
         os.makedirs(arg_output_dir)
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
     fp = open(os.path.join(arg_output_dir, filename), 'w')
     doc.writexml(fp, addindent='\t', newl='\n', encoding='utf-8')
 
@@ -142,9 +131,9 @@ class Extract(object):
         self.txt_path = txt_path
 
     def get_path(self):
-        if os.path.exists(os.path.join(self.txt_path, "Annotations")) is False:
+        if os.path.exists(os.path.join(self.txt_path, "Annotations_bbx")) is False:
             raise FileNotFoundError("Annotation dose not in path:'{}'.".format(self.txt_path))
-        self.File_path = os.path.join(self.txt_path, 'Annotations')
+        self.File_path = os.path.join(self.txt_path, 'Annotations_bbx')
 
         self.xml_list = [os.path.join(self.File_path, line.strip())
                          for line in os.listdir(self.File_path) if (line.strip()[-3:]) == 'bbx']
@@ -179,17 +168,12 @@ class Extract(object):
                 size_feature_all = np.vstack((size_feature_all, size_feature))
             count += 1
 
-            txt_convert_to_xml(filename, name, Position)
+            txt_convert_to_xml(filename, name, Position, self.txt_path)
         return size_feature_all
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-    # the path for both the image and annotation folder (put Annotations)
     A = Extract('C://Users\\VelocityUser\\Documents\\D2K TDS A\\6_class_combine')
-=======
-    A = Extract('/Users/maojietang/Downloads/Test')
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
     feature = A.get_info()
     # SSE = []  # Sum Square Error
     # Scores = []
@@ -203,7 +187,7 @@ if __name__ == '__main__':
     # plt.plot(X, SSE, 'o-')
     # plt.show()
 
-    estimator = KMeans(n_clusters=3)
-    estimator.fit(feature)
-    print(estimator.cluster_centers_)
+    # estimator = KMeans(n_clusters=3)
+    # estimator.fit(feature)
+    # print(estimator.cluster_centers_)
 
