@@ -218,6 +218,12 @@ class DenseNetBackbone(Backbone):
                 # print(f"{name}")
                 break   # only want to train parameters starting at least in denseblock4
             else:
+                # if isinstance(m, nn.Conv2d):
+                #     nn.init.kaiming_normal_(m.weight)
+                # elif isinstance(m, nn.BatchNorm2d):
+                #     nn.init.constant_(m.weight, 1)
+                #     nn.init.constant_(m.bias, 0)
+
                 # print(f"{name}")
                 for p in m.parameters():
                     # print(f"{p}")
