@@ -3,6 +3,7 @@ from typing import Optional, List, Dict, Tuple
 import torch
 from torch import Tensor
 import torch.nn.functional as F
+import torch.nn as nn
 
 import det_utils
 import boxes as box_ops
@@ -54,6 +55,30 @@ def fastrcnn_loss(class_logits, box_regression, labels, regression_targets):
 
     return classification_loss, box_loss
 
+class LabelSmoothingLoss(nn.Module):
+    def __init__(self, classes, smoothing=0.0, dim=-1, weight = None):
+        """if smoothing == 0, it's one-hot method
+           if 0 < smoothing < 1, it's smooth method
+        """
+        super(LabelSmoothingLoss, self).__init__()
+        self.confidence = 1.0 - smoothing
+        self.smoothing = smoothing
+        self.weight = weight
+        self.cls = classes
+        self.dim = dim
+
+    def forward(self, pred, target):
+        assert 0 <= self.smoothing < 1
+        pred = pred.log_softmax(dim=self.dim)
+
+        if self.weight is not None:
+            pred = pred * self.weight.unsqueeze(0)
+
+        with torch.no_grad():
+            true_dist = torch.zeros_like(pred)
+            true_dist.fill_(self.smoothing / (self.cls - 1))
+            true_dist.scatter_(1, target.data.unsqueeze(1), self.confidence)
+        return torch.mean(torch.sum(-true_dist * pred, dim=self.dim))
 
 class RoIHeads(torch.nn.Module):
     __annotations__ = {
@@ -73,7 +98,8 @@ class RoIHeads(torch.nn.Module):
                  # Faster R-CNN inference
                  score_thresh,        # default: 0.05
                  nms_thresh,          # default: 0.5
-                 detection_per_img):  # default: 100
+                 detection_per_img,   # default: 100
+                 gamma_weight):       # default: 1
         super(RoIHeads, self).__init__()
 
         self.box_similarity = box_ops.box_iou
@@ -98,6 +124,7 @@ class RoIHeads(torch.nn.Module):
         self.score_thresh = score_thresh  # default: 0.05
         self.nms_thresh = nms_thresh      # default: 0.5
         self.detection_per_img = detection_per_img  # default: 100
+        self.gamma_weight = gamma_weight  # default: 1.0
 
     def assign_targets_to_proposals(self, proposals, gt_boxes, gt_labels):
         # type: (List[Tensor], List[Tensor], List[Tensor]) -> Tuple[List[Tensor], List[Tensor]]
@@ -383,7 +410,7 @@ class RoIHeads(torch.nn.Module):
             loss_classifier, loss_box_reg = fastrcnn_loss(
                 class_logits, box_regression, labels, regression_targets)
             losses = {
-                "loss_classifier": loss_classifier,
+                "loss_classifier": self.gamma_weight*loss_classifier,
                 "loss_box_reg": loss_box_reg
             }
         else:

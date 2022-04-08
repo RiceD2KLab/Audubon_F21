@@ -2,19 +2,18 @@ import os
 import datetime
 
 import torch
+import argparse
 
 import transforms
 from network_files.faster_rcnn_framework import FasterRCNN, FastRCNNPredictor
 from backbone.resnet50_fpn_model import resnet50_fpn_backbone
-<<<<<<< HEAD
+
 # from my_dataset import VOCDataSet
 from my_dataset_for_bird import VOCDataSet
-=======
-from my_dataset import VOCDataSet
-# from my_dataset_for_bird import VOCDataSet
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+
 from train_utils.group_by_aspect_ratio import GroupedBatchSampler, create_aspect_ratio_groups
 from train_utils import train_eval_utils as utils
+
 
 #
 
@@ -22,22 +21,18 @@ from train_utils import train_eval_utils as utils
 def create_model(num_classes):
     # trainable_layers consits of ['layer4', 'layer3', 'layer2', 'layer1', 'conv1']， 5 means train all layers
     backbone = resnet50_fpn_backbone(norm_layer=torch.nn.BatchNorm2d,
-                                     trainable_layers=3)
+                                     trainable_layers=5)
     # do not change num_classes = 91
-<<<<<<< HEAD
+
     model = FasterRCNN(backbone=backbone, num_classes=91,
-                       image_mean=[0.48119384, 0.46555066, 0.39456555],
-                       image_std=[0.17753279, 0.16947103, 0.1736244])
+                       image_mean=[0.48334974, 0.467136, 0.3966847],
+                       image_std= [0.17774136, 0.16977543, 0.17396447],)
+
     # load weight
     # https://download.pytorch.org/models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth
 
     weights_dict = torch.load("./fasterrcnn_20220225.pth", map_location='cpu')
-=======
-    model = FasterRCNN(backbone=backbone, num_classes=91)
-    # load weight
-    # https://download.pytorch.org/models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth
-    weights_dict = torch.load("/Users/maojietang/Downloads/fasterrcnn_20220225.pth", map_location='cpu')
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
+
     missing_keys, unexpected_keys = model.load_state_dict(weights_dict, strict=False)
     if len(missing_keys) != 0 or len(unexpected_keys) != 0:
         print("missing_keys: ", missing_keys)
@@ -66,13 +61,9 @@ def main(parser_data):
 
     VOC_root = parser_data.data_path
     # check voc root
-<<<<<<< HEAD
+
     # if os.path.exists(os.path.join(VOC_root, "VOCdevkit")) is False:
     #     raise FileNotFoundError("VOCdevkit dose not in path:'{}'.".format(VOC_root))
-=======
-    if os.path.exists(os.path.join(VOC_root, "VOCdevkit")) is False:
-        raise FileNotFoundError("VOCdevkit dose not in path:'{}'.".format(VOC_root))
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
 
     # load train data set
     # VOCdevkit -> VOC2012 -> ImageSets -> Main -> train.txt
@@ -91,7 +82,7 @@ def main(parser_data):
     # because the read data includes images and targets, and cannot be directly
     # synthesized into a batch using the default method
     batch_size = parser_data.batch_size
-    nw = 0  #min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
+    nw = 0  # min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers
     print('Using %g dataloader workers' % nw)
     if train_sampler:
         # If the image is sampled according to the image aspect ratio, the dataloader needs to use batch_sampler
@@ -112,11 +103,7 @@ def main(parser_data):
     # VOCdevkit -> VOC2012 -> ImageSets -> Main -> val.txt
     val_dataset = VOCDataSet(VOC_root, "2012", data_transform["val"], "val.txt")
     val_data_set_loader = torch.utils.data.DataLoader(val_dataset,
-<<<<<<< HEAD
                                                       batch_size=8,
-=======
-                                                      batch_size=1,
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
                                                       shuffle=False,
                                                       pin_memory=True,
                                                       num_workers=nw,
@@ -128,8 +115,7 @@ def main(parser_data):
     count = 0
     for m in model.parameters():
         count += m.numel()
-    print(count)
-    print('Finish')
+    print('{} trainable parameters in this model'.format(count))
 
     model.to(device)
 
@@ -139,11 +125,18 @@ def main(parser_data):
                                 momentum=0.9, weight_decay=0.0005)
 
     scaler = torch.cuda.amp.GradScaler() if args.amp else None
+#1. CE-> Label SMoothing Loss.
+#2. Adam
+#3. Penalty coff. Classifcation loss.
 
     # learning rate scheduler
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                    step_size=3,
                                                    gamma=0.33)
+
+# 1. Make two models have same param.
+    # 2. make code easier to use. ()
+        # 3. test-set confusion matrix.(mAP)
 
     # If the address of the weight file saved from the last training is specified,
     # the training will continue with the last result
@@ -193,7 +186,8 @@ def main(parser_data):
             'epoch': epoch}
         if args.amp:
             save_files["scaler"] = scaler.state_dict()
-        torch.save(save_files, "./save_weights/resNetFpn-model-{}.pth".format(epoch))
+        if epoch % 20 == 0:
+            torch.save(save_files, "./save_weights/resNetFpn-model-{}.pth".format(epoch))
 
     # plot loss and lr curve
     if len(train_loss) != 0 and len(learning_rate) != 0:
@@ -207,7 +201,6 @@ def main(parser_data):
 
 
 if __name__ == "__main__":
-    import argparse
 
     parser = argparse.ArgumentParser(
         description=__doc__)
@@ -215,37 +208,22 @@ if __name__ == "__main__":
     # device
     parser.add_argument('--device', default='cuda:0', help='device')
     # root path(VOCdevkit)
-<<<<<<< HEAD
-    parser.add_argument('--data-path', default='C://Users\\VelocityUser\\Documents\\D2K TDS A\\6_class_combine', help='dataset')
+    parser.add_argument('--data-path', default='C://Users\\VelocityUser\\Documents\\D2K TDS A\\6_class_combine',
+                        help='dataset')
     # num_class(without considering bg)
     parser.add_argument('--num-classes', default=6, type=int, help='num_classes')
     # save path
     parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
     # resume path
-    parser.add_argument('--resume', default="C://Users//VelocityUser//Documents//Audubon_F21//Flex_Faster_RCNN//save_weights//resNetFpn-model-99.pth", type=str, help='resume from checkpoint')
+    parser.add_argument('--resume', default='./save_weights\\resNetFpn-model-180.pth', type=str,
+                        help='resume from checkpoint')
     # start epoch(if set resume path)
-    parser.add_argument('--start_epoch', default=99, type=int, help='start epoch')
+    parser.add_argument('--start_epoch', default=180, type=int, help='start epoch')
     # epochs in total
-    parser.add_argument('--epochs', default=200, type=int, metavar='N',
+    parser.add_argument('--epochs', default=401, type=int, metavar='N',
                         help='number of total epochs to run')
     # batch size
     parser.add_argument('--batch_size', default=8, type=int, metavar='N',
-=======
-    parser.add_argument('--data-path', default='/Users/maojietang/Downloads', help='dataset')
-    # num_class(without considering bg)
-    parser.add_argument('--num-classes', default=5, type=int, help='num_classes')
-    # save path
-    parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
-    # resume path
-    parser.add_argument('--resume', default='', type=str, help='resume from checkpoint')
-    # start epoch(if set resume path)
-    parser.add_argument('--start_epoch', default=0, type=int, help='start epoch')
-    # epochs in total
-    parser.add_argument('--epochs', default=3, type=int, metavar='N',
-                        help='number of total epochs to run')
-    # batch size
-    parser.add_argument('--batch_size', default=1, type=int, metavar='N',
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
                         help='batch size when training.')
     parser.add_argument('--aspect-ratio-group-factor', default=3, type=int)
     # mixed precision training

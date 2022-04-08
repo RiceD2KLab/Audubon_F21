@@ -4,13 +4,10 @@ import time
 
 import torch
 
-from .coco_utils import get_coco_api_from_dataset
-from .coco_eval import CocoEvaluator
-<<<<<<< HEAD
+from coco_utils import get_coco_api_from_dataset
+from coco_eval import CocoEvaluator
+
 import distributed_utils as utils
-=======
-import train_utils.distributed_utils as utils
->>>>>>> e55d678011589736c57c1965d915317b7a449b1f
 
 
 def train_one_epoch(model, optimizer, data_loader, device, epoch,
