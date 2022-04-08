@@ -36,7 +36,7 @@ def get_parser():
     parser.add_argument('--model_config_file', default="FasterRCNN-DenseNet121.yaml", type=str,
                         help='path to model config file eg. "configs/FasterRCNN-DenseNet121.yaml"')
     parser.add_argument('--pretrained_weights_file', default="", type=str, help='load pretrained model weights from file. ')
-    parser.add_argument('--num_workers', default=4, type=int, help='number of workers for dataloader')
+    parser.add_argument('--num_workers', default=0, type=int, help='number of workers for dataloader')
     parser.add_argument('--eval_period', default=0, type=int, help='period between coco eval scores on val set')
     parser.add_argument('--max_iter', default=3000, type=int, help='maximum epochs')
     parser.add_argument('--checkpoint_period',default=1000,type=int, help='save a checkpoint after this number of iterations')
@@ -68,7 +68,7 @@ def setup(args):
     # cfg.merge_from_file(args.config_file)   # done inside add_densenet_function
     # cfg.merge_from_list(args.opts)
     cfg.MODEL.DENSENET.NUM_CLASSES = len(BIRD_SPECIES)
-    cfg.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
     # cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 256   # 512 default
     # cfg.freeze()   # what does this do?
     # default_setup(cfg, args)   # doubt I need this
