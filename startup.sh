@@ -43,7 +43,7 @@ read DIR_IGNORE
 if [[ -z "$DIR_IGNORE" ]]; then
   echo "DIR_IGNORE is empty. Going with default."
   # TODO: NOT SURE HOW TO DEAL WITH LIST INPUTS
-  DIR_IGNORE=""
+  DIR_IGNORE=[]
 fi
 echo $DIR_IGNORE
 
@@ -138,7 +138,7 @@ echo "Please enter the number of steps on scheduler (default: 1500):"
 read SCHEDULER_STEPS
 if [[ -z "$SCHEDULER_STEPS" ]]; then
   echo "SCHEDULER_STEPS is empty. Going with default."
-  SCHEDULER_STEPS="1500"
+  SCHEDULER_STEPS=[1500]
 fi
 echo $SCHEDULER_STEPS
 
@@ -182,7 +182,7 @@ if [[ -z "$OUTPUT_DIR" ]]; then
 fi
 echo $OUTPUT_DIR
 
-echo "Going to train model with following parameters:"
+echo "Going to train model:"
 
 python Audubon_S22.py --data_dir=$DATA_DIR --img_ext=$IMG_EXT --dir_exceptions=$DIR_IGNORE --model_type=$MODEL_TYPE
 --model_config_file=$MODEL_CONFIG_FILE --pretrained_weights_file=$PRETRAINED_WEIGHTS_FILE --num_workers=$NUM_WORKERS
