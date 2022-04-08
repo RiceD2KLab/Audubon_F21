@@ -59,7 +59,7 @@ from utils.cropping_hank import train_val_test_split
 
 
 # already cropped directory (8 classes)
-crop_dir = 'C://Users\\VelocityUser\\Documents\\D2K TDS B\\TDS B-10'
+crop_dir = 'C://Users\VelocityUser\Documents\D2K TDS C\TDS C-01'
 
 # ######################################################################################################################
 
@@ -68,19 +68,19 @@ crop_dir = 'C://Users\\VelocityUser\\Documents\\D2K TDS B\\TDS B-10'
 dirs = os.listdir(crop_dir)
 
 ##################################write all the bbx files into csv files#################################################
-from utils.cropping_hank import csv_to_dict, dict_to_csv
-
-for d in dirs:
-    for f in glob.glob(os.path.join(crop_dir, d, '*.bbx')):
-        dict_bird = csv_to_dict(f, annot_file_ext='bbx')
-        # print(dict_bird)
-        dict_to_csv(dict_bird, os.path.split(f)[0], empty=False, img_ext='bbx')
-
-#######################################################################################################################
-# # ************** the data augmenation part in this section of the code *************************************
-# # this data augmentation code only works on the training set!!!
-# # the output direction is "aug_dir"
+# from utils.cropping_hank import csv_to_dict, dict_to_csv
 #
+# for d in dirs:
+#     for f in glob.glob(os.path.join(crop_dir, d, '*.bbx')):
+#         dict_bird = csv_to_dict(f, annot_file_ext='bbx')
+#         # print(dict_bird)
+#         dict_to_csv(dict_bird, os.path.split(f)[0], empty=False, img_ext='bbx')
+#
+# #######################################################################################################################
+# # # ************** the data augmenation part in this section of the code *************************************
+# # # this data augmentation code only works on the training set!!!
+# # # the output direction is "aug_dir"
+# #
 # import shutil
 # from utils.augmentation import AugTrainingSet, dataset_aug
 #
@@ -95,7 +95,8 @@ for d in dirs:
 # overlap = 0.2
 # #
 # # # List of species that we want to augment (PLEASE include the full name)
-# minor_species = ["Reddish Egret Adult", "White Ibis Adult", "Roseate Spoonbill Adult", "Great Blue Heron Adult"]
+# minor_species = ["Reddish Egret Adult", "White Ibis Adult", "Roseate Spoonbill Adult", "Great Blue Heron Adult", "Great Egret Chick",
+#                  "Fly"]
 # #
 # # # Threshold of non-minor creatures existing in a subimage
 # thres = .4
@@ -139,15 +140,28 @@ dirs = [os.path.join(data_dir, d) for d in os.listdir(data_dir)]
 
 # Bird species used by object detector. Species contained in dataset that are
 # not contained in this list will be categorized as an "Unknown Bird"
-BIRD_SPECIES = ["Brown Pelican", "Laughing Gull", "Mixed Tern", "Tricolored Heron", "Black Skimmer",
-                'Black-Crowned Night Heron', 'Reddish Egret', 'White Ibis', 'Roseate Spoonbill',
-                'Great Blue Heron']
+# BIRD_SPECIES = ["Brown Pelican", "Laughing Gull", "Mixed Tern", "Tricolored Heron", "Black Skimmer",
+#                 'Black-Crowned Night Heron', 'Reddish Egret', 'White Ibis', 'Roseate Spoonbill',
+#                 'Great Blue Heron']
+#
+# birds_species_names = BIRD_SPECIES
+#
+# SPECIES_MAP = {0: 'Brown Pelican', 1: 'Laughing Gull', 2: 'Mixed Tern',
+#                3: 'Tricolored Heron', 4: 'Black Skimmer', 5: 'Black Crowed Night Heron',
+#                6: 'Reddish Egret', 7: 'White Ibis', 8: 'Roseate Spoonbill', 9: 'Great Blue Heron'}
+
+
+BIRD_SPECIES = ["Brown Pelican Adult", "Laughing Gull Adult", "Great Egret Chick", "Tricolored Heron Adult", "Black Skimmer Adult",
+                'Black-Crowned Night Heron Adult', 'Reddish Egret Adult', 'White Ibis Adult', 'Roseate Spoonbill Adult',
+                'Great Blue Heron Adult', "Fly", "Brown Pelican Chick ", "Cattle Egret Adult", "Great Egret Adult"]
 
 birds_species_names = BIRD_SPECIES
 
-SPECIES_MAP = {0: 'Brown Pelican', 1: 'Laughing Gull', 2: 'Mixed Tern',
-               3: 'Tricolored Heron', 4: 'Black Skimmer', 5: 'Black Crowed Night Heron',
-               6: 'Reddish Egret', 7: 'White Ibis', 8: 'Roseate Spoonbill', 9: 'Great Blue Heron'}
+SPECIES_MAP = {0: 'Brown Pelican Adult', 1: 'Laughing Gull Adult', 2: "Great Egret Chick",
+               3: 'Tricolored Heron Adult', 4: 'Black Skimmer Adult', 5: 'Black-Crowned Night Heron Adult',
+               6: 'Reddish Egret Adult', 7: 'White Ibis Adult', 8: 'Roseate Spoonbill Adult',
+               9: 'Great Blue Heron Adult', 10: 'Fly', 11: "Brown Pelican Chick", 12: "Cattle Egret Adult ",
+               13: "Great Egret Adult"}
 
 # #
 # # # Bounding box colors for bird species (used when plotting images)
@@ -171,69 +185,37 @@ from utils.trainer import Trainer, MyTrainer
 from detectron2.utils.registry import Registry
 from detectron2.modeling.roi_heads import StandardROIHeads
 
-from utils.custom_loss import CustomFastRCNNOutputLayers
+# from utils.custom_loss import CustomFastRCNNOutputLayers
 
+# model_name = "faster_rcnn_R_50_FPN_1x"
+
+# # Create detectron2 config
+# cfg = get_cfg()
+# # add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
+# cfg.merge_from_file(model_zoo.get_config_file(f"COCO-Detection/{model_name}.yaml"))
 #
-# # setup training logger
-setup_logger()
-
-model_name = "faster_rcnn_R_50_FPN_1x"
-
-# Create detectron2 config
-cfg = get_cfg()
-# add project-specific config (e.g., TensorMask) here if you're not running a model in detectron2's core library
-cfg.merge_from_file(model_zoo.get_config_file(f"COCO-Detection/{model_name}.yaml"))
-
-# Get pretrained model from MS COCO
-cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(f"COCO-Detection/{model_name}.yaml")
-
-# add datasets used for training and validation
-cfg.DATASETS.TRAIN = ("birds_species_Train",)
-cfg.DATASETS.TEST = ("birds_species_Validate",)
+# # Get pretrained model from MS COCO
+# cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(f"COCO-Detection/{model_name}.yaml")
+#
+# # add datasets used for training and validation
+# cfg.DATASETS.TRAIN = ("birds_species_Train",)
+# cfg.DATASETS.TEST = ("birds_species_Validate",)
 
 # # hyperparameters in the cls loss and bbox loss () ## lambd
 from detectron2.utils.logger import setup_logger
 
-model_output_dir = '../Training_models/03_24_bay_tune_10class_aug_B'
+model_output_dir = '../Training_models/04_07_bay_tune_15class_aug_B'
 
 cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 6, 'BASE_LR': .001, 'GAMMA': 0.01,
-             'WARMUP_ITERS': 1, 'MAX_ITER': 550,
+             'WARMUP_ITERS': 1, 'MAX_ITER': 600,
              'STEPS': [499], 'CHECKPOINT_PERIOD': 499, 'output_dir': model_output_dir,
              'model_name': "faster_rcnn_R_50_FPN_1x", 'BIRD_SPECIES': BIRD_SPECIES}
-
-cfg.DATASETS.TRAIN = ("birds_species_train",)
-cfg.DATASETS.TEST = ("birds_species_val",)
-
-cfg.DATALOADER.NUM_WORKERS = cfg_parms['NUM_WORKERS']
-cfg.SOLVER.IMS_PER_BATCH = cfg_parms['IMS_PER_BATCH']
-cfg.SOLVER.BASE_LR = cfg_parms['BASE_LR']
-cfg.SOLVER.GAMMA = cfg_parms['GAMMA']
-cfg.SOLVER.WARMUP_ITERS = cfg_parms['WARMUP_ITERS']
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(cfg_parms['BIRD_SPECIES'])
-cfg.SOLVER.MAX_ITER = cfg_parms['MAX_ITER']
-cfg.SOLVER.STEPS = cfg_parms['STEPS']
-cfg.SOLVER.CHECKPOINT_PERIOD = cfg_parms['CHECKPOINT_PERIOD']
-
-# naming needs to be updated
-cfg.OUTPUT_DIR = os.path.join(os.getcwd(), 'test_custom_loss')
-os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-
-cw = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1]
-cfg.MODEL.ROI_HEADS = StandardROIHeads(cfg, input_shape = 50, box_predictor= CustomFastRCNNOutputLayers(weight=cw))
-
-# setup training logger
-setup_logger()
-
-trainer = MyTrainer(cfg)
-trainer.resume_or_load(resume=False)
-trainer.train()
-
 
 from utils.hyperparameter import main_hyper, main_fit
 
 # hyperparameter tunning
-# tuned_cfg_params = main_hyper(cfg_parms, iterations=35)
-# tuned_cfg_params['MAX_ITER'] = tuned_cfg_params['MAX_ITER'] + 150
+# tuned_cfg_params = main_hyper(cfg_parms, iterations=40)
+# tuned_cfg_params['MAX_ITER'] = tuned_cfg_params['MAX_ITER'] + 100
 # tune_weight_dir, loss = main_fit(tuned_cfg_params)
 
 ############################### hand tuning
@@ -266,15 +248,15 @@ from utils.cropping_hank import crop_dataset_img_only
 
 #
 # # perform tiling on images
-data_dir = 'C://Users\\VelocityUser\\Documents\\D2K TDS B\\AI QC B'  # data directory folder
+data_dir = 'C://Users\\VelocityUser\Documents\\D2K TDS C\\QC C Files'  # data directory folder
 os.makedirs(os.getcwd() + '/AI_QC_test/crop', exist_ok=True)
 output_dir = os.getcwd() + '/AI_QC_test/crop'
 img_ext = '.JPG'
 CROP_WIDTH = 640
 CROP_HEIGHT = 640
 SLIDING_SIZE = 400
-crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=CROP_HEIGHT, crop_width=CROP_WIDTH,
-                      sliding_size=SLIDING_SIZE)
+# crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=CROP_HEIGHT, crop_width=CROP_WIDTH,
+#                       sliding_size=SLIDING_SIZE)
 # #
 # # #########################################################################################################################
 # #Evaluating the trained detectron2 model
@@ -296,14 +278,18 @@ cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
 
 # location of the trained weights
 # cfg.MODEL.WEIGHTS = f"./D2K_TDS_A_5_classes/multibirds_{model_name}/model_final.pth"
-cfg.MODEL.WEIGHTS = tune_weight_dir + '/model_final.pth'
+# cfg.MODEL.WEIGHTS = tune_weight_dir + '/model_final.pth'
 
-# cfg.MODEL.WEIGHTS = 'C://Users\\VelocityUser\\Documents\\Training_models\\03_24_bay_tune_10class_aug\\faster_rcnn_R_50_FPN_1x-20220401-173719\\model_final.pth'
-#
+cfg.MODEL.WEIGHTS = 'C://Users\\VelocityUser\\Documents\\Training_models\\04_07_bay_tune_15class_aug_B\\faster_rcnn_R_50_FPN_1x-20220407-232234\\model_final.pth'
+
+# cfg.MODEL.WEIGHTS = 'C://Users\\VelocityUser\\Documents\\Training_models\\04_07_bay_tune_15class_aug_B\\faster_rcnn_R_50_FPN_1x-20220408-050645\\model_final.pth'
+
+
+
 # os.getcwd()+'/03_24_bay_tune_8class/faster_rcnn_R_50_FPN_1x-20220325-170316' +'/model_final.pth'
 
 cfg.DATALOADER.NUM_WORKERS = 0
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
+cfg.MODEL.ROI_HEADS.NUM_CLASSES= len(BIRD_SPECIES)
 
 # Create default predictor to run inference
 predictor = DefaultPredictor(cfg)
@@ -314,9 +300,9 @@ CROP_HEIGHT = 640
 SLIDING_SIZE = 400
 # # #
 # # # # Run evaluation
-output_df = evaluate_full_pipeline(eval_file_lst, predictor, SPECIES_MAP, RAW_IMG_WIDTH, RAW_IMG_HEIGHT, CROP_WIDTH,
-                                   CROP_HEIGHT, SLIDING_SIZE)
-output_df.to_csv('D2K_TDS_10_B_species_hp.csv')
+# output_df = evaluate_full_pipeline(eval_file_lst, predictor, SPECIES_MAP, RAW_IMG_WIDTH, RAW_IMG_HEIGHT, CROP_WIDTH,
+#                                    CROP_HEIGHT, SLIDING_SIZE)
+# output_df.to_csv('D2K_TDS_15_species_hp.csv')
 #
 # # #######################################################################################################################
 # #confusion matrix output for model evaluation

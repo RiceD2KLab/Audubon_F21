@@ -156,7 +156,7 @@ def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'J
                 # if ('DJI' not in file.split('/')[-1]) or ('LBN' not in file.split('/')[-1]):
                 #     low_res.append(file.split('/')[-1])
                 bird_list = [x[1] for x in annt_list]
-                # if "White Ibis Adult" in bird_list or "Roseate Spoonbill Adult" in bird_list:
-                #     plot_img_bbx_wrong(w_img, annt_list, annt_pred=pred_bbx.tolist(), img_file=file.split('/')[-1])
+                if "Great Egret Chick" in bird_list:
+                    plot_img_bbx_wrong(w_img, annt_list, annt_pred=pred_bbx.tolist(), img_file=file.split('/')[-1])
     return pred_total, truth_total
 

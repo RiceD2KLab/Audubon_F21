@@ -201,8 +201,9 @@ def build_model_for_hp(params, cfg_parms):
     cfg_parms['GAMMA'] = params['gamma']
     cfg_parms['BASE_LR'] = params['base_learning_rate']
 
-    cfg = setup_dense(cfg_parms)
+    # cfg = setup_dense(cfg_parms)
 
+    cfg = setup1(cfg_parms)
 
     # cfg = setup1(cfg_parms)
     #
