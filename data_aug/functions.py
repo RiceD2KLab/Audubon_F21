@@ -220,9 +220,8 @@ def color_img(img, info_dict, output_dir, command):
 
             # Save annotation
             dict_to_csv(jit_dict, empty=False, output_path=output_dir, test=True)        
-            plt.figure();plt.axis("off");plt.title("Brightness Altered Image" + str(n));plt.imshow(jitted);
-            plotting.plot_img_bbx(jitted, [list(x.values()) for x in jit_dict["bbox"]])
 
+            
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, aug_command, annot_file_ext='bbx'):
     # Read csv file
     file_name = os.path.split(csv_file)[-1][:-4]
