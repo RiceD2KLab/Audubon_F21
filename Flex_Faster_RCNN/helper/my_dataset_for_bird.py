@@ -4,7 +4,7 @@ import torch
 import json
 from PIL import Image
 from lxml import etree
-
+import numpy as np
 import xml.etree.ElementTree as ET
 
 
