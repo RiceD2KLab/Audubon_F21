@@ -108,9 +108,7 @@ def flip_img(img, info_dict, output_dir, command):
 
         # Save Annotation
         dict_to_csv(hflip_dict, empty=False, output_path=output_dir, test=True)
-        plt.figure();plt.axis("off");plt.title("Horizontally Flipped Image");plt.imshow(hflipped);
-        plotting.plot_img_bbx(hflipped, [list(x.values()) for x in hflip_dict["bbox"]])
-    # is_v_flip
+        
     if command[1]:
         # Read info
         img_width, img_height, img_depth = info_dict['img_size']
@@ -139,8 +137,7 @@ def flip_img(img, info_dict, output_dir, command):
 
         # Save Annotation
         dict_to_csv(vflip_dict, empty=False, output_path=output_dir, test=True)
-        plt.figure();plt.axis("off");plt.title("Vertically Flipped Image");plt.imshow(vflipped);
-        plotting.plot_img_bbx(vflipped, [list(x.values()) for x in vflip_dict["bbox"]])
+    
     
 def rotate_img(img, info_dict, output_dir, command):
     # is_left_rotate
@@ -172,8 +169,7 @@ def rotate_img(img, info_dict, output_dir, command):
 
         # Save annotation
         dict_to_csv(lrot_dict, empty=False, output_path=output_dir, test=True)
-        plt.figure();plt.axis("off");plt.title("Left Rotated Image");plt.imshow(lrotated);
-        plotting.plot_img_bbx(lrotated, [list(x.values()) for x in lrot_dict["bbox"]])
+        
     # is_right_rotate
     if command[1]:
         # Read info
@@ -203,8 +199,7 @@ def rotate_img(img, info_dict, output_dir, command):
 
         # Save annotation
         dict_to_csv(rrot_dict, empty=False, output_path=output_dir, test=True)
-        plt.figure();plt.axis("off");plt.title("Right Rotated Image");plt.imshow(rrotated);
-        plotting.plot_img_bbx(rrotated, [list(x.values()) for x in rrot_dict["bbox"]])
+        
   
 def color_img(img, info_dict, output_dir, command):
     if command[0]:
@@ -312,7 +307,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
             flip_img(img = cropped, info_dict = file_dict, output_dir = output_dir, command = aug_command[0:2])
             rotate_img(img = cropped, info_dict = file_dict, output_dir = output_dir, command = aug_command[2:4])
             color_img(img = cropped, info_dict = file_dict, output_dir = output_dir, command = aug_command[-1])
-            plotting.plot_img_bbx(cropped, [list(x.values()) for x in file_dict["bbox"]])
+         
 
 def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_command, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640):
     if annot_file_ext == 'bbx':
