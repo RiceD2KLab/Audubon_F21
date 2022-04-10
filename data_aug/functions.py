@@ -278,15 +278,15 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
             else:
                 if (xmax - xmin) * (ymax - ymin) > overlap * (bbx['xmax'] - bbx['xmin']) * (bbx['ymax'] - bbx['ymin']):
 
-                instance_dict = {}
-                instance_dict['class'] = bbx['class']
-                instance_dict['desc'] = bbx['desc']
-                instance_dict['xmin'] = max(bbx['xmin'] - left, 0)
-                instance_dict['ymin'] = max(bbx['ymin'] - top, 0)
-                instance_dict['xmax'] = min(bbx['xmax'] - left, crop_width)
-                instance_dict['ymax'] = min(bbx['ymax'] - top, crop_height)
+                    instance_dict = {}
+                    instance_dict['class'] = bbx['class']
+                    instance_dict['desc'] = bbx['desc']
+                    instance_dict['xmin'] = max(bbx['xmin'] - left, 0)
+                    instance_dict['ymin'] = max(bbx['ymin'] - top, 0)
+                    instance_dict['xmax'] = min(bbx['xmax'] - left, crop_width)
+                    instance_dict['ymax'] = min(bbx['ymax'] - top, crop_height)
 
-                file_dict['bbox'].append(instance_dict)
+                    file_dict['bbox'].append(instance_dict)
 
         # Set majority birds threshold
         non_minor = 0
