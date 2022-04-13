@@ -256,7 +256,7 @@ def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_comman
 # def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, annot_file_ext='csv'):
 #
 
-def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres,img_ext, annot_file_ext='csv'):
+def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext='csv'):
 
 
     file_name = os.path.split(csv_file)[-1][:-4]
@@ -335,11 +335,13 @@ def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres,img_ext,
 
             # dict_to_csv(file_dict, empty=False, output_path=output_dir, test = True)
             # print(file_dict)
-            flip_img(img=image, info_dict=file_dict, output_dir=output_dir, img_ext = img_ext)
+            flip_img(img = image, info_dict = file_dict, output_dir = output_dir, command = aug_command[0:2], img_ext = img_ext)
+            rotate_img(img = image, info_dict = file_dict, output_dir = output_dir, command = aug_command[2:4], img_ext = img_ext)
+            color_img(img = image, info_dict = file_dict, output_dir = output_dir, command = aug_command[-1], img_ext = img_ext)
 
 
 
-def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, img_ext, annot_file_ext='csv'):
+def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext='csv'):
     # if annot_file_ext == 'csv'
 
     Train_files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == annot_file_ext]
@@ -348,5 +350,5 @@ def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, img_ext
     # perform both data augmentation and data cropping need for training
     for file in tqdm(Train_files, desc='Augmenting data'):
         # data augmentation
-        Test_aug_minor(csv_file=file, output_dir=output_dir, minor_species=minor_species, overlap=overlap, thres=thres,
+        Test_aug_minor(csv_file=file, output_dir=output_dir, minor_species=minor_species, overlap=overlap, thres=thres, aug_command=aug_command,
                        img_ext = img_ext)
