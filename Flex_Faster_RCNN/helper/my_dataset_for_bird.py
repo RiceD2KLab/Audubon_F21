@@ -4,7 +4,7 @@ import torch
 import json
 from PIL import Image
 from lxml import etree
-
+import numpy as np
 import xml.etree.ElementTree as ET
 
 
@@ -231,6 +231,95 @@ def getNormalize(train_data):
     std_value.div_(len(train_data))
     print('Computing Complete')
     return list(mean_value.numpy()), list(std_value.numpy())
+
+# Non-experienced bounding box ratios
+def K_means_Bird(train_data, K):
+    train_loader = torch.utils.data.DataLoader(
+        train_data, batch_size=1, shuffle=False, num_workers=0,
+        pin_memory=True)
+
+    # save w and h
+    position_info = []
+
+    for _, X in train_loader:
+        # w, h
+        X = X['boxes'].squeeze()
+        for i in range(X.shape[0]):
+            position_info.append([(X[i, 2].numpy() - X[i, 0].numpy()), (X[i, 3].numpy() - X[i, 1].numpy())])
+
+    # Initial K-means
+    position_info = np.array(position_info)
+    K_iter = torch.randperm(len(position_info))[:K]
+    centroids = position_info[K_iter, :]
+
+    # initial Label
+    Label = np.zeros(position_info.shape[0])
+    for i in range(K):
+        Label[K_iter[i]] = i + 1
+
+    # Calculate avg_IOU to check converge
+    avg_IOU_now = avg_IOU(position_info, centroids)
+    avg_IOU_past = 0
+    max_iter = 10000
+    iteration_k = 0
+
+    # Assign
+    while iteration_k <= max_iter and (avg_IOU_now - avg_IOU_past) > 1e-20:
+        for i in range(position_info.shape[0]):
+            Label[i] = np.argmin(1 - IOU(position_info[i], centroids)) + 1
+
+        # Update centroids
+        for j in range(1, K + 1):
+            cluster_ind = np.where(j == Label)[0]
+            cluster = position_info[cluster_ind, :]
+            centroids[j-1, :] = np.mean(cluster, axis=0)
+        avg_IOU_past = avg_IOU_now
+        avg_IOU_now = avg_IOU(position_info, centroids)
+        iteration_k += 1
+        # print(iteration_k, (avg_IOU_now - avg_IOU_past))
+        if np.isnan(avg_IOU_now):
+            assert (np.isnan(avg_IOU_now)), "K = {} is too large for this project.".format(K)
+    print('Compute centroids with K = {} for training data, Avg IoU is {}'.format(K, avg_IOU_now))
+    return centroids, avg_IOU_now
+
+
+def IOU(x, centroids):
+    """
+    :param x: ground truth's w,h
+    :param centroids: anchor's w,h set [(w,h),(),...],
+    :return: IoU set between ground truth box and all k anchor box
+    """
+    IoUs = []
+    w, h = x  # ground truth's w,h
+    for centroid in centroids:
+        c_w, c_h = centroid  # anchor's w,h
+        if c_w >= w and c_h >= h:  # anchor surrounded by ground truth
+            iou = w * h / (c_w * c_h)
+        elif c_w >= w and c_h <= h:  # if anchor is short/wide
+            iou = w * c_h / (w * h + (c_w - w) * c_h)
+        elif c_w <= w and c_h >= h:  # if anchor is thin and long
+            iou = c_w * h / (w * h + c_w * (c_h - h))
+        else:  # ground truth surround anchor means both w,h are bigger than c_w and c_h respectively
+            iou = (c_w * c_h) / (w * h)
+
+        IoUs.append(iou)  # will become (k,) shape
+
+    return np.array(IoUs)
+
+
+def avg_IOU(X, centroids):
+    """
+    :param X: ground truth's w,h set[(w,h),(),...]
+    :param centroids: anchor's w,h set[(w,h),(),...]，
+    :return: mean value of GT and all anchor (w and h)
+    """
+
+    n, d = X.shape
+    sum_iou = 0.
+    for i in range(X.shape[0]):
+        sum_iou += max(IOU(X[i], centroids))
+
+    return sum_iou / n  # get mean
 
 # import transforms
 # from draw_box_utils import draw_box
