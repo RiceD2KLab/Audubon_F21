@@ -6,7 +6,7 @@ from tqdm import tqdm
 from pathlib import Path
 from PIL import Image, ImageDraw
 from torchvision import transforms
-from utils.cropping_hank import csv_to_dict, dict_to_csv, crop_img_trainer
+from Audubon_F21.utils.cropping_hank import csv_to_dict, dict_to_csv, crop_img_trainer
 
 
 def flip_img(img, info_dict, output_dir, command):
