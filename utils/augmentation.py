@@ -9,7 +9,7 @@ from torchvision import transforms
 from Audubon_F21.utils.cropping_hank import csv_to_dict, dict_to_csv, crop_img_trainer
 
 
-def flip_img(img, info_dict, output_dir, command):
+def flip_img(img, info_dict, output_dir, img_ext, command):
     # is_h_flip
     if command[0]:
         # Read info
@@ -38,7 +38,7 @@ def flip_img(img, info_dict, output_dir, command):
             hflip_dict['bbox'].append(instancef_dict)
 
         # Save Annotation
-        dict_to_csv(hflip_dict, empty=False, output_path=output_dir, test=True)
+        dict_to_csv(hflip_dict, empty=False, output_path=output_dir, img_ext = img_ext)
         
     if command[1]:
         # Read info
@@ -67,10 +67,10 @@ def flip_img(img, info_dict, output_dir, command):
             vflip_dict['bbox'].append(instancef_dict)
 
         # Save Annotation
-        dict_to_csv(vflip_dict, empty=False, output_path=output_dir, test=True)
+        dict_to_csv(vflip_dict, empty=False, output_path=output_dir, img_ext = img_ext)
     
     
-def rotate_img(img, info_dict, output_dir, command):
+def rotate_img(img, info_dict, output_dir, img_ext, command):
     # is_left_rotate
     if command[0]:
         # Read info
@@ -99,7 +99,7 @@ def rotate_img(img, info_dict, output_dir, command):
             lrot_dict['bbox'].append(instance_dict)
 
         # Save annotation
-        dict_to_csv(lrot_dict, empty=False, output_path=output_dir, test=True)
+        dict_to_csv(lrot_dict, empty=False, output_path=output_dir, img_ext = img_ext)
         
     # is_right_rotate
     if command[1]:
@@ -129,10 +129,10 @@ def rotate_img(img, info_dict, output_dir, command):
             rrot_dict['bbox'].append(instance_dict)
 
         # Save annotation
-        dict_to_csv(rrot_dict, empty=False, output_path=output_dir, test=True)
+        dict_to_csv(rrot_dict, empty=False, output_path=output_dir, img_ext = img_ext)
         
   
-def color_img(img, info_dict, output_dir, command):
+def color_img(img, info_dict, output_dir, img_ext, command):
     if command[0]:
         # Randomly change the brightness and contrast
         jitter = transforms.ColorJitter(brightness=.5, contrast = .3)
@@ -150,10 +150,10 @@ def color_img(img, info_dict, output_dir, command):
             jit_dict["file_name"] = name
 
             # Save annotation
-            dict_to_csv(jit_dict, empty=False, output_path=output_dir, test=True)        
+            dict_to_csv(jit_dict, empty=False, output_path=output_dir, img_ext = img_ext)        
 
             
-def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, aug_command, annot_file_ext='bbx'):
+def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext='bbx'):
     # Read csv file
     file_name = os.path.split(csv_file)[-1][:-4]
 
@@ -231,22 +231,22 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
             file_dict["file_name"] = file_name+"_"+str(valid_i).zfill(2)+ ".JPEG"
             cropped.save(output_dir+"/"+file_name+"_"+str(valid_i).zfill(2)+ ".JPEG")
 
-            dict_to_csv(file_dict, empty=False, output_path=output_dir, test=True)
+            dict_to_csv(file_dict, empty=False, output_path=output_dir, img_ext = img_ext)
 
             # Flipping, rotation and color manipulation
-            flip_img(img = cropped, info_dict = file_dict, output_dir = output_dir, command = aug_command[0:2])
-            rotate_img(img = cropped, info_dict = file_dict, output_dir = output_dir, command = aug_command[2:4])
-            color_img(img = cropped, info_dict = file_dict, output_dir = output_dir, command = aug_command[-1])
+            flip_img(img = cropped, info_dict = file_dict, output_dir = output_dir, img_ext = img_ext, command = aug_command[0:2])
+            rotate_img(img = cropped, info_dict = file_dict, output_dir = output_dir, img_ext = img_ext, command = aug_command[2:4])
+            color_img(img = cropped, info_dict = file_dict, output_dir = output_dir, img_ext = img_ext, command = aug_command[-1])
          
 
-def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_command, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640):
+def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640):
     if annot_file_ext == 'bbx':
         files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == 'bbx'] 
     # perform both data augmentation and data cropping need for training
     for file in tqdm(files, desc='Cropping files'):
         # data augmentation
         aug_minor(csv_file=file, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir,
-                  minor_species=minor_species, overlap=overlap, thres=thres, aug_command = aug_command)
+                  minor_species=minor_species, overlap=overlap, thres=thres, aug_command = aug_command, img_ext = img_ext)
         # data cropping
         # crop_img_trainer(csv_file=files, crop_height=crop_height, crop_width=crop_width, sliding_size_x=550,
         #                  sliding_size_y=550, output_dir=output_dir, class_map= {},annot_file_ext=annot_file_ext,
@@ -333,11 +333,11 @@ def Test_aug_minor(csv_file,  output_dir, minor_species, overlap, thres, aug_com
             file_dict["file_name"] = file_name + "_" + str(valid_i).zfill(2) + "."+img_ext
             image.save(output_dir + "/" + file_name + "_" + str(valid_i).zfill(2) + "."+img_ext)
 
-            # dict_to_csv(file_dict, empty=False, output_path=output_dir, test = True)
+            # dict_to_csv(file_dict, empty=False, output_path=output_dir, img_ext = img_ext)
             # print(file_dict)
-            flip_img(img = image, info_dict = file_dict, output_dir = output_dir, command = aug_command[0:2], img_ext = img_ext)
-            rotate_img(img = image, info_dict = file_dict, output_dir = output_dir, command = aug_command[2:4], img_ext = img_ext)
-            color_img(img = image, info_dict = file_dict, output_dir = output_dir, command = aug_command[-1], img_ext = img_ext)
+            flip_img(img = image, info_dict = file_dict, output_dir = output_dir, img_ext = img_ext, command = aug_command[0:2])
+            rotate_img(img = image, info_dict = file_dict, output_dir = output_dir, img_ext = img_ext, command = aug_command[2:4])
+            color_img(img = image, info_dict = file_dict, output_dir = output_dir, img_ext = img_ext, command = aug_command[-1])
 
 
 
