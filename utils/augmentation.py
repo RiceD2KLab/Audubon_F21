@@ -135,7 +135,8 @@ def rotate_img(img, info_dict, output_dir, img_ext, command):
 def color_img(img, info_dict, output_dir, img_ext, command):
     if command[0]:
         # Randomly change the brightness and contrast
-        jitter = transforms.ColorJitter(brightness=.5, contrast = .3)
+        # jitter = transforms.ColorJitter(brightness=.5, contrast = .3)
+        jitter = transforms.ColorJitter(brightness=.5)
 
         for n in range(1, command[1]+1):
             # Read info
