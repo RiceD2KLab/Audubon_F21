@@ -14,55 +14,60 @@ from detectron2.modeling.box_regression import Box2BoxTransform, _dense_box_regr
 from detectron2.structures import Boxes, Instances
 from detectron2.utils.events import get_event_storage
 
+from detectron2.modeling.poolers import ROIPooler
+from detectron2.modeling.roi_heads.roi_heads import build_box_head
+from detectron2.utils.registry import Registry
+from detectron2.modeling import ROI_HEADS_REGISTRY
+
 import numpy as np
 
-
-# this function makes the custom loss function based off the distribution of the classes
-@ROI_HEADS_REGISTRY.register()
-class MyStandardROIHeads(StandardROIHeads):
-    def __init__(self, cfg, input_shape):
-        super().__init__(cfg, input_shape,
-                         box_predictor=MyRCNNOutput(cfg, box_head.output_shape))
-
-        super().__init__()
-        self.weigts =
-
-    @classmethod
-    def _init_box_head(cls, cfg, input_shape):
-        # fmt: off
-        in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
-        pooler_resolution = cfg.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION
-        pooler_scales = tuple(1.0 / input_shape[k].stride for k in in_features)
-        sampling_ratio = cfg.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO
-        pooler_type = cfg.MODEL.ROI_BOX_HEAD.POOLER_TYPE
-        # fmt: on
-
-        # If StandardROIHeads is applied on multiple feature maps (as in FPN),
-        # then we share the same predictors and therefore the channel counts must be the same
-        in_channels = [input_shape[f].channels for f in in_features]
-        # Check all channel counts are equal
-        assert len(set(in_channels)) == 1, in_channels
-        in_channels = in_channels[0]
-
-        box_pooler = ROIPooler(
-            output_size=pooler_resolution,
-            scales=pooler_scales,
-            sampling_ratio=sampling_ratio,
-            pooler_type=pooler_type,
-        )
-        # Here we split "box head" and "box predictor", which is mainly due to historical reasons.
-        # They are used together so the "box predictor" layers should be part of the "box head".
-        # New subclasses of ROIHeads do not need "box predictor"s.
-        box_head = build_box_head(
-            cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
-        )
-        box_predictor = CustomFastRCNNOutputLayers(cfg, box_head.output_shape, )
-        return {
-            "box_in_features": in_features,
-            "box_pooler": box_pooler,
-            "box_head": box_head,
-            "box_predictor": box_predictor,
-        }
+# ROI_HEADS_REGISTRY = Registry("MyStandardROIHeads")
+#
+#
+# # this function makes the custom loss function based off the distribution of the classes
+# @ROI_HEADS_REGISTRY.register()
+# class MyStandardROIHeads(StandardROIHeads):
+#     def __init__(self, cfg, input_shape):
+#         # super().__init__(cfg, input_shape,
+#         #                  box_predictor=MyRCNNOutput(cfg, box_head.output_shape))
+#         super().__init__()
+#
+#     @classmethod
+#     def _init_box_head(cls, cfg, input_shape):
+#         # fmt: off
+#         in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
+#         pooler_resolution = cfg.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION
+#         pooler_scales = tuple(1.0 / input_shape[k].stride for k in in_features)
+#         sampling_ratio = cfg.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO
+#         pooler_type = cfg.MODEL.ROI_BOX_HEAD.POOLER_TYPE
+#         # fmt: on
+#
+#         # If StandardROIHeads is applied on multiple feature maps (as in FPN),
+#         # then we share the same predictors and therefore the channel counts must be the same
+#         in_channels = [input_shape[f].channels for f in in_features]
+#         # Check all channel counts are equal
+#         assert len(set(in_channels)) == 1, in_channels
+#         in_channels = in_channels[0]
+#
+#         box_pooler = ROIPooler(
+#             output_size=pooler_resolution,
+#             scales=pooler_scales,
+#             sampling_ratio=sampling_ratio,
+#             pooler_type=pooler_type,
+#         )
+#         # Here we split "box head" and "box predictor", which is mainly due to historical reasons.
+#         # They are used together so the "box predictor" layers should be part of the "box head".
+#         # New subclasses of ROIHeads do not need "box predictor"s.
+#         box_head = build_box_head(
+#             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
+#         )
+#         box_predictor = CustomFastRCNNOutputLayers(cfg, box_head.output_shape)
+#         return {
+#             "box_in_features": in_features,
+#             "box_pooler": box_pooler,
+#             "box_head": box_head,
+#             "box_predictor": box_predictor,
+#         }
 
 
 def _log_classification_stats(pred_logits, gt_classes, prefix="fast_rcnn"):
@@ -96,9 +101,29 @@ def _log_classification_stats(pred_logits, gt_classes, prefix="fast_rcnn"):
 
 
 class CustomFastRCNNOutputLayers(FastRCNNOutputLayers):
-    def __init__(self, weight):
-        super().__init__()
-        self.custom_weight = weight
+
+    def __init__(self, cfg, input_shape, weight):
+
+        in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
+        in_channels = [input_shape[f].channels for f in in_features]
+        # Check all channel counts are equal
+        assert len(set(in_channels)) == 1, in_channels
+        in_channels = in_channels[0]
+        pooler_resolution = cfg.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION
+        box_head = build_box_head(
+            cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
+        )
+        # input_shape = box_head.output_shape
+
+        # self.custom_weight = torch.from_numpy(np.array(cfg.MODEL.weight, )
+        # w = np.array(self.custom_weight, dtype='float32')
+        # torch.from_numpy(w).to("cuda:0")
+        # self.gw = gpu_weight
+        self.gpu_weight = weight
+        FastRCNNOutputLayers.__init__(self, input_shape = box_head.output_shape,
+                                      box2box_transform= Box2BoxTransform(weights=cfg.MODEL.ROI_BOX_HEAD.BBOX_REG_WEIGHTS)
+                                      ,num_classes= cfg.MODEL.ROI_HEADS.NUM_CLASSES)
+
 
     def losses(self, predictions, proposals):
         """
@@ -134,13 +159,14 @@ class CustomFastRCNNOutputLayers(FastRCNNOutputLayers):
         else:
             proposal_boxes = gt_boxes = torch.empty((0, 4), device=proposal_deltas.device)
 
+        #torch.from_numpy(w).to("cuda:0")
+        # w = np.array(self.custom_weight, dtype= 'float32')
         losses = {
             # "loss_cls": cross_entropy(scores, gt_classes, reduction="mean"),
-            'loss_cls': F.cross_entropy(scores, gt_classes, reduction="mean", weight=self.custom_weight),
+            'loss_cls': F.cross_entropy(scores, gt_classes, reduction="mean", weight=self.gpu_weight),
             "loss_box_reg": self.box_reg_loss(
                 proposal_boxes, gt_boxes, proposal_deltas, gt_classes
             ),
         }
         return {k: v * self.loss_weight.get(k, 1.0) for k, v in losses.items()}
 
-# F.cross_entropy(input, target, reduction=reduction, **kwargs)

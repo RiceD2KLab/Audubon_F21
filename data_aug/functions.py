@@ -230,7 +230,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
     annotation_lst = [list(x.values()) for x in annot_dict['bbox']]
 
     # Load image
-    image_file = csv_file.replace(annot_file_ext, 'JPG')
+    image_file = csv_file.replace(annot_file_ext, 'JPG') # TODO need to change this form JPG to img_ext
     assert os.path.exists(image_file)
 
     image = Image.open(image_file)

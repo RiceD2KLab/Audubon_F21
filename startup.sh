@@ -20,6 +20,12 @@ FOCAL_LOSS_GAMMA=""
 FOCAL_LOSS_ALPHA=""
 OUTPUT_DIR=""
 
+# birds (BRPEA) list, txt file name of list ofp birds to train on
+
+
+
+
+
 echo "Welcome to Houston Audobon's state of the art bird detection model, developed in collaboration with Rice University"
 
 echo "Please enter the path to the data directory (default: ./data):"

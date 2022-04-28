@@ -136,31 +136,35 @@ def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
     fig_iou50, ax_iou50 = plt.subplots()
     fig_iou75, ax_iou75 = plt.subplots()
     for c_indx, class_name in enumerate(class_names):
+        fig, ax = plt.subplots()
+        fig_iou50, ax_iou50 = plt.subplots()
         avg_precision = np.mean(np.squeeze(precisions[:, :, c_indx, 0, -1]), axis=1)
         print(f"AP50 for {class_name}: {avg_precision[0]}")
         print(f"AP75 for {class_name}: {avg_precision[5]}")
         max_recall = np.squeeze(max_recalls[:, c_indx, 0, -1])
         print(f"Max recall (IoU 50) for {class_name}: {max_recall[0]}")
-        ax.plot(max_recall, avg_precision, color=class_colors[c_indx])
+        # ax.plot(max_recall, avg_precision, color=class_colors[c_indx])
+        ax.plot(max_recall, avg_precision)
         precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
-        ax_iou50.plot(recall, precisions_iou50, color=class_colors[c_indx])
+        # ax_iou50.plot(recall, precisions_iou50, color=class_colors[c_indx])
+        ax_iou50.plot(recall, precisions_iou50)
         # precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
-        precisions_iou75 = np.squeeze(precisions[5, :, c_indx, 0, -1])
-        ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
+        # precisions_iou75 = np.squeeze(precisions[5, :, c_indx, 0, -1])
+        # ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
 
-    ax.set(ylabel="Avg. Precision",
-           xlabel="Max Recall")
-    ax_iou50.set(title="Precision-Recall Curve (IoU = 0.5)",
-                 ylabel="Precision",
-                 xlabel="Recall")
-    ax_iou75.set(title="Precision-Recall Curve (IoU = 0.75)",
-                 ylabel="Precision",
-                 xlabel="Recall")
-    ax.legend(class_names, loc='best')
-    ax_iou50.legend(class_names, loc='best')
-    ax_iou75.legend(class_names, loc='best')
+        ax.set(ylabel="Avg. Precision",
+               xlabel="Max Recall")
+        ax_iou50.set(title=f"Precision-Recall Curve (IoU = 0.5) for {class_name}",
+                     ylabel="Precision",
+                     xlabel="Recall")
+        # ax_iou75.set(title="Precision-Recall Curve (IoU = 0.75)",
+        #              ylabel="Precision",
+        #              xlabel="Recall")
+        # ax.legend(class_names, loc='best')
+        # ax_iou50.legend(class_names, loc='best')
+        # ax_iou75.legend(class_names, loc='best')
 
-    plt.show()
+        plt.show()
 
 
 def non_max_suppression_fast(df, overlap_thresh = 0.5):

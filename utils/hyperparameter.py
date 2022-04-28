@@ -14,6 +14,11 @@ from detectron2.config import get_cfg
 from detectron2 import model_zoo
 from detectron2.config import CfgNode as CN
 
+from detectron2.modeling.roi_heads import StandardROIHeads
+from detectron2.modeling import ROI_HEADS_REGISTRY
+from utils.custom_loss import CustomFastRCNNOutputLayers
+#
+
 # import project utility functions
 from utils.config import add_retinanet_config, add_fasterrcnn_config
 from utils.dataloader import get_bird_only_dicts, get_bird_species_dicts, register_datasets
@@ -41,6 +46,7 @@ def setup(cfg_parms):
     cfg.SOLVER.MAX_ITER = cfg_parms['MAX_ITER']
     cfg.SOLVER.STEPS = cfg_parms['STEPS']
     cfg.SOLVER.CHECKPOINT_PERIOD = cfg_parms['CHECKPOINT_PERIOD']
+    cfg.MODEL.weight = cfg_parms['weight']
 
     # naming needs to be updated
     cfg.OUTPUT_DIR = os.path.join(cfg_parms['output_dir'],
@@ -78,6 +84,56 @@ def setup1(cfg_parms):
     cfg.OUTPUT_DIR = os.path.join(cfg_parms['output_dir'],
                                   f"{cfg_parms['model_name']}-{datetime.now().strftime('%Y%m%d-%H%M%S')}")
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+
+
+
+    # save the parameters files
+    with open(os.path.join(cfg.OUTPUT_DIR, 'parameters.txt'), 'a+') as f:
+        f.write(json.dumps(cfg_parms))
+
+    # setup training logger
+    setup_logger()
+
+    return cfg
+
+
+def setup_loss(cfg_parms):
+    cfg = get_cfg()
+    cfg.merge_from_file(model_zoo.get_config_file(f"COCO-Detection/{cfg_parms['model_name']}.yaml"))
+    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(f"COCO-Detection/{cfg_parms['model_name']}.yaml")
+
+    cfg.DATASETS.TRAIN = ("birds_species_Train",)
+    cfg.DATASETS.TEST = ("birds_species_Validate",)
+
+    cfg.DATALOADER.NUM_WORKERS = cfg_parms['NUM_WORKERS']
+    cfg.SOLVER.IMS_PER_BATCH = cfg_parms['IMS_PER_BATCH']
+    cfg.SOLVER.BASE_LR = cfg_parms['BASE_LR']
+    cfg.SOLVER.GAMMA = cfg_parms['GAMMA']
+    cfg.SOLVER.WARMUP_ITERS = cfg_parms['WARMUP_ITERS']
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(cfg_parms['BIRD_SPECIES'])
+    cfg.SOLVER.MAX_ITER = cfg_parms['MAX_ITER']
+    cfg.SOLVER.STEPS = cfg_parms['STEPS']
+    cfg.SOLVER.CHECKPOINT_PERIOD = cfg_parms['CHECKPOINT_PERIOD']
+
+    weight = torch.from_numpy(
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1, 1, 1], dtype='float32')).to("cuda:0")
+
+    # ROI_HEADS_REGISTRY = Registry("ROI_HEADS")
+    # this function makes the custom loss function based off the distribution of the classes
+    @ROI_HEADS_REGISTRY.register()
+    class MyStandardROIHeads(StandardROIHeads):
+        def __init__(self, cfg, input_shape):
+            # gpu_weight =
+            super().__init__(cfg, input_shape,
+                             box_predictor=CustomFastRCNNOutputLayers(cfg, input_shape, weight))
+
+    # naming needs to be updated
+    cfg.OUTPUT_DIR = os.path.join(cfg_parms['output_dir'],
+                                  f"{cfg_parms['model_name']}-{datetime.now().strftime('%Y%m%d-%H%M%S')}")
+    os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+
+
+
     # save the parameters files
     with open(os.path.join(cfg.OUTPUT_DIR, 'parameters.txt'), 'a+') as f:
         f.write(json.dumps(cfg_parms))
@@ -143,7 +199,6 @@ def train(cfg):
     # trainer = Trainer(cfg)
     trainer = MyTrainer(cfg)
     trainer.resume_or_load(resume=False)
-
     return trainer.train()
 
 
@@ -260,20 +315,12 @@ def main_hyper(cfg_parms, iterations):
     cfg_parms['BASE_LR'] = trial.params['base_learning_rate']
     cfg_parms['GAMMA'] = trial.params['gamma']
 
-    # cfg_parms['BASE_LR']
-    with open(os.path.join(cfg_parms['output_dir'], 'best_parameters.txt'), 'a+') as f:
-        f.write(json.dumps(trial.params))
-
     return cfg_parms
 
-    # cv2.waitkey(0)
-    # print("Press any key to continue...")
-    # cv2.destroyAllWindows()
 
 
 def main_fit(cfg_parms):
-    # cfg = setup1(cfg_parms)
-    cfg = setup_dense(cfg_parms)
+    cfg = setup1(cfg_parms)
 
     # if cfg_parms['dense'] == True:
     #     cfg = setup_dense(cfg_parms)

@@ -101,7 +101,7 @@ def get_bird_species_dicts(data_dir,class_names,unknown_bird_category, img_ext, 
     for _, row in imgs_anns_df.iterrows():
       obj = None
       for id, class_name in enumerate(class_names):
-        if class_name in row["class_name"]:   ########### why using "in" instead of "==" ?
+        if class_name in row["class_id"]:   ########### why using "in" instead of "==" ?
           obj = {
             "bbox": [row["x"], row["y"], row["width"], row["height"]],
             "bbox_mode": BoxMode.XYWH_ABS,

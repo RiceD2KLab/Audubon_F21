@@ -48,11 +48,12 @@ def plot_img_bbx_wrong(image, annotation_lst, annt_pred, img_file):
     for annot in annotation_lst:
         obj_class, desc, x_min, y_min, x_max, y_max = annot
         plotted_img.rectangle(((x_min, y_min), (x_max, y_max)), width=5, outline=(0, 0, 255))
-        plotted_img.text((x_min, y_min - 10), obj_class, fill = (255,255,255),)
-    # incorrect annt
+        # plotted_img.text((x_min, y_min - 10), obj_class, fill = (255,255,255),)
+
     for annot in annt_pred:
+        # print(annot)
         x_min, y_min, x_max, y_max = annot
-        plotted_img.rectangle(((x_min, y_min), (x_max, y_max)), width=5, outline=(255, 0, 0))
+        # plotted_img.rectangle(((x_min, y_min), (x_max, y_max)), width=5, outline=(255, 0, 0))
 
     plt.figure(figsize=(20, 10))  # this is for AWS imaging, 60,30 is too big for AWS sagemaker
     # plt.figure(figsize=(60, 30))
@@ -147,8 +148,8 @@ def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'J
                 pred_total.append(len(bird_species)+1)
                 miss_bird += 1
 
-        if annt_bbx.shape[0] > 1:
-            if miss_bird / (annt_bbx.shape[0]) > 0:
+        if annt_bbx.shape[0] > 10:
+            if miss_bird / (annt_bbx.shape[0]) == 0:
                 w_img = Image.open(file)
                 # print(file.replace(img_ext, 'csv'))
                 annot_dict = csv_to_dict(csv_path=file.replace(img_ext, 'csv'), test=False, annot_file_ext='csv')
@@ -156,7 +157,7 @@ def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'J
                 # if ('DJI' not in file.split('/')[-1]) or ('LBN' not in file.split('/')[-1]):
                 #     low_res.append(file.split('/')[-1])
                 bird_list = [x[1] for x in annt_list]
-                if "Great Egret Chick" in bird_list:
-                    plot_img_bbx_wrong(w_img, annt_list, annt_pred=pred_bbx.tolist(), img_file=file.split('/')[-1])
+                # if "Brown Pelican" in bird_list:
+                # plot_img_bbx_wrong(w_img, annt_list, annt_pred=pred_bbx.tolist(), img_file=file.split('/')[-1])
     return pred_total, truth_total
 
