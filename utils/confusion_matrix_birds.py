@@ -64,7 +64,7 @@ def plot_img_bbx_wrong(image, annotation_lst, annt_pred, img_file):
 
 
 
-def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'JPEG'):
+def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'JPEG', iou_thre = 0.5):
     '''
 
     Args:
@@ -98,10 +98,6 @@ def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'J
         pred_bbx = (lst[0][1].tensor).numpy()
         pred_species = (lst[-1][1]).numpy()
 
-        # print('pred: ', pred_bbx.shape, ' species: ', pred_species.shape)
-        # print(pred_bbx.tolist())
-        # print('annt: ', annt)
-
         # keeps track of found birds, if not then it in the not found category
         found = []
         miss_bird = 0
@@ -116,38 +112,35 @@ def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'J
 
             annt_bbx.drop(index=drop_index, inplace=True)
 
-        # Got rid of all the nest in the cropping section of the model
-
-        # drop_index = []
-        # for ind, val in enumerate(annt_bbx['desc']):
-        #     if 'Nest' in val:
-        #         drop_index.append(ind)
-        #         # print(val)
-        # annt_bbx.drop(index=drop_index, inplace=True)
-        #
         annt_bbx = annt_bbx[['x', 'y', 'width', 'height']].to_numpy()
-
         # compare the anntation and the prediction
+        # loop through all ground truth
         for birds in range(annt_bbx.shape[0]):
+            # calculating the Iout box
             box = annt_bbx[birds]
             # getting the x2 and y2 values
             box[2] += box[0]
             box[3] += box[1]
+            # counter to see if that bird has been found
             ff = 0
             for i in range(len(pred_bbx)):
                 if i in found:
                     continue
+                # if iou threshold is greater than 50% we have a hit
                 iou_val = iou(box, pred_bbx[i])
-                if iou_val >= .5:
+                if iou_val >= iou_thre:
+                    # append the prediction to the list
                     pred_total.append(pred_species[i])
                     found.append(i)
                     ff = 1
                     break
+            # if bird is not found then we append an extra category saying it was not found
             truth_total.append(annt[birds]['category_id'])
             if ff == 0:
                 pred_total.append(len(bird_species)+1)
                 miss_bird += 1
 
+        # plotting the prediction and ground truth
         if annt_bbx.shape[0] > 10:
             if miss_bird / (annt_bbx.shape[0]) == 0:
                 w_img = Image.open(file)
