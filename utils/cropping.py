@@ -43,7 +43,7 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     return info_dict
 
 
-def dict_to_csv(info_dict, output_path, empty):
+def dict_to_csv(info_dict, output_path, empty, img_ext= 'JPEG'):
     """
     Function to convert (cropped images') info_dicts to annoatation csv files
     INPUT:
@@ -57,6 +57,11 @@ def dict_to_csv(info_dict, output_path, empty):
     schema = ['class_id', 'desc', 'x', 'y', 'width', 'height']
     if not empty:
         for obj in info_dict['bbox']:
+            # if 'Nest' in obj['desc']:
+            #     continue
+            # if ('Flying' in obj['desc']) or ('Wings Spread' in obj['desc']):
+            #     obj['class'] = 'Fly'
+            #     obj['desc'] = 'Fly'
             className = obj['class']
             desc = obj['desc']
             xmin = obj['xmin']
@@ -66,14 +71,21 @@ def dict_to_csv(info_dict, output_path, empty):
             # className, description, xmin, ymin, width, height
             new_bbx_buffer.append([className, desc, int(xmin), int(ymin), int(xmax) - int(xmin), int(ymax) - int(ymin)])
     # Name of the file to save
-    save_file_name = os.path.join(output_path, info_dict["file_name"].replace('JPG', 'csv'))
+    if img_ext == 'JPEG':
+        save_file_name = os.path.join(output_path, info_dict["file_name"].replace('JPEG', 'csv'))
+    if img_ext == 'JPG':
+        save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
+
+    if img_ext == 'bbx':
+        save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
+
+    # print(save_file_name)
     # write to files
     with open(save_file_name, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([g for g in schema])
         if not empty:
             writer.writerows(new_bbx_buffer)
-    # print(save_file_name)
 
 
 def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
