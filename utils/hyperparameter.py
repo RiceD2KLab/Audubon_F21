@@ -37,7 +37,7 @@ from Audubon_F21.utils.evaluation import PrecisionRecallEvaluator, get_precision
 import json
 import optuna
 
-
+# Set up the model for running. This is the most basic model
 def setup(cfg_parms):
     # outputs the best hyperparameter tuned model
     cfg = get_cfg()
@@ -71,6 +71,7 @@ def setup(cfg_parms):
 
     return cfg
 
+# Set up the model for running. This is the most basic model
 
 def setup1(cfg_parms):
     cfg = get_cfg()
@@ -106,7 +107,7 @@ def setup1(cfg_parms):
 
     return cfg
 
-
+# Set up the model for running the model with custom loss function
 def setup_loss(cfg_parms):
     cfg = get_cfg()
     cfg.merge_from_file(model_zoo.get_config_file(f"COCO-Detection/{cfg_parms['model_name']}.yaml"))
@@ -153,7 +154,7 @@ def setup_loss(cfg_parms):
 
     return cfg
 
-
+# Set up the model for running the Faster RCNN with a dense net backbone
 def setup_dense(cfg_parms):
     import FasterRCNNDenseNet.densenet.densenet
 
@@ -199,7 +200,7 @@ def setup_dense(cfg_parms):
 
     return cfg
 
-
+# setting up the training
 def train(cfg):
     cfg.DATASETS.TRAIN = ("birds_species_Train",)
     cfg.DATASETS.TEST = ("birds_species_Validate",)  # "birds_test"
@@ -212,10 +213,9 @@ def train(cfg):
     return trainer.train()
 
 
+# evaluting the model for the hyperparameter tuning. This is performed on the validation st
 def eval(cfg, cfg_parms):
     '''
-
-
     Args:
         cfg: the model that we are using for the predictor (so faster R-CNN)
         cfg_parms: is a dictionary of all the parameters needed for t
@@ -236,32 +236,10 @@ def eval(cfg, cfg_parms):
     # print('validation inference:')
     val_precisions, val_max_recalls = get_precisions_recalls(cfg, predictor, "birds_species_Validate")
 
-    # plot_precision_recall(val_precisions, val_max_recalls, BIRD_SPECIES + ["Unknown Bird"],
-    #                       BIRD_SPECIES_COLORS + [(0, 0, 0)])
-    # print('test inference:')
-    # test_precisions, test_max_recalls = get_precisions_recalls(cfg, predictor, "birds_species_test")
-    # plot_precision_recall(test_precisions, test_max_recalls, BIRD_SPECIES + ["Unknown Bird"],
-    #                       BIRD_SPECIES_COLORS + [(0, 0, 0)])
-
-    # for d in ["val", "test"]:
-    #     dataset_dicts = DatasetCatalog.get(f"birds_species_{d}")
-    #     print(f'\n {d} examples:')
-    #     for k in random.sample(dataset_dicts, 3):
-    #         im = cv2.imread(k["file_name"])
-    #         outputs = predictor(im)
-    #         outputs = outputs["instances"].to("cpu")
-    #         outputs = outputs[outputs.scores > 0.5]
-    #         v = Visualizer(im[:, :, ::-1],
-    #                        metadata=MetadataCatalog.get(f"birds_species_{d}"),
-    #                        scale=0.5,
-    #                        instance_mode=ColorMode.SEGMENTATION)
-    #         out = v.draw_instance_predictions(outputs)
-    #         cv2.imshow(f'{d} prediction {i}', out.get_image()[:, :, ::-1])
-    #         cv2.waitKey(1)
-
     return sum(val_precisions) / len(val_precisions)
 
 
+# building the model for hyperparameter tuning
 def build_model_for_hp(params, cfg_parms):
     cfg_parms['GAMMA'] = params['gamma']
     cfg_parms['BASE_LR'] = params['base_learning_rate']
@@ -270,33 +248,25 @@ def build_model_for_hp(params, cfg_parms):
 
     cfg = setup1(cfg_parms)
 
-    # cfg = setup1(cfg_parms)
-    #
-    # if cfg_parms['dense'] == 'True':
-    #     cfg = setup_dense(cfg_parms)
-    #
-    # else:
-    #     cfg = setup1(cfg_parms)
-
     return cfg
 
-
+# objective function for HP tuning. 
 def objective(trial):
     params = {
         'base_learning_rate': trial.suggest_loguniform('base_learning_rate', 1e-4, 0.1),
         'gamma': trial.suggest_loguniform('gamma', 0.001, 0.2)
     }
+    # if learning rate is too high then output a large validation loss
     try:
         model_cfg = build_model_for_hp(params, cfg_parms_cp)
         # train on bird species
-
         train(model_cfg)
 
         # find the last validation loss value produced by the model
         metrics = os.path.join(model_cfg.OUTPUT_DIR, 'metrics.json')
 
         f = open(metrics, 'r')
-
+        
         for i in f:
             data = json.loads(i)
             if data['iteration'] == model_cfg.SOLVER.MAX_ITER - 1:
@@ -307,14 +277,14 @@ def objective(trial):
 
     return val_loss
 
-
+# bayesian hyperparameter optimization
 def hp_tune(iter):
     # create study for hyper paramter tuning
     study = optuna.create_study(direction="minimize", sampler=optuna.samplers.TPESampler())
     study.optimize(objective, n_trials=iter)
     return study
 
-
+# pipeline for hyperparameter tuning.
 def main_hyper(cfg_parms, iterations):
     global cfg_parms_cp
     cfg_parms_cp = cfg_parms
@@ -328,14 +298,9 @@ def main_hyper(cfg_parms, iterations):
     return cfg_parms
 
 
-
+# only one model fit
 def main_fit(cfg_parms):
     cfg = setup1(cfg_parms)
-
-    # if cfg_parms['dense'] == True:
-    #     cfg = setup_dense(cfg_parms)
-    # else:
-    #     cfg = setup1(cfg_parms)
 
     train(cfg)
 
@@ -350,5 +315,4 @@ def main_fit(cfg_parms):
             val_loss = data['validation_loss']
     print(' val loss is: ', val_loss)
 
-    # val_loss = eval(cfg,cfg_parms)
     return cfg.OUTPUT_DIR, val_loss
