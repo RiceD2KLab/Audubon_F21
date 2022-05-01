@@ -5,8 +5,8 @@ import pandas as pd
 from PIL import Image
 import cv2
 from tqdm.autonotebook import tqdm
-# from utils.cropping_hank import csv_to_dict # only use this if on PC
-from Audubon_F21.utils.cropping_hank import csv_to_dict
+from utils.cropping_hank import csv_to_dict # only use this if on PC
+# from Audubon_F21.utils.cropping_hank import csv_to_dict
 from PIL import Image, ImageDraw
 
 

@@ -132,9 +132,9 @@ def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
          class_colors: List of colors for corresponding to bird species
     """
     recall = np.linspace(0, 1, 101)
-    fig, ax = plt.subplots()
-    fig_iou50, ax_iou50 = plt.subplots()
-    fig_iou75, ax_iou75 = plt.subplots()
+    # fig, ax = plt.subplots()
+    # fig_iou50, ax_iou50 = plt.subplots()
+    # fig_iou75, ax_iou75 = plt.subplots()
     for c_indx, class_name in enumerate(class_names):
         fig, ax = plt.subplots()
         fig_iou50, ax_iou50 = plt.subplots()
