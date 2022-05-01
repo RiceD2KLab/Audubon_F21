@@ -1,5 +1,3 @@
-# # # # # making the output file with using non maximum suppression
-# # # #
 from utils.cropping_hank import crop_dataset_img_only
 import os, sys, shutil, glob
 import numpy as np
@@ -80,28 +78,25 @@ SLIDING_SIZE = 400
 
 from utils.dataloader import get_bird_species_dicts
 from detectron2.data import DatasetCatalog
-
+from sklearn.metrics import confusion_matrix, classification_report
 from utils.confusion_matrix_birds import confusion_matrix_report
 
 # registering the test dataset
 d = 1
 
-
 train_set_dir = crop_dir + '\Test'
 DatasetCatalog.register('test_set', lambda d=d: get_bird_species_dicts(train_set_dir, birds_species_names,
                                                                        img_ext='.JPG', unknown_bird_category=True))
-
 data = DatasetCatalog.get("test_set")
 
 # grab the confusion matrix
 pred_total, truth_total = confusion_matrix_report(data, predictor, birds_species_names, img_ext='JPG')
-#
-from sklearn.metrics import confusion_matrix, classification_report
 
-# print(confusion_matrix(truth_total, pred_total))
-# print(classification_report(truth_total, pred_total))
+print(confusion_matrix(truth_total, pred_total))
+print(classification_report(truth_total, pred_total))
 
-
+########################################################################################################################
+# precision and recall curve
 from utils.evaluation import get_precisions_recalls, plot_precision_recall
 
 cfg.DATASETS.TEST = ("test_set",)
@@ -116,6 +111,7 @@ BIRD_SPECIES_COLORS = [(255, 0, 0), (255, 153, 51), (0, 255, 0),
                        (0, 0, 255), (255, 51, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255), (255, 255, 255)]
 register_datasets(dirs, img_ext, BIRD_SPECIES, bird_species_colors=BIRD_SPECIES_COLORS, unknown_bird_category=False)
 
+# change this to the specific directory of the fitting model
 cfg.OUTPUT_DIR = 'C://Users\\VelocityUser\\Documents\\Training_models\\03_24_bay_tune_10class_aug_B\\faster_rcnn_R_50_FPN_1x-20220402-174351'
 
 # print('validation inference:')
