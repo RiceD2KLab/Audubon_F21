@@ -251,7 +251,7 @@ Due to the lack of annotated data available for other bird species, we re-label 
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/raulgarcia66">@Raul</a> <br>
 
-  <b>Dhananjay Vijay Singh</b> wyl1@rice.edu<br>
+  <b>Dhananjay Vijay Singh</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: Dv17@rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@awx1</a> <br>
 
