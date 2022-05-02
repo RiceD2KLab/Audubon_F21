@@ -42,47 +42,14 @@ def csv_to_dict(csv_path, class_map={}, test=False, annot_file_ext='csv'):
     return info_dict
 
 
-def dict_to_csv(info_dict, output_path, empty, test=False):
-    """
-    Function to convert (cropped images') info_dicts to annoatation csv files
-    INPUT:
-     info_dict -- output from the csv_to_dict function, containing bbox, filename, img_size
-     output_path -- folder path to store the converted csv files
-    OUTPUT:
-      an csv file(corresponding for 1 image) saved to a folder. The bndbox info in the format of (className,
-      xmin, ymin, width, height)
-    """
-    new_bbx_buffer = []
-    schema = ['class_id', 'desc', 'x', 'y', 'width', 'height']
-    if not empty:
-        for obj in info_dict['bbox']:
-            className = obj['class']
-            desc = obj['desc']
-            xmin = obj['xmin']
-            xmax = obj['xmax']
-            ymin = obj['ymin']
-            ymax = obj['ymax']
-            # className, description, xmin, ymin, width, height
-            new_bbx_buffer.append([className, desc, int(xmin), int(ymin), int(xmax) - int(xmin), int(ymax) - int(ymin)])
-    # Name of the file to save
-    if test:
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace('JPEG', 'csv'))
-    else:
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace('JPG', 'csv'))
-    # write to files
-    with open(save_file_name, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([g for g in schema])
-        if not empty:
-            writer.writerows(new_bbx_buffer)
-    # print(save_file_name)
-
 def dict_to_csv(info_dict, output_path, empty, img_ext):
     """
     Function to convert (cropped images') info_dicts to annoatation csv files
     INPUT:
      info_dict -- output from the csv_to_dict function, containing bbox, filename, img_size
      output_path -- folder path to store the converted csv files
+     empty -- default to be false
+     img_ext -- file extension specified for saved image
     OUTPUT:
       an csv file(corresponding for 1 image) saved to a folder. The bndbox info in the format of (className,
       xmin, ymin, width, height)
@@ -122,7 +89,18 @@ def dict_to_csv(info_dict, output_path, empty, img_ext):
             writer.writerows(new_bbx_buffer)
 
 def flip_img(img, info_dict, output_dir, command, img_ext):
-    # is_h_flip
+    """
+    Function to flip image and reannotate the coordinates of the birds within
+    INPUT:
+      img -- image file ready to be flipped
+      info_dict -- input image information dictionary
+      output_dir -- flipped image and annotation output directory
+      command -- flipping command
+      img_ext -- file extension specified for saved image
+    OUTPUT:
+      automatically save processed image and annotation csv files
+    """
+    # horizontal flipping command
     if command[0]:
         # Read info
         img_width, img_height, img_depth = info_dict['img_size']
@@ -152,7 +130,8 @@ def flip_img(img, info_dict, output_dir, command, img_ext):
         # Save Annotation
         # dict_to_csv(hflip_dict, empty=False, output_path=output_dir, test=True)
         dict_to_csv(hflip_dict, output_path = output_dir, empty = False, img_ext = img_ext)
-
+    
+    # vertical flipping command
     if command[1]:
         # Read info
         img_width, img_height, img_depth = info_dict['img_size']
@@ -180,12 +159,22 @@ def flip_img(img, info_dict, output_dir, command, img_ext):
             vflip_dict['bbox'].append(instancef_dict)
 
         # Save Annotation
-        # dict_to_csv(vflip_dict, empty=False, output_path=output_dir, test=True)
         dict_to_csv(vflip_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
 
 def rotate_img(img, info_dict, output_dir, command, img_ext):
-    # is_left_rotate
+    """
+    Function to rotate image and reannotate the coordinates of the birds within
+    INPUT:
+      img -- image file ready to be rotated
+      info_dict -- input image information dictionary
+      output_dir -- rotated image and annotation output directory
+      command -- rotation command
+      img_ext -- file extension specified for saved image
+    OUTPUT:
+      automatically save processed image and annotation csv files
+    """
+    # left rotation command
     if command[0]:
         # Read info
         img_width, img_height, img_depth = info_dict['img_size']
@@ -216,7 +205,7 @@ def rotate_img(img, info_dict, output_dir, command, img_ext):
         # dict_to_csv(lrot_dict, empty=False, output_path=output_dir, test=True)
         dict_to_csv(lrot_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
-    # is_right_rotate
+    # right rotation command
     if command[1]:
         # Read info
         img_width, img_height, img_depth = info_dict['img_size']
@@ -249,6 +238,18 @@ def rotate_img(img, info_dict, output_dir, command, img_ext):
 
 
 def color_img(img, info_dict, output_dir, command, img_ext):
+    """
+    Function to tune image brightness/contrast and reannotate the coordinates of the birds within
+    INPUT:
+      img -- image file ready to be tuned
+      info_dict -- input image information dictionary
+      output_dir -- color-tuned image and annotation output directory
+      command -- color tuning command
+      img_ext -- file extension specified for saved image
+    OUTPUT:
+      automatically save processed image and annotation csv files
+    """
+    # color tuning command
     if command[0]:
         # Randomly change the brightness and contrast
         jitter = transforms.ColorJitter(brightness=.5, contrast=.3)
@@ -272,6 +273,20 @@ def color_img(img, info_dict, output_dir, command, img_ext):
 
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, aug_command, img_ext,
               annot_file_ext='bbx'):
+    """
+    Function to perform data augmentation on one image file
+    INPUT:
+      csv_file -- image annotation file
+      crop_height/crop_width -- tile size
+      output_dir -- augmented images and annotations output directory
+      overlap -- minimum portion of a bounding box being accepted in a tile
+      thres -- threshold of non-minor creatures existing in a tile
+      aug_command -- augmentation methods
+      minor_species -- species that we want to augment
+      img_ext -- file extension specified for saved image
+    OUTPUT:
+      automatically save cropped tiles and annotation files
+    """
     # Read csv file
     file_name = os.path.split(csv_file)[-1][:-4]
 
@@ -349,7 +364,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
             # cropped.save(output_dir + "/" + file_name + "_" + str(valid_i).zfill(2) + "."+img_ext)
             # # print(file_dict["file_name"] )
             # # dict_to_csv(file_dict, empty=False, output_path=output_dir, test=True)
-            # dict_to_csv(file_dict, output_path=output_dir, empty= False, img_ext=img_ext)
+            # dict_to_csv(file_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
             # Flipping, rotation and color manipulation
             flip_img(img=cropped, info_dict=file_dict, output_dir=output_dir, command=aug_command[0:2], img_ext= img_ext)
@@ -359,7 +374,14 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
 
 def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext='bbx',
                 crop_height=640, crop_width=640):
-
+    """
+    Function to perform data augmentation on a dataset
+    INPUT:
+      input_dir -- input directory of images and annotation files
+      output_dir -- output directory of augmented images and annotation files
+    OUTPUT:
+      automatically save cropped tiles and annotation files
+    """
     if annot_file_ext == annot_file_ext:
         files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == annot_file_ext]
     for file in tqdm(files, desc='Aug_files'):
@@ -367,84 +389,6 @@ def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_comman
                   minor_species=minor_species, overlap=overlap, thres=thres, annot_file_ext=annot_file_ext,
                   img_ext=img_ext, aug_command=aug_command)
 
-
-#
-def Test_aug_minor(csv_file, output_dir, minor_species, overlap, thres, img_ext, annot_file_ext='csv'):
-    file_name = os.path.split(csv_file)[-1][:-4]
-
-    # annotation
-    annot_dict = csv_to_dict(csv_path=csv_file, annot_file_ext=annot_file_ext)
-    annotation_lst = [list(x.values()) for x in annot_dict['bbox']]
-
-    # print(annot_dict)
-    # print(annotation_lst)
-    image_file = csv_file.replace(annot_file_ext, img_ext)
-    assert os.path.exists(image_file)
-
-    crop_width = 640
-    crop_height = 640
-    image = Image.open(image_file)
-    width, height = image.size
-
-    minors = []
-    valid_i = 0
-    for dic in annot_dict['bbox']:
-        if dic["class"] in minor_species:
-            minors.append(dic)
-
-    for i in range(len(minors)):
-        minor = minors[i]
-        center_w, center_h = (minor["xmin"] + minor["xmax"]) // 2, (minor["ymin"] + minor["ymax"]) // 2
-
-        left, top, right, bottom = center_w - 0.5 * crop_width, center_h - 0.5 * crop_width, center_w + 0.5 * crop_width, center_h + 0.5 * crop_height
-        if left < 0:
-            left, right = 0, crop_width
-        if right > width:
-            left, right = width - crop_width, width
-        if top < 0:
-            top, bottom = 0, crop_height
-        if bottom > height:
-            top, bottom = height - crop_height, height
-
-        file_dict = {}
-        file_dict["bbox"] = []
-        file_dict["img_size"] = (crop_width, crop_height, 3)
-
-        for bbx in annot_dict['bbox']:
-            ymin = max(bbx['ymin'] - top, 0)
-            ymax = min(bbx['ymax'] - top, crop_height)
-            xmin = max(bbx['xmin'] - left, 0)
-            xmax = min(bbx['xmax'] - left, crop_width)
-            # if the bird is not in this patch, pass
-            if xmin > crop_width or xmax < 0 or ymin > crop_height or ymax < 0:  # >=
-                continue
-            else:
-                if (xmax - xmin) * (ymax - ymin) > overlap * (bbx['xmax'] - bbx['xmin']) * (bbx['ymax'] - bbx['ymin']):
-                    instance_dict = {}
-                    instance_dict['class'] = bbx['class']
-                    instance_dict['desc'] = bbx['desc']
-                    instance_dict['xmin'] = max(bbx['xmin'] - left, 0)
-                    instance_dict['ymin'] = max(bbx['ymin'] - top, 0)
-                    instance_dict['xmax'] = min(bbx['xmax'] - left, crop_width)
-                    instance_dict['ymax'] = min(bbx['ymax'] - top, crop_height)
-
-                    file_dict['bbox'].append(instance_dict)
-
-        non_minor = 0
-        for bbx in file_dict['bbox']:
-            if bbx['desc'] not in minor_species:
-                non_minor += 1
-
-        if non_minor / len(file_dict['bbox']) > thres:
-            continue
-        else:
-            valid_i += 1
-            file_dict["file_name"] = file_name + "_" + str(valid_i).zfill(2) + "." + img_ext
-            image.save(output_dir + "/" + file_name + "_" + str(valid_i).zfill(2) + "." + img_ext)
-
-            # dict_to_csv(file_dict, empty=False, output_path=output_dir, test = True)
-            # print(file_dict)
-            flip_img(img=image, info_dict=file_dict, output_dir=output_dir, img_ext=img_ext)
 
 
 def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, img_ext, annot_file_ext='csv'):
