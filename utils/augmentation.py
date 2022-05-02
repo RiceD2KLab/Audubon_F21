@@ -128,7 +128,6 @@ def flip_img(img, info_dict, output_dir, command, img_ext):
             hflip_dict['bbox'].append(instancef_dict)
 
         # Save Annotation
-        # dict_to_csv(hflip_dict, empty=False, output_path=output_dir, test=True)
         dict_to_csv(hflip_dict, output_path = output_dir, empty = False, img_ext = img_ext)
     
     # vertical flipping command
@@ -202,7 +201,6 @@ def rotate_img(img, info_dict, output_dir, command, img_ext):
             lrot_dict['bbox'].append(instance_dict)
 
         # Save annotation
-        # dict_to_csv(lrot_dict, empty=False, output_path=output_dir, test=True)
         dict_to_csv(lrot_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
     # right rotation command
@@ -233,7 +231,6 @@ def rotate_img(img, info_dict, output_dir, command, img_ext):
             rrot_dict['bbox'].append(instance_dict)
 
         # Save annotation
-        # dict_to_csv(rrot_dict, empty=False, output_path=output_dir, test=True)
         dict_to_csv(rrot_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
 
@@ -267,7 +264,6 @@ def color_img(img, info_dict, output_dir, command, img_ext):
             jit_dict["file_name"] = name
 
             # Save annotation
-            # dict_to_csv(jit_dict, empty=False, output_path=output_dir, test=True)
             dict_to_csv(jit_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
 
@@ -388,7 +384,6 @@ def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_comman
         aug_minor(csv_file=file, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir,
                   minor_species=minor_species, overlap=overlap, thres=thres, annot_file_ext=annot_file_ext,
                   img_ext=img_ext, aug_command=aug_command)
-
 
 
 def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, img_ext, annot_file_ext='csv'):
