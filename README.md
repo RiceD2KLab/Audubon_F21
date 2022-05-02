@@ -53,7 +53,7 @@
 <img src="https://raw.githubusercontent.com/numpy/numpy/9ee47e0ebe7e869f4ddcf1e3d18978fa23d43c1d/branding/logo/primary/numpylogo.svg" width="140">
 <img src="https://pandas.pydata.org/static/img/pandas.svg" width="150">
 <img src="https://matplotlib.org/_static/logo2.svg" width="150">
-<img src="https://github.com/opencv/opencv/blob/f86c8656a3bfa9219359faba16fd11091fbb7938/doc/js_tutorials/js_assets/opencv_logo.jpg?raw=true" width="150">
+<img src="https://github.com/opencv/opencv/blob/f86c8656a3bfa9219359faba16fd11091fbb7938/doc/js_tutorials/js_assets/opencv_logo.jpg?raw=true" width="50">
 
 <!--This project is written in Python programming language. <br>-->
 The following open source packages are used in this project:
