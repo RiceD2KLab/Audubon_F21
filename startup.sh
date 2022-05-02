@@ -72,7 +72,7 @@ if [[ -z "$OUTPUT_DIR" ]]; then
 fi
 echo $OUTPUT_DIR
 
-echo "Going to train model:"
+echo "Going to train model..."
 
 python Audubon_S22.py --data_dir=$DATA_DIR --img_ext=$IMG_EXT --dir_exceptions=$DIR_IGNORE --num_workers=$NUM_WORKERS
 --max_iter=$MAX_ITERS --batch_size=$BATCH_SIZE --output_dir=$OUTPUT_DIR
