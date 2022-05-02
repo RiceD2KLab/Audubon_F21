@@ -49,11 +49,11 @@
 <h2 id="prerequisites"> Prerequisites</h2>
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) <br>
-<img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200">
 <img src="https://raw.githubusercontent.com/numpy/numpy/9ee47e0ebe7e869f4ddcf1e3d18978fa23d43c1d/branding/logo/primary/numpylogo.svg" width="140">
 <img src="https://pandas.pydata.org/static/img/pandas.svg" width="150">
 <img src="https://matplotlib.org/_static/logo2.svg" width="150">
-<img src="https://github.com/opencv/opencv/blob/f86c8656a3bfa9219359faba16fd11091fbb7938/doc/js_tutorials/js_assets/opencv_logo.jpg?raw=true" width="50">
+<img src="https://github.com/opencv/opencv/blob/f86c8656a3bfa9219359faba16fd11091fbb7938/doc/js_tutorials/js_assets/opencv_logo.jpg?raw=true" width="75">
+<img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200">
 
 <!--This project is written in Python programming language. <br>-->
 The following open source packages are used in this project:
@@ -62,7 +62,6 @@ The following open source packages are used in this project:
 * Matplotlib
 * OpenCV 
 * Detectron2
-* WAndB
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
