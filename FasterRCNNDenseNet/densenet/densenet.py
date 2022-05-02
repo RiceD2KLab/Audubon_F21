@@ -1,4 +1,9 @@
-# Adapted from PyTorch's DenseNet source code
+# DenseNet backbone adapted from PyTorch's DenseNet source code
+# https://pytorch.org/vision/0.8/_modules/torchvision/models/densenet.html
+
+# Faster R-CNN with DensetNet adapted from VoVNet source code
+# https://github.com/youngwanLEE/detectron2/tree/vovnet/projects/VoVNet
+
 
 from detectron2.modeling import BACKBONE_REGISTRY, Backbone, ShapeSpec # FPN
 from detectron2.layers import FrozenBatchNorm2d
@@ -203,6 +208,7 @@ class DenseNetBackbone(Backbone):
 
         self._freeze_backbone(cfg.MODEL.BACKBONE.FREEZE_AT, max_layer=block_config[3])
 
+    # TODO: Figure out if to freeze by denseblocks, by layers in last denseblock, or by layers and denseblock
     def _freeze_backbone(self, freeze_at, max_layer):
         freeze_all = False
         if freeze_at < 0:
