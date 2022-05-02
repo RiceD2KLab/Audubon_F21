@@ -21,55 +21,8 @@ from detectron2.modeling import ROI_HEADS_REGISTRY
 
 import numpy as np
 
-# ROI_HEADS_REGISTRY = Registry("MyStandardROIHeads")
-#
-#
-# # this function makes the custom loss function based off the distribution of the classes
-# @ROI_HEADS_REGISTRY.register()
-# class MyStandardROIHeads(StandardROIHeads):
-#     def __init__(self, cfg, input_shape):
-#         # super().__init__(cfg, input_shape,
-#         #                  box_predictor=MyRCNNOutput(cfg, box_head.output_shape))
-#         super().__init__()
-#
-#     @classmethod
-#     def _init_box_head(cls, cfg, input_shape):
-#         # fmt: off
-#         in_features = cfg.MODEL.ROI_HEADS.IN_FEATURES
-#         pooler_resolution = cfg.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION
-#         pooler_scales = tuple(1.0 / input_shape[k].stride for k in in_features)
-#         sampling_ratio = cfg.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO
-#         pooler_type = cfg.MODEL.ROI_BOX_HEAD.POOLER_TYPE
-#         # fmt: on
-#
-#         # If StandardROIHeads is applied on multiple feature maps (as in FPN),
-#         # then we share the same predictors and therefore the channel counts must be the same
-#         in_channels = [input_shape[f].channels for f in in_features]
-#         # Check all channel counts are equal
-#         assert len(set(in_channels)) == 1, in_channels
-#         in_channels = in_channels[0]
-#
-#         box_pooler = ROIPooler(
-#             output_size=pooler_resolution,
-#             scales=pooler_scales,
-#             sampling_ratio=sampling_ratio,
-#             pooler_type=pooler_type,
-#         )
-#         # Here we split "box head" and "box predictor", which is mainly due to historical reasons.
-#         # They are used together so the "box predictor" layers should be part of the "box head".
-#         # New subclasses of ROIHeads do not need "box predictor"s.
-#         box_head = build_box_head(
-#             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
-#         )
-#         box_predictor = CustomFastRCNNOutputLayers(cfg, box_head.output_shape)
-#         return {
-#             "box_in_features": in_features,
-#             "box_pooler": box_pooler,
-#             "box_head": box_head,
-#             "box_predictor": box_predictor,
-#         }
-
-
+# this function was grabbed from the Detectron2.modeling. We overwrote this function to create grab the loss per iteration
+# refer more to the official documentation.
 def _log_classification_stats(pred_logits, gt_classes, prefix="fast_rcnn"):
     """
     Log the classification metrics to EventStorage.
@@ -99,7 +52,10 @@ def _log_classification_stats(pred_logits, gt_classes, prefix="fast_rcnn"):
         storage.put_scalar(f"{prefix}/fg_cls_accuracy", fg_num_accurate / num_fg)
         storage.put_scalar(f"{prefix}/false_negative", num_false_negative / num_fg)
 
-
+        
+        
+# custom loss function, this inherits the FasterRCNNOutputlayer function and changes the weights in the cross entropy funciton
+# most function is kept the same.
 class CustomFastRCNNOutputLayers(FastRCNNOutputLayers):
 
     def __init__(self, cfg, input_shape, weight):
@@ -113,12 +69,15 @@ class CustomFastRCNNOutputLayers(FastRCNNOutputLayers):
         box_head = build_box_head(
             cfg, ShapeSpec(channels=in_channels, height=pooler_resolution, width=pooler_resolution)
         )
+        # different ways of grabbing the custom weight array
+        
         # input_shape = box_head.output_shape
-
         # self.custom_weight = torch.from_numpy(np.array(cfg.MODEL.weight, )
         # w = np.array(self.custom_weight, dtype='float32')
         # torch.from_numpy(w).to("cuda:0")
         # self.gw = gpu_weight
+        
+        # grabbing the weights
         self.gpu_weight = weight
         FastRCNNOutputLayers.__init__(self, input_shape = box_head.output_shape,
                                       box2box_transform= Box2BoxTransform(weights=cfg.MODEL.ROI_BOX_HEAD.BBOX_REG_WEIGHTS)
@@ -163,7 +122,7 @@ class CustomFastRCNNOutputLayers(FastRCNNOutputLayers):
         # w = np.array(self.custom_weight, dtype= 'float32')
         losses = {
             # "loss_cls": cross_entropy(scores, gt_classes, reduction="mean"),
-            'loss_cls': F.cross_entropy(scores, gt_classes, reduction="mean", weight=self.gpu_weight),
+            'loss_cls': F.cross_entropy(scores, gt_classes, reduction="mean", weight=self.gpu_weight),#main function change!
             "loss_box_reg": self.box_reg_loss(
                 proposal_boxes, gt_boxes, proposal_deltas, gt_classes
             ),
