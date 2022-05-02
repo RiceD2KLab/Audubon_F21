@@ -269,7 +269,7 @@ def color_img(img, info_dict, output_dir, command, img_ext):
 
 
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, aug_command, img_ext,
-              annot_file_ext='bbx'):
+              annot_file_ext):
     """
     Function to perform data augmentation on one image file
     INPUT:
@@ -281,6 +281,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
       aug_command -- augmentation methods
       minor_species -- species that we want to augment
       img_ext -- file extension specified for saved image
+      annot_file_ext -- annotation file extension
     OUTPUT:
       automatically save cropped tiles and annotation files
     """
@@ -368,7 +369,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
             color_img(img=cropped, info_dict=file_dict, output_dir=output_dir, command=aug_command[-1], img_ext= img_ext)
 
 
-def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext='bbx',
+def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext,
                 crop_height=640, crop_width=640):
     """
     Function to perform data augmentation on a dataset
@@ -378,8 +379,7 @@ def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_comman
     OUTPUT:
       automatically save cropped tiles and annotation files
     """
-    if annot_file_ext == annot_file_ext:
-        files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == annot_file_ext]
+    files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == annot_file_ext]
     for file in tqdm(files, desc='Aug_files'):
         aug_minor(csv_file=file, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir,
                   minor_species=minor_species, overlap=overlap, thres=thres, annot_file_ext=annot_file_ext,
