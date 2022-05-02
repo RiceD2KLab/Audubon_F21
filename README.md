@@ -207,13 +207,13 @@ but only original images will be used for evaluation and testing purposes.
 </p>
 
  <li><b>Hyper-parameters tuning</b></li>
+
+ <li><b>Weighted loss function</b></li>
  The idea is to give sample size-based weights to different classes in the loss function, so that the model will lean more focus on the minority classes during training. In the classification layer of the network, we propose a custom weighted Cross Entropy loss function:
 
 <p align="center">
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/WeightedLoss.png" width="300">
 </p>
-
- <li><b>Weighted loss function</b></li>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
