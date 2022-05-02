@@ -206,10 +206,15 @@ but only original images will be used for evaluation and testing purposes.
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Flex_Faster_RCNN/fasterRCNN.png">
 </p>
 
- <li><b>Hyper-parameters tuning</b></li>
+ <li><b>Bayesian Hyperparameters tuning</b></li>
+Model performance is heavily influenced by hyperparameters. Grid search or manual tuning both necessitate a lot of tuning skill and computational resources, which is why we employ bayesian hyperparameters tuning to address these two issues.This model’s entire procedure is defined as follows:
+(1) To describe the uncertainty, compute the posterior belief u(x) using a surrogate Gaussian pro- cess to create an estimate of the mean and standard deviation around this estimate σ(x).
+(2) Calculate an acquisition function a(x) that is proportional to how advantageous it is to sample the next point in the range of values.
+(3) Locate the maximum point of this acquisition function and sample from there.
+(4) This process is repeated a certain number of times, commonly known as the optimization bud- get, until a pretty good point is reached.
 
  <li><b>Weighted loss function</b></li>
- The idea is to give sample size-based weights to different classes in the loss function, so that the model will lean more focus on the minority classes during training. In the classification layer of the network, we propose a custom weighted Cross Entropy loss function:
+Given that our dataset is unbalanced and has to be corrected. The idea is to give distinct classes in the loss function sample size-based weights so that the model can focus more on the minority classes during training. We propose a custom weighted Cross Entropy loss function for the network's classification layer:
 
 <p align="center">
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/WeightedLoss.png" width="300">
