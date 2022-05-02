@@ -170,34 +170,6 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
-<!-- PREPROCESSING -->
-<h2 id="preprocessing"> Preprocessing</h2>
-
-<p align="justify"> 
-  The data wrangling module of the pipeline largely involves preparing the data to be fed into deep learning models used to detect objects, namely birds. Our data wrangling process includes:
-  <ol>
-    <li><b>Tiling</b></li> 
-    <li><b>Data Augmentation</b></li>
-  </ol>
-
-</p>
-
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
-<!-- PRE-PROCESSED DATA -->
-<h2 id="tiling"> Tiling</h2>
-
-<p align="justify"> 
-  Principally, deep learning models train faster and have better performances on smaller images. For instance, 600 × 600 pixels is usually an ideal image size for typical object detection deep learning models. Therefore, our first attempt was to split the 8192 × 5460 images into tiles. The size of generated images can be specified by setting parameters and is default to be 600 × 600.
-  
-  A caveat of this approach is that unavoidably some birds will be cut into two parts and appear in two neighboring patches, as seen in Figure 2. In addition, as counting the number of birds is among the objectives, the same problem needs to be tackled in the detection phase as well. In this case, only the generated image with over 50% fraction of the cropped bird keeps the bounding box, while the remaining fraction of the bounding box in another image is discarded. This means that we are training the model to detect both complete birds and partial birds.
-  
-  In the detection stage, we will also try to come up with a proper merging mechanism to merge partial detection in neighboring patches and count as one if repeated counting is a common pattern in detection.
-</p>
-
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
 <!-- STATISTICAL FEATURE -->
 <h2 id="data-augmentation"> Data Augmentation</h2>
 
