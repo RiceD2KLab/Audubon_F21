@@ -149,7 +149,7 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
   <img src="assets/pipeline.png" width="600">
 </p>
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+![-----------------------------------------------------](https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Data.png?raw=true)
 
 <!-- DATASET -->
 <h2 id="dataset"> Dataset</h2>
