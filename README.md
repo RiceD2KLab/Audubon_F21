@@ -239,30 +239,32 @@ Due to the lack of annotated data available for other bird species, we re-label 
 
 <p>
   
-  <b>Krish Kabra</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: krish.kabra@rice.edu <a></a> <br>
+  <b>Wenbin Li</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu <a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/krishk97">@krishk97</a> <br>
   
-  <b>Minxuan Luo</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ml122@rice.edu<a></a> <br>
+  <b>Tianjiao Yu</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/minxuanluo">@minxuanluo</a> <br>
 
-  <b>Alexander Xiong</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: xionga27@rice.edu<a></a> <br>
+  <b>Raul Garcia</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
 
-  <b>William Lu</b> wyl1@rice.edu<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: <a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
+  <b>Dhananjay Vijay Singh</b> wyl1@rice.edu<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
 
-  <b>Anna Vallery</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: avallery@houstonaudubon.org<a></a> <br>
+  <b>Jiahui Yu</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
 
-  <b>Richard Gibbons Lu</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: rgibbons@houstonaudubon.org<a></a> <br>
+  <b>Maojie Tang</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
   
   <b>Hank Arnold</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: hmarnold@msn.com<a></a> <br>
 </p>
 <br>
-✤ <i>This was the project for the course COMP 449/549 - Machine Learning and Data Science Projects (Fall 2021), at <a href="https://www.rice.edu/">Rice University</a><i>
+✤ <i>This was the project for the course COMP 449/549 - Machine Learning and Data Science Projects (Spring 2022), at <a href="https://www.rice.edu/">Rice University</a><i>
