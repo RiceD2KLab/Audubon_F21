@@ -52,6 +52,8 @@
 <img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200">
 <img src="https://raw.githubusercontent.com/numpy/numpy/9ee47e0ebe7e869f4ddcf1e3d18978fa23d43c1d/branding/logo/primary/numpylogo.svg" width="140">
 <img src="https://pandas.pydata.org/static/img/pandas.svg" width="150">
+<img src="https://matplotlib.org/_static/logo2.svg" width="150">
+
 <!--This project is written in Python programming language. <br>-->
 The following open source packages are used in this project:
 * Numpy
