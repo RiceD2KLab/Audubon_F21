@@ -143,20 +143,10 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 ![-----------------------------------------------------](https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/DataPipeLine.png?raw=true)
 
 <!-- DATA SCIENCE PIPELINE -->
-<h2 id="dataset"> Data Science Pipeline </h2>
-
-<p align="center">
-  <img src="assets/pipeline.png" width="600">
-</p>
 
 ![-----------------------------------------------------](https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Data.png?raw=true)
 
 <!-- DATASET -->
-<h2 id="dataset"> Dataset</h2>
-
-<p align="center">
-  <img src="assets/DSC06695 - Ref Image.jpg" width="600">
-</p>
 
 <p> 
   Houston Audubon has provided us a 52 GB image dataset consisting of images captured using DJI M300RTK UAV with a P1 camera attachment. The images are typically 8192 x 5460 high-resolution images. The dataset contains 3 GB annotated images with corresponding CSV files for each image specifying species labels and bounding box locations. The annotated dataset features 19276 birds of 15 species, and the remaining 50.5 GB are raw images without annotations. The CSV files contain:
