@@ -141,16 +141,6 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 </p> 
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
-<!-- DATA SCIENCE PIPELINE -->
-<h2 id="dataset"> Data Science Pipeline </h2>
-
-<p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/DataPipeLine.png?raw=true" width="600">
-</p>
-
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
 <!-- DATASET -->
 <h2 id="dataset"> Dataset</h2>
 
@@ -172,6 +162,15 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
+<!-- DATA SCIENCE PIPELINE -->
+<h2 id="dataset"> Data Science Pipeline </h2>
+
+<p align="center">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/DataPipeLine.png?raw=true" width="600">
+</p>
+
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+
 <!-- STATISTICAL FEATURE -->
 <h2 id="data-augmentation"> Data Augmentation</h2>
 
@@ -179,11 +178,14 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 
   Deep learning models are effective with about 1,000 images per class, but some bird species do not have abundant training samples in our dataset. Our team plans to make deep learning models more robust via data augmentation, which means training models with synthetically modified data:
   <ul>
+  <li><b>data cropping: </b> namely extracting the target block of each image.</li>
   <li><b>rotation: </b>Orthogonal or non-orthogonal rotations. Rotation is a natural data augmentation step for our data at hand because the bird images are taken from different angles by drones.</li>
-  <li><b>random crop: </b>Randomly sample a section from the image and resize it to the original image size.</li>
+  <li><b>flipping: </b> Houston Audubon bird images are taken from different angles by drones, so it is natural to adopt horizontal or vertical image flipping for detection convenience.</li>
+  <li><b>color space: </b> Randomly tuning brightness and contrast of the bird images can compensate detection bias caused by different light, weather and location conditions.</li>
+    
   </ul>
 
-These data augmentation steps help models adapt to different orientations, locations, and scales of the
+These data augmentation steps help models adapt to different orientations, locations, light conditions and scales of the
 same object class, and will boost the performance of the models.
 
 We utilized the <i>imgaug</i> library to generate modified images. We have tried several types of augmentations: flipping, blurring, adding Gaussian noise and changing color contrasts. 
@@ -191,6 +193,14 @@ We utilized the <i>imgaug</i> library to generate modified images. We have tried
 <b> For the time being, our model is only trained on original data. </b> We plan to retrain our model on the augmented dataset and compare performances. We are generating a larger training set using the augmentation methods mentioned above. Specifically, both the original images and the transformed images will be fed to the model in the training phase,
 but only original images will be used for evaluation and testing purposes.
 
+</p>
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+
+<!-- STATISTICAL FEATURE -->
+<h2 id="model"> Model</h2>
+
+<p align="center">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Flex_Faster_RCNN/fasterRCNN.png" width="600">
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
