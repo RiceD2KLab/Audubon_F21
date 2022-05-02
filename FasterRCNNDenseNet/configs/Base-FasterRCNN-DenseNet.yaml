@@ -34,7 +34,7 @@ MODEL:
     IOU_LABELS: [0, 1]
     BATCH_SIZE_PER_IMAGE: 512   # use 128 or 256?
     POSITIVE_FRACTION: 0.25   # 128:384
-    SCORE_THRESH_TEST: 0.5   # default 0.05, Audubon said 0.5
+    SCORE_THRESH_TEST: 0.05   # default 0.05
     NMS_THRESH_TEST: 0.7   # 0.5 default
   ROI_BOX_HEAD:
     NAME: "FastRCNNConvFCHead"
