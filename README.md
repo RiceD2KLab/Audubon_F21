@@ -194,13 +194,14 @@ We utilized the <i>imgaug</i> library to generate modified images. We have tried
 but only original images will be used for evaluation and testing purposes.
 
 </p>
+
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- STATISTICAL FEATURE -->
 <h2 id="model"> Model</h2>
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Flex_Faster_RCNN/fasterRCNN.png" width="600">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Flex_Faster_RCNN/fasterRCNN.png">
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
