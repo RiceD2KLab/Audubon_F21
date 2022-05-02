@@ -238,22 +238,12 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
 <i><b>Note:</b> The model weights used to initialize both the bird-only and bird-species detector come from a pre-trained model on the MS COCO dataset. </i>
 
 <ol>
-  <li><b>Confusion Matrix of Object Detection</b></li> 
+  <li><b>Object Detection Results</b></li> 
   <p align="center">
     <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Results.png" width="700">
   </p>
-  
-  The high AP of 93.7% using an IoU threshold of 0.50 is very promising.
-  
-  The mAP of 43.7% is comparableto the state-of-the-art results for challenging object detection tasks such as on the COCO dataset.
-  <li><b>Bird species detector (Faster R-CNN ResNet-50 FPN)</b></li>
 
-  |                | Brown Pelican | Laughing Gull | Mixed Tern | Great Blue Heron | Great Egret/White Morph | Other/Unknown | Overall |
-  |----------------|---------------|---------------|------------|------------------|-------------------------|--------------|---------|
-  | AP (IoU = 0.5) | 98.8%         | 100.0%        | 97.6%      | 98.5%            | 96.9%                   | 0.0%         | 82.0%   |
-
-  The higher AP for all bird species using an IoU threshold of 0.50 in comparison to the bird-only detector is excellent, except for the “Other/Unknown” categroy, where the model drastically fails to classify. 
-  Nevertheless, we can combine the results from a bird-only detector and bird-species detector to recover the poor performance of the "Other/Unknown" bird category.
+  The high precision scores for all bird species using an IoU threshold of 0.50 is excellent, except for the minority category (“Roseate Spoonbill” and "White Ibis"), where the model drastically fails to classify. 
 </ol>
 
 </p>
