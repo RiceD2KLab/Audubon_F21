@@ -208,11 +208,14 @@ but only original images will be used for evaluation and testing purposes.
 
  <li><b>Bayesian Hyperparameters tuning</b></li>
 Model performance is heavily influenced by hyperparameters. Grid search or manual tuning both necessitate a lot of tuning skill and computational resources, which is why we employ bayesian hyperparameters tuning to address these two issues.This model’s entire procedure is defined as follows:
-(1) To describe the uncertainty, compute the posterior belief u(x) using a surrogate Gaussian pro- cess to create an estimate of the mean and standard deviation around this estimate σ(x).
-(2) Calculate an acquisition function a(x) that is proportional to how advantageous it is to sample the next point in the range of values.
-(3) Locate the maximum point of this acquisition function and sample from there.
-(4) This process is repeated a certain number of times, commonly known as the optimization bud- get, until a pretty good point is reached.
-
+  <ul>
+  <li><b>(1)</b> To describe the uncertainty, compute the posterior belief u(x) using a surrogate Gaussian pro- cess to create an estimate of the mean and standard deviation around this estimate σ(x).</li>
+  <li><b>(2)</b>Calculate an acquisition function a(x) that is proportional to how advantageous it is to sample the next point in the range of values.</li>
+  <li><b>(3)</b> Locate the maximum point of this acquisition function and sample from there.</li>
+  <li><b>(4)</b> This process is repeated a certain number of times, commonly known as the optimization bud- get, until a pretty good point is reached.</li>
+    
+  </ul>
+  
  <li><b>Weighted loss function</b></li>
 Given that our dataset is unbalanced and has to be corrected. The idea is to give distinct classes in the loss function sample size-based weights so that the model can focus more on the minority classes during training. We propose a custom weighted Cross Entropy loss function for the network's classification layer:
 
