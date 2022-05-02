@@ -383,16 +383,3 @@ def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_comman
         aug_minor(csv_file=file, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir,
                   minor_species=minor_species, overlap=overlap, thres=thres, annot_file_ext=annot_file_ext,
                   img_ext=img_ext, aug_command=aug_command)
-
-
-def AugTrainingSet(input_dir, output_dir, minor_species, overlap, thres, img_ext, annot_file_ext='csv'):
-    # if annot_file_ext == 'csv'
-
-    Train_files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == annot_file_ext]
-
-    # print(Train_files)
-    # perform both data augmentation and data cropping need for training
-    for file in tqdm(Train_files, desc='Augmenting data'):
-        # data augmentation
-        Test_aug_minor(csv_file=file, output_dir=output_dir, minor_species=minor_species, overlap=overlap, thres=thres,
-                       img_ext=img_ext)
