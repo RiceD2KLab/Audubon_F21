@@ -10,7 +10,7 @@
 <details open="open">
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#about-the-project"> ➤ About The Project</a></li>
+    <li><a href="#Team Audubon in 22SP"> ➤ Team Audubon in 22SP</a></li>
     <li><a href="#prerequisites"> ➤ Prerequisites</a></li>
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
@@ -32,7 +32,7 @@
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- ABOUT THE PROJECT -->
-<h2 id="about-the-project"> About The Project</h2>
+<h2 id="Team Audubon in 22SP"> Team Audubon in 22SP</h2>
 
 <p align="justify"> 
   In order to both improve the accuracy of bird counts as well as the speed, Houston Audubon and students from the D2K capstone course at Rice University
@@ -49,7 +49,10 @@
 <h2 id="prerequisites"> Prerequisites</h2>
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) <br>
-<img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200"> <br>
+<img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200">
+<img src="https://raw.githubusercontent.com/numpy/numpy/9ee47e0ebe7e869f4ddcf1e3d18978fa23d43c1d/branding/logo/primary/numpylogo.svg" width="140">
+<img src="https://pandas.pydata.org/static/img/pandas.svg" width="150">
+<img src="https://matplotlib.org/_static/logo2.svg" width="150">
 
 <!--This project is written in Python programming language. <br>-->
 The following open source packages are used in this project:
