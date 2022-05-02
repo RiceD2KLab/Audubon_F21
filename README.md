@@ -241,7 +241,7 @@ Due to the lack of annotated data available for other bird species, we re-label 
   
   <b>Wenbin Li</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: wl56@rice.edu <a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
+
   
   <b>Tianjiao Yu</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ty37@rice.edu<a></a> <br>
@@ -253,7 +253,6 @@ Due to the lack of annotated data available for other bird species, we re-label 
 
   <b>Dhananjay Vijay Singh</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: Dv17@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@awx1</a> <br>
 
   <b>Jiahui Yu</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: jy89@rice.edu<a></a> <br>
