@@ -241,7 +241,7 @@ Due to the lack of annotated data available for other bird species, we re-label 
   
   <b>Wenbin Li</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: wl56@rice.edu <a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/krishk97">@krishk97</a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@</a> <br>
   
   <b>Tianjiao Yu</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ty37@rice.edu<a></a> <br>
@@ -249,19 +249,19 @@ Due to the lack of annotated data available for other bird species, we re-label 
 
   <b>Raul Garcia</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: @rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/raulgarcia66">@Raul</a> <br>
 
   <b>Dhananjay Vijay Singh</b> wyl1@rice.edu<br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: Dv17@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="">@awx1</a> <br>
 
   <b>Jiahui Yu</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: jy89@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/awx1">@awx1</a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/KarenYu729">@Jiahui</a> <br>
 
   <b>Maojie Tang</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: mt84@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/WaitDumplings">Maojie</a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/WaitDumplings">@Maojie</a> <br>
   
   <b>Hank Arnold</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: hmarnold@msn.com<a></a> <br>
