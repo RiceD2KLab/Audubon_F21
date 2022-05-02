@@ -170,6 +170,7 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+
 <!-- STATISTICAL FEATURE -->
 <h2 id="data-augmentation"> Data Augmentation</h2>
 
