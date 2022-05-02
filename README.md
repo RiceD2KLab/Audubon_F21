@@ -93,7 +93,7 @@ The following open source packages are used in this project:
 
 <p> 
   <ol>
-  <li>Clone the repository</li>
+  <li><b>Clone the repository</b></li>
 
   ```linux
   git clone https://github.com/RiceD2KLab/Audubon_F21.git
@@ -198,11 +198,17 @@ but only original images will be used for evaluation and testing purposes.
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- STATISTICAL FEATURE -->
-<h2 id="model"> Model</h2>
+<h2 id="Modeling"> Modeling</h2>
+
+<li><b>Faster R-CNN</b></li>
 
 <p align="center">
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Flex_Faster_RCNN/fasterRCNN.png">
 </p>
+
+ <li><b>Hyper-parameters tuning</b></li>
+ 
+ <li><b>Weighted loss function</b></li>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
