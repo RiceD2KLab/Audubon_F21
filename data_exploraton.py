@@ -356,8 +356,8 @@ def birdExamples():
 
 target_data = dataLoader()
 birdCounts(target_data)
-# # birdPerPhoto(target_data)
-# birdExamples()
+birdPerPhoto(target_data)
+birdExamples()
 #
 
 
