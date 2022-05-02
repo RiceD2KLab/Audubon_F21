@@ -230,23 +230,19 @@ Given that our dataset is unbalanced and has to be corrected. The idea is to giv
 
 <p align="justify"> 
 
-We utilize a RetinaNet and Faster R-CNN module both with a ResNet-50-FPN backbone. 
-We first train our model to perform the simple task of detecting birds with no distinction of species.
-We then train the model to identify bird species: namely, Brown Pelicans, Laughing Gulls, Mixed Terns, Great Blue Herons, and Great Egrets/White Morphs. 
-
-Due to the lack of annotated data available for other bird species, we re-label all other bird species under the "Other/Unknown" category. 
+We utilize Faster R-CNN module with a ResNet-50-FPN backbone. 
+We first split dataset into train set(70%) validation set(20%) and test set(10%).
+We then use train set and validation set for bayesian optimization to get the optimal hyperparameters.
+Next, we train our model with new hyperparameters and evaluate it on test set.
 
 <i><b>Note:</b> The model weights used to initialize both the bird-only and bird-species detector come from a pre-trained model on the MS COCO dataset. </i>
 
 <ol>
-  <li><b>Bird-only detector (RetinaNet ResNet-50 FPN)</b></li> 
-      
-  |                 | Birds |
-  |-----------------|-------|
-  | AP (IoU = 0.5)  | 93.7% |
-  | AP (IoU = 0.75) | 26.4% |
-  | mAP             | 43.7% |
-
+  <li><b>Confusion Matrix of Object Detection</b></li> 
+  <p align="center">
+    <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Results.png" width="500">
+  </p>
+  
   The high AP of 93.7% using an IoU threshold of 0.50 is very promising.
   
   The mAP of 43.7% is comparableto the state-of-the-art results for challenging object detection tasks such as on the COCO dataset.
