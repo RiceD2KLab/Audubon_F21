@@ -240,7 +240,7 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
 <ol>
   <li><b>Confusion Matrix of Object Detection</b></li> 
   <p align="center">
-    <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Results.png" width="500">
+    <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Results.png">
   </p>
   
   The high AP of 93.7% using an IoU threshold of 0.50 is very promising.
