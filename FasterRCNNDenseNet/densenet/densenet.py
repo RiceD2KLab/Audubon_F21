@@ -1,7 +1,7 @@
 # DenseNet backbone adapted from PyTorch's DenseNet source code
 # https://pytorch.org/vision/0.8/_modules/torchvision/models/densenet.html
 
-# Faster R-CNN with DensetNet adapted from VoVNet source code
+# Faster R-CNN with DensetNet backbone adapted from VoVNet source code
 # https://github.com/youngwanLEE/detectron2/tree/vovnet/projects/VoVNet
 
 
@@ -208,7 +208,7 @@ class DenseNetBackbone(Backbone):
 
         self._freeze_backbone(cfg.MODEL.BACKBONE.FREEZE_AT, max_layer=block_config[3])
 
-    # TODO: Figure out if to freeze by denseblocks, by layers in last denseblock, or by layers and denseblock
+    # TODO: Determine if to freeze by denseblocks, by layers in last denseblock, or by layers and denseblock
     def _freeze_backbone(self, freeze_at, max_layer):
         freeze_all = False
         if freeze_at < 0:
@@ -274,10 +274,10 @@ class DenseNetBackbone(Backbone):
         
     def forward(self, x):   # x is the input image
         features = self.features(x)
-        # Might want these two
+        # Return only the features
+        return {"SoleStage": features}
         # out = F.relu(features, inplace=True)
         # out = F.adaptive_avg_pool2d(out, (1, 1))
-        return {"SoleStage": features}
         # out = torch.flatten(out, 1)
         # out = self.classifier(out)
         # return out
@@ -315,6 +315,7 @@ def _densenet(cfg, arch, growth_rate, block_config, num_init_features, pretraine
     if pretrained:
         _load_state_dict(model, model_urls[arch], progress)
     return model
+
 
 def densenet121(cfg, pretrained=True, progress=True, **kwargs):
     r"""Densenet-121 model from
@@ -372,6 +373,7 @@ def densenet201(cfg, pretrained=True, progress=True, **kwargs):
                      **kwargs)
 
 
+# Only need to register this function
 @BACKBONE_REGISTRY.register()
 def build_densenet_backbone(cfg, input_shape: ShapeSpec):
     """

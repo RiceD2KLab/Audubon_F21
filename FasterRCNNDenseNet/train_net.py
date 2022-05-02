@@ -1,4 +1,10 @@
-# train_net.py
+# Faster R-CNN with DenseNet backbone
+# Adapted from VoVNet source code
+# https://github.com/youngwanLEE/detectron2/tree/vovnet/projects/VoVNet
+
+"""
+Training Script.
+"""
 
 from detectron2.utils.logger import setup_logger
 

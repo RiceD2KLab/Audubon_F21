@@ -1,3 +1,5 @@
+# This file is for training on a particular PC
+
 import os, sys, shutil, glob
 import numpy as np
 import matplotlib.pyplot as plt
