@@ -193,6 +193,10 @@ We utilized the <i>imgaug</i> library to generate modified images. We have tried
 <b> For the time being, our model is only trained on original data. </b> We plan to retrain our model on the augmented dataset and compare performances. We are generating a larger training set using the augmentation methods mentioned above. Specifically, both the original images and the transformed images will be fed to the model in the training phase,
 but only original images will be used for evaluation and testing purposes.
 
+<p align="center">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/WeightedLoss.png" width="600">
+</p>
+
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -207,6 +211,7 @@ but only original images will be used for evaluation and testing purposes.
 </p>
 
  <li><b>Hyper-parameters tuning</b></li>
+ The idea is to give sample size-based weights to different classes in the loss function, so that the model will lean more focus on the minority classes during training. In the classification layer of the network, we propose a custom weighted Cross Entropy loss function:
  
  <li><b>Weighted loss function</b></li>
 
