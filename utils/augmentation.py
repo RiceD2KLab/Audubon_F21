@@ -359,7 +359,6 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
             file_dict["file_name"] = file_name + "_" + str(valid_i).zfill(2) + "."+img_ext
             # cropped.save(output_dir + "/" + file_name + "_" + str(valid_i).zfill(2) + "."+img_ext)
             # # print(file_dict["file_name"] )
-            # # dict_to_csv(file_dict, empty=False, output_path=output_dir, test=True)
             # dict_to_csv(file_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
             # Flipping, rotation and color manipulation
