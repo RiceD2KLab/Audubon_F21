@@ -69,17 +69,18 @@ The following open source packages are used in this project:
 
     code
     .
+    ├── .ipynb_checkpoints
+    ├────── (..........)
+    ├── FasterRCNNDenseNet
+    ├────── (Train Faster RCNN with DenseNet model)
+    ├── Flex_Faster_RCNN
+    ├────── (Train Faster RCNN with flexible configurations and backbones)   
     ├── configs
-    ├────── (useful sweep config files for WAndB)
-    ├── scripts
-    ├────── data_exploration.py
+    ├────── (configurations of Detectron2)
+    ├── data_aug
+    ├────── (data augmentation methods)
     ├── utils
-    ├────── config.py
-    ├────── cropping.py
-    ├────── dataloader.py
-    ├────── evaluation.py
-    ├────── plotting.py
-    ├────── trainer.py
+    ├────── (useful functions for constructing Faster RCNN)
     ├── README.md
     ├── requirements.txt
     ├── data_exploration.py  
