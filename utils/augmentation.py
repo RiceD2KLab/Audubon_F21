@@ -88,6 +88,7 @@ def dict_to_csv(info_dict, output_path, empty, img_ext):
         if not empty:
             writer.writerows(new_bbx_buffer)
 
+            
 def flip_img(img, info_dict, output_dir, command, img_ext):
     """
     Function to flip image and reannotate the coordinates of the birds within
