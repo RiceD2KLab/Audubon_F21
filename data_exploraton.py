@@ -1,93 +1,4 @@
 # #coding = utf-8
-# """
-# according to the result of training, some bird species cannot be detected
-# 1. find the size of the bounding box of each species
-# 2. figuring out why some species has higher accuracy and some cannot be detected
-# This file based on the dataset uploaded on Feb 20
-# Bird species:
-# AI Class                Desc            Total Annotations
-# MTRNA           Mixed Tern Adult             8794
-# LAGUA          Laughing Gull Adult           2694
-# BRPEA         Brown Pelican Adult            309
-# GBHEA       Great Blue Heron Adult           214
-# TRHEA       Tricolored Heron Adult           212
-# ROSPA       Roseate Spoonbill Adult          52
-# WHIBA           White Ibis Adult             22
-# BCNHA   Black-Crowned Night Heron Adult      21
-# REEGA       Reddish Egret Adult              15
-# SNEGA           Snowy Egret                  11
-# LAGUA       Laughing Gull Flying              3
-# REEGWMA   White Morph Reddish Egret Adult     2
-# """
-# import pandas as pd
-# import os
-# from numpy import *
-# import numpy as np
-# """
-# • species id: unique species id in integer.
-# • species label: species label in words.
-# • x: Smallest x-axis coordinate of the bounding box; used to identify location in image
-# • y: Smallest y-axis coordinate of the bounding box; used to identify location in image
-# • width: width of a bounding box.
-# • height: height of a bounding box.
-# """
-# # **************************************************************************
-# #                   size of bounding box
-# # **************************************************************************
-#
-# def dataLoader():
-#     # data_dir = 'C:/Users/karen/Downloads/SS22_03/'
-#
-#     data_dir = 'C:/Users/VelocityUser/Documents/D2K TDS A/TDS A-10_com/'
-#     dirs = [os.listdir(data_dir)]
-#
-#     # target_file: get the direction of files
-#     # filename: the name of the bbx file
-#     target_file = []
-#     filename = []
-#     for d in dirs[0]:
-#         file_dirs = os.path.join(data_dir, d[:-4])
-#         filename.append(d[:-4])
-#
-#         target_file.append(file_dirs+'.bbx')
-#
-#     return target_file
-
-# def checkoneSpecies(target_file, species_name):
-#     width = []
-#     height = []
-#     for i in range(len(target_file)):
-#
-#         df = pd.read_csv(target_file[i])
-#         for j in range(len(df)):
-#             val1 = df.values[j][1]
-#
-#             if val1 == species_name:
-#                 val2 = df.values[j][4:6]
-#                 width.append(val2[0])
-#                 height.append(val2[1])
-#
-#     print('min width of ', species_name, ' is ', min(width))
-#     print('min height of ', species_name, ' is ', min(height))
-#     print('max width of ', species_name, ' is ', max(width))
-#     print('max height of ', species_name, ' is ', max(height))
-#     print('mean width of ', species_name, ' is ', mean(width))
-#     print('mean height of ', species_name, ' is ', mean(height))
-#     print('std of the width of ', species_name, ' is ', np.std(width,ddof=1))
-#     print('std of the height of ', species_name, ' is ', np.std(height,ddof=1))
-#
-# target_file = dataLoader()
-#
-# BirdSpecies = ['Mixed Tern Adult','Laughing Gull Adult','Brown Pelican Adult',
-#                'Great Blue Heron Adult','Tricolored Heron Adult','Roseate Spoonbill Adult',
-#                'White Ibis Adult','Black-Crowned Night Heron Adult','Reddish Egret Adult',
-#                'Snowy Egret','Laughing Gull Flying','White Morph Reddish Egret Adult']
-#
-# for Bird in BirdSpecies:
-#     checkoneSpecies(target_file, Bird)
-#     print('---------------------')
-
-
 # # **************************************************************************
 # #                   plot
 # # **************************************************************************
@@ -194,7 +105,7 @@ def birdCounts(target_data):
 
     ### Bird Counts
     target_counts = target_data["class_name"].value_counts().sort_values(ascending=False)
-    plt.figure(figsize=(6, 8))
+    plt.figure(figsize=(13, 7))
     print(np.log(target_counts.values))
     ########## The barplot has bars that are horizontal, I believe
     ########## target_counts.index is in iterable of the names?
@@ -202,24 +113,24 @@ def birdCounts(target_data):
     ########## target_counts.values are the count values?
     print(target_counts.values)
     print(target_counts.index.values)
-    print([1,2,3,4,5,6,7,8,9,10])
-    color = ['#c1cbd7', '#dfd7d7', '#d8caaf', '#d3d4cc', '#e0cdcf', '#f8ebd8', '#c9c0d3', '#ead0d1', '#96a48b', '#a6a6a8']
-    ax = sns.barplot(x=target_counts.index.values, y=target_counts.values, order=target_counts.index, orient = 'v',
+
+    # color = ['#c1cbd7', '#dfd7d7', '#d8caaf', '#d3d4cc', '#e0cdcf', '#f8ebd8', '#c9c0d3', '#ead0d1', '#96a48b', '#a6a6a8']
+    ax = sns.barplot(y=target_counts.index.values, x=target_counts.values, order=target_counts.index, orient = 'h',
                      palette = "Set2")
-    # ax.set_xlim(left=9000)
+    ax.set(xlim=(1, 8700))
     # Set tick font size
-    ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
+    #ax.set_xticklabels(('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
 
     for label in (ax.get_xticklabels() + ax.get_yticklabels()):
         label.set_fontsize(10)
     for i, v in enumerate(target_counts):
         ax.text(v, i, str(v), color='black', size=12)
-    plt.xticks(fontsize=18)
+    plt.xticks(fontsize=8)
     plt.subplots_adjust(left=0.27)
     # plt.legend(labels=target_counts.index.values.tolist())
-    plt.yticks(fontsize=18, rotation = 45)
-    plt.xlabel('Bird Species', fontsize=20, fontweight='bold')
-    plt.ylabel('Number of Birds', fontsize=20,fontweight='bold')
+    plt.yticks(fontsize=8)
+    plt.xlabel('Bird Species', fontsize=12)
+    plt.ylabel('Number of Birds', fontsize=12)
     plt.tight_layout()
     plt.savefig('bird_count.png', dpi=600)
     plt.show()
@@ -239,30 +150,30 @@ def birdPerPhoto(target_data):
     print(a)
     print(len(set(a)))
     print(set(a))
-    ok = {"1 to 5": 0, "6 to 10": 0, "11 to 15": 0, "16 to 30": 0, "31 to 50": 0, "51 to 100": 0, "> 100": 0}
+    ok = {"1 to 3": 0, "4 to 6": 0, "7 to 10": 0, "11 to 15": 0, "16 to 25": 0, "26 to 50": 0, "> 50": 0}
     new_a = []
     for item in a:
-        if item <= 5:
-            new_a.append("1 to 5")  ########## I'm guessing it doesn't append if it already exists
-            ok["1 to 5"] += 1
+        if item <= 3:
+            new_a.append("1 to 3")  ########## I'm guessing it doesn't append if it already exists
+            ok["1 to 3"] += 1
+        elif item <= 6:
+            new_a.append("4 to 6")
+            ok["4 to 6"] += 1
         elif item <= 10:
-            new_a.append("6 to 10")
-            ok["6 to 10"] += 1
+            new_a.append("7 to 10")
+            ok["7 to 10"] += 1
         elif item <= 15:
             new_a.append("11 to 15")
             ok["11 to 15"] += 1
-        elif item <= 30:
-            new_a.append("16 to 30")
-            ok["16 to 30"] += 1
+        elif item <= 25:
+            new_a.append("16 to 25")
+            ok["16 to 25"] += 1
         elif item <= 50:
-            new_a.append("31 to 50")
-            ok["31 to 50"] += 1
-        elif item <= 100:
-            new_a.append("51 to 100")
-            ok["51 to 100"] += 1
+            new_a.append("26 to 50")
+            ok["26 to 50"] += 1
         else:
-            new_a.append("> 100")
-            ok["> 100"] += 1
+            new_a.append("> 50")
+            ok["> 50"] += 1
 
     labels = ok.keys()
     sizes = ok.values()
@@ -343,7 +254,7 @@ def birdExamples():
 
         plt.subplot(4,3,count)
         plt.imshow(cropImage)
-        plt.title(v[1]["class_name"][0], fontsize = 8, fontweight='bold')
+        plt.title(v[1]["class_name"][0], fontsize = 8)
         # plt.title(v[1]["class_name"][0], fontsize = 7)
         plt.tight_layout()
 
@@ -359,6 +270,7 @@ birdCounts(target_data)
 birdPerPhoto(target_data)
 birdExamples()
 #
+
 
 
 # target_data = {'Mixed Tern Adult': "", 'Laughing Gull Adult': "",
@@ -491,33 +403,4 @@ But it may related to where they appeared most
 # print('\n')
 
 
-# import os
-# import pandas as pd
-#
-#
-# data_dir = 'C:/Users/VelocityUser/Documents/Audubon_F21/augment_0224_2/'
-# def dropNestAnnotation(data_dir):
-# dirs = [os.listdir(data_dir)]
-#
-# target_file = []
-# filename = []
-# for d in dirs[0]:
-#     print(d)
-#     if d[-4:] == '.csv':
-#         file_dirs = os.path.join(data_dir, d)
-#
-#         filename.append(d[:-4])
-#         target_file.append(file_dirs)
-#
-# target_data = []
-# for i in range(len(target_file)):
-#     df = pd.read_csv(target_file[i])
-#     df['desc'] = df['desc'].apply(lambda x: 'fly' if ('Flying' in x)or('Wings Spread' in x)or('Flight' in x) else x)
-#
-#     for j in range(len(df)):
-#         if ('Nest' in df['desc'][j]) or ('Egg' in df['desc'][j]) or ('Other Bird' in df['desc'][j]):
-#
-#             df = df.drop(j)
-#     # print(df)
-#     # df.drop(index=(df[['Egg' in x for x in df['Species Desc']]]),axis = 0)
-#     df.to_csv(data_dir+filename[i] + '.csv')
+
