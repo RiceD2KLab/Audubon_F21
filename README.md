@@ -15,8 +15,8 @@
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
     <li><a href="#dataset"> ➤ Dataset</a></li>
+    <li><a href="#Data Science Pipeline"> ➤ Data Science Pipeline</a></li>
     <li><a href="#results-and-discussion"> ➤ Results and Discussion</a></li>
-    <li><a href="#references"> ➤ References</a></li>
     <li><a href="#contributors"> ➤ Contributors</a></li>
   </ol>
 </details>
@@ -159,7 +159,7 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- DATA SCIENCE PIPELINE -->
-<h2 id="dataset"> Data Science Pipeline </h2>
+<h2 id="Data Science Pipeline"> Data Science Pipeline </h2>
 
 <p align="center">
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/DataPipeLine.png?raw=true" width="600">
