@@ -14,12 +14,12 @@ def train_mode_activate():
 
     Label(train_frame, text='Data Directory').grid(row=0, column=0, padx=10, pady=5)
     data_dir = Entry(train_frame, width=40)
-    data_dir.insert(0, "./data")
+    data_dir.insert(0, 'C://Users\VelocityUser\Documents\D2K TDS D\TDS D-10')
     data_dir.grid(row=0, column=1, padx=10, pady=5)
 
     Label(train_frame, text='Image Extension').grid(row=1, column=0, padx=10, pady=5)
     img_ext = Entry(train_frame, width=40)
-    img_ext.insert(0, ".JPEG")
+    img_ext.insert(0, ".JPG")
     img_ext.grid(row=1, column=1, padx=10, pady=5)
 
     Label(train_frame, text='Directory to Ignore').grid(row=2, column=0, padx=10, pady=5)
@@ -43,13 +43,11 @@ def train_mode_activate():
 
     Label(train_frame, text='Batch Size').grid(row=6, column=0, padx=10, pady=5)
     batch_size = Entry(train_frame, width=40)
-    batch_size.insert(0, "8")
+    batch_size.insert(0, "6")
     batch_size.grid(row=6, column=1, padx=10, pady=5)
 
-    Label(train_frame, text='Output Directory').grid(row=7, column=0, padx=10, pady=5)
-    output_dir = Entry(train_frame, width=40)
-    output_dir.insert(0, "./output")
-    output_dir.grid(row=7, column=1, padx=10, pady=5)
+    Label(train_frame, text='The Output Directory for the trained model is fixed as \"Documents\\Training_models\\\"')\
+        .grid(row=7, padx=10, pady=5, columnspan=2)
 
     # Confusion matrix TODO
 
@@ -57,10 +55,10 @@ def train_mode_activate():
                                                                                           img_ext.get(),
                                                                                           dir_ignore.get(),
                                                                                           num_workers.get(),
-                                                                                          bayesian_iters.get(),
                                                                                           max_iters.get(),
+                                                                                          bayesian_iters.get(),
                                                                                           batch_size.get(),
-                                                                                          output_dir.get()]))\
+                                                                                          "Documents\\Training_models\\"]))\
         .grid(row=8)
 
     train_frame.grid(row=0)
@@ -68,8 +66,7 @@ def train_mode_activate():
 
 
 def train_button_click(args):
-    print(args)
-    # Training_only.run([])
+    Training_only.run(args)
     pass
 
 
