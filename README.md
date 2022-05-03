@@ -249,7 +249,7 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
   
   <li><b>Detection Results Example</b></li> 
     <p align="center">
-    <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Cover%2520Image.JPEG" width="700">
+    <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Cover%2520Image.JPEG">
   </p>
 </ol>
 
