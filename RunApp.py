@@ -4,7 +4,7 @@ import detect_only
 import os
 
 main_window = Tk()
-main_window.geometry("500x300")
+main_window.geometry("800x300")
 initial_frame = Frame(main_window)
 train_frame = Frame(main_window)
 run_frame = Frame(main_window)
