@@ -123,7 +123,7 @@ def run_default():
 
 
 def run(argv):
-    crop_dir = 'C://Users\VelocityUser\Documents\D2K TDS A\TDS A-10'
+    crop_dir = 'C://Users\VelocityUser\Documents\detect_images'
 
     BIRD_SPECIES = ['BRPEA', 'LAGUA', 'MTRNA', 'TRHEA', 'BLSKA',
                     'BCNHA', 'REEGA', 'WHIBA', 'ROSPA',
@@ -136,7 +136,7 @@ def run(argv):
     birds_species_names = BIRD_SPECIES
 
     # # perform tiling on images 8K images
-    data_dir = 'C://Users\\VelocityUser\Documents\\D2K TDS B\\AI QC B'  # data directory folder
+    data_dir = 'C://Users\\VelocityUser\Documents\\detect_images\\AI QC B'  # data directory folder
     os.makedirs(os.getcwd() + '/AI_QC_test/crop', exist_ok=True)
     output_dir = os.getcwd() + '/AI_QC_test/crop'
     img_ext = '.JPG'
@@ -168,8 +168,7 @@ def run(argv):
     # cfg.MODEL.WEIGHTS = f"./D2K_TDS_A_5_classes/multibirds_{model_name}/model_final.pth"
     # cfg.MODEL.WEIGHTS = tune_weight_dir + '/model_final.pth'
 
-    cfg.MODEL.WEIGHTS = 'C://Users\\VelocityUser\\Documents\\Training_models\\03_24_bay_tune_10class_aug_B\\' \
-                        'faster_rcnn_R_50_FPN_1x-20220402-174351\\model_final.pth '
+    cfg.MODEL.WEIGHTS = str(argv[0]) + "\\" + os.listdir(str(argv[0])).sort()[-1] + "\\model_final.pth"
 
     cfg.DATALOADER.NUM_WORKERS = 0
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
@@ -227,7 +226,7 @@ def run(argv):
     register_datasets(dirs, img_ext, BIRD_SPECIES, bird_species_colors=BIRD_SPECIES_COLORS, unknown_bird_category=False)
 
     # change this to the specific directory of the fitting model
-    cfg.OUTPUT_DIR = 'C://Users\\VelocityUser\\Documents\\Training_models\\03_24_bay_tune_10class_aug_B\\faster_rcnn_R_50_FPN_1x-20220402-174351'
+    cfg.OUTPUT_DIR = str(argv[0]) + "\\" + os.listdir(str(argv[0])).sort()[-1]
 
     # print('validation inference:')
     val_precisions, val_max_recalls = get_precisions_recalls(cfg, predictor, "birds_species_Test")

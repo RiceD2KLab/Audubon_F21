@@ -302,7 +302,11 @@ def run(argv):
 
     # name of the model output
     today = date.today()
-    model_output_dir = argv[7] + "model" + str(today.year * 10000 + today.month * 100 + today.day)
+    now = date.now()
+    current_time = now.strftime("%H%M%S")
+
+    model_output_dir = argv[7] + "model" + str(today.year * 10000 + today.month * 100 + today.day) + "-" \
+                       + str(current_time)
 
     cfg_parms = {'NUM_WORKERS': int(argv[3]), 'IMS_PER_BATCH': int(argv[6]), 'BASE_LR': .001, 'GAMMA': 0.01,
                  'WARMUP_ITERS': 1, 'MAX_ITER': int(argv[4]),

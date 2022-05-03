@@ -1,5 +1,6 @@
 from tkinter import *
 import Training_only
+import detect_only
 import os
 
 main_window = Tk()
@@ -96,13 +97,16 @@ def run_mode_activate():
     drop = OptionMenu(run_frame, clicked, *options)
     drop.grid(row=0, column=1, padx=10)
 
-    run_b = Button(run_frame, text="Run Trained Model", width=25, command=run_button_click)
+    run_b = Button(run_frame, text="Run Trained Model", width=25, command=lambda: run_button_click([clicked.get()]))
     run_b.grid(row=0, column=2, padx=10)
+
+    Label(run_frame, text='Loading images from Documents\\detect_images').grid(row=1, padx=10, columnspan=3)
 
     run_frame.grid(row=0)
 
 
-def run_button_click():
+def run_button_click(argv):
+    detect_only.run(argv)
     pass
 
 
