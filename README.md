@@ -274,7 +274,8 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
 
   <b>Dhananjay Vijay Singh</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: Dv17@rice.edu<a></a> <br>
-
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/dhananjaysingh2000">@Dhananjay</a> <br>
+  
   <b>Jiahui Yu</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: jy89@rice.edu<a></a> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/KarenYu729">@Jiahui</a> <br>
