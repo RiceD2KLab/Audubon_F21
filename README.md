@@ -68,11 +68,11 @@ The following open source packages are used in this project:
     code
     .
     ├── .ipynb_checkpoints
-    ├────── (..........)
+    ├────── (colab files)
     ├── FasterRCNNDenseNet
-    ├────── (Train Faster RCNN with DenseNet backbone)
+    ├────── (train Faster RCNN with DenseNet backbone)
     ├── Flex_Faster_RCNN
-    ├────── (Train Faster RCNN with flexible configurations and backbones)   
+    ├────── (train Faster RCNN with flexible configurations and backbones)   
     ├── configs
     ├────── (configurations of Detectron2)
     ├── data_aug
