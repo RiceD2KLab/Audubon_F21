@@ -82,11 +82,11 @@ The following open source packages are used in this project:
     ├── utils
     ├────── (useful functions for constructing Faster RCNN)
     ├── README.md
+    ├── Audubon_S22.py
+    ├── RunApp.py
+    ├── Training_only.py
     ├── requirements.txt
-    ├── data_exploration.py  
-    ├── Audubon-Bird-Detection-Tutorial.ipynb
     ├── startup.sh
-    ├── get_dist.py
     ├── train_net.py
     ├── detect_only.py
     
