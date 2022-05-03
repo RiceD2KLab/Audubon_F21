@@ -15,14 +15,6 @@
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
     <li><a href="#dataset"> ➤ Dataset</a></li>
-    <li>
-      <a href="#preprocessing"> ➤ Preprocessing</a>
-      <ul>
-        <li><a href="#tiling">Tiling</a></li>
-        <li><a href="#data-augmentation">Data Augmentation</a></li>
-      </ul>
-    </li>
-    <!--<li><a href="#experiments">Experiments</a></li>-->
     <li><a href="#results-and-discussion"> ➤ Results and Discussion</a></li>
     <li><a href="#references"> ➤ References</a></li>
     <li><a href="#contributors"> ➤ Contributors</a></li>
