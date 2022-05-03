@@ -1,5 +1,5 @@
 from tkinter import *
-
+import Training_only
 
 main_window = Tk()
 main_window.geometry("500x300")
@@ -33,26 +33,42 @@ def train_mode_activate():
 
     Label(train_frame, text='Max Iterations').grid(row=4, column=0, padx=10, pady=5)
     max_iters = Entry(train_frame, width=40)
-    max_iters.insert(0, "3000")
+    max_iters.insert(0, "500")
     max_iters.grid(row=4, column=1, padx=10, pady=5)
 
-    Label(train_frame, text='Batch Size').grid(row=5, column=0, padx=10, pady=5)
+    Label(train_frame, text='Bayesian Tuning Iterations').grid(row=5, column=0, padx=10, pady=5)
+    max_iters = Entry(train_frame, width=40)
+    max_iters.insert(0, "40")
+    max_iters.grid(row=5, column=1, padx=10, pady=5)
+
+    Label(train_frame, text='Batch Size').grid(row=6, column=0, padx=10, pady=5)
     batch_size = Entry(train_frame, width=40)
     batch_size.insert(0, "8")
-    batch_size.grid(row=5, column=1, padx=10, pady=5)
+    batch_size.grid(row=6, column=1, padx=10, pady=5)
 
-    Label(train_frame, text='Output Directory').grid(row=6, column=0, padx=10, pady=5)
+    Label(train_frame, text='Output Directory').grid(row=7, column=0, padx=10, pady=5)
     output_dir = Entry(train_frame, width=40)
     output_dir.insert(0, "./output")
-    output_dir.grid(row=6, column=1, padx=10, pady=5)
+    output_dir.grid(row=7, column=1, padx=10, pady=5)
 
-    Button(train_frame, text="Train Model", width=25, command=train_button_click).grid(row=7)
+    # Confusion matrix TODO
+
+    Button(train_frame, text="Train Model", width=25, command=lambda: train_button_click([data_dir.get(),
+                                                                                          img_ext.get(),
+                                                                                          dir_ignore.get(),
+                                                                                          num_workers.get(),
+                                                                                          max_iters.get(),
+                                                                                          batch_size.get(),
+                                                                                          output_dir.get()]))\
+        .grid(row=8)
 
     train_frame.grid(row=0)
 
 
 
-def train_button_click():
+def train_button_click(args):
+    print(args)
+    # Training_only.run([])
     pass
 
 
