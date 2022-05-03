@@ -190,8 +190,6 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 These data augmentation steps help models adapt to different orientations, locations, light conditions and scales of the
 same object class, and will boost the performance of the models.
 
-We utilized the <i>imgaug</i> library to generate modified images. We have tried several types of augmentations: flipping, blurring, adding Gaussian noise and changing color contrasts. 
-
 <b> For the time being, our model is only trained on original data. </b> We plan to retrain our model on the augmented dataset and compare performances. We are generating a larger training set using the augmentation methods mentioned above. Specifically, both the original images and the transformed images will be fed to the model in the training phase,
 but only original images will be used for evaluation and testing purposes.
 
