@@ -10,21 +10,19 @@
 <details open="open">
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#Team Audubon in 22SP"> ➤ Team Audubon in 22SP</a></li>
+    <li><a href="#Team Audubon in SP22"> ➤ Team Audubon in SP22</a></li>
     <li><a href="#prerequisites"> ➤ Prerequisites</a></li>
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
     <li><a href="#dataset"> ➤ Dataset</a></li>
     <li>
-      <a href="#preprocessing"> ➤ Preprocessing</a>
+      <a href="#Data Science Pipeline"> ➤ Data Science Pipeline</a>
       <ul>
-        <li><a href="#tiling">Tiling</a></li>
         <li><a href="#data-augmentation">Data Augmentation</a></li>
+        <li><a href="#Modeling">Modeling</a></li>
+        <li><a href="#Experiments">Experiments</a></li>
       </ul>
     </li>
-    <!--<li><a href="#experiments">Experiments</a></li>-->
-    <li><a href="#results-and-discussion"> ➤ Results and Discussion</a></li>
-    <li><a href="#references"> ➤ References</a></li>
     <li><a href="#contributors"> ➤ Contributors</a></li>
   </ol>
 </details>
@@ -32,7 +30,7 @@
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- ABOUT THE PROJECT -->
-<h2 id="Team Audubon in 22SP"> Team Audubon in 22SP</h2>
+<h2 id="Team Audubon in SP22"> Team Audubon in SP22</h2>
 
 <p align="justify"> 
   In order to both improve the accuracy of bird counts as well as the speed, Houston Audubon and students from the D2K capstone course at Rice University
@@ -70,11 +68,11 @@ The following open source packages are used in this project:
     code
     .
     ├── .ipynb_checkpoints
-    ├────── (..........)
+    ├────── (colab files)
     ├── FasterRCNNDenseNet
-    ├────── (Train Faster RCNN with DenseNet backbone)
+    ├────── (train Faster RCNN with DenseNet backbone)
     ├── Flex_Faster_RCNN
-    ├────── (Train Faster RCNN with flexible configurations and backbones)   
+    ├────── (train Faster RCNN with flexible configurations and backbones)   
     ├── configs
     ├────── (configurations of Detectron2)
     ├── data_aug
@@ -82,10 +80,14 @@ The following open source packages are used in this project:
     ├── utils
     ├────── (useful functions for constructing Faster RCNN)
     ├── README.md
+    ├── Audubon_S22.py
+    ├── RunApp.py
+    ├── Training_only.py
     ├── requirements.txt
-    ├── data_exploration.py  
-    ├── Audubon-Bird-Detection-Tutorial.ipynb
+    ├── startup.sh
     ├── train_net.py
+    ├── detect_only.py
+    
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -132,7 +134,7 @@ The following open source packages are used in this project:
 
   <li>Execute the scripts as required.</li>
   
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Sp22_Audubon_Bird_Detection_Tutorial.ipynb) <br> 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RiceD2KLab/Audubon_F21/blob/SP22/Sp22_Audubon_Bird_Detection_Tutorial.ipynb) <br> 
 
 See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [Colab Notebook](Sp22_Audubon_Bird_Detection_Tutorial.ipynb) for usage of code. 
 
@@ -163,7 +165,7 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- DATA SCIENCE PIPELINE -->
-<h2 id="dataset"> Data Science Pipeline </h2>
+<h2 id="Data Science Pipeline"> Data Science Pipeline </h2>
 
 <p align="center">
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/DataPipeLine.png?raw=true" width="600">
@@ -187,8 +189,6 @@ See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [
 
 These data augmentation steps help models adapt to different orientations, locations, light conditions and scales of the
 same object class, and will boost the performance of the models.
-
-We utilized the <i>imgaug</i> library to generate modified images. We have tried several types of augmentations: flipping, blurring, adding Gaussian noise and changing color contrasts. 
 
 <b> For the time being, our model is only trained on original data. </b> We plan to retrain our model on the augmented dataset and compare performances. We are generating a larger training set using the augmentation methods mentioned above. Specifically, both the original images and the transformed images will be fed to the model in the training phase,
 but only original images will be used for evaluation and testing purposes.
@@ -226,7 +226,7 @@ Given that our dataset is unbalanced and has to be corrected. The idea is to giv
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- EXPERIMENTS -->
-<h2 id="experiments"> Experiments</h2>
+<h2 id="Experiments"> Experiments</h2>
 
 <p align="justify"> 
 
@@ -244,6 +244,11 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
   </p>
 
   The high precision scores for all bird species using an IoU threshold of 0.50 is excellent, except for the minority category (“Roseate Spoonbill” and "White Ibis"), where the model drastically fails to classify. 
+  
+  <li><b>Experiment Example</b></li> 
+    <p align="center">
+    <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Cover%2520Image.JPEG">
+  </p>
 </ol>
 
 </p>
