@@ -47,7 +47,7 @@ def train_mode_activate():
     batch_size.insert(0, "6")
     batch_size.grid(row=6, column=1, padx=10, pady=5)
 
-    Label(train_frame, text='The Output Directory for the trained model is fixed as \"Documents\\Training_models\\\"')\
+    Label(train_frame, text='The Output Directory for the trained model is fixed as \"C://Users\\VelocityUser\\Documents\\Training_models\\\"')\
         .grid(row=7, padx=10, pady=5, columnspan=2)
 
     # Confusion matrix TODO
@@ -59,7 +59,7 @@ def train_mode_activate():
                                                                                           max_iters.get(),
                                                                                           bayesian_iters.get(),
                                                                                           batch_size.get(),
-                                                                                          "Documents\\Training_models\\"]))\
+                                                                                          "C://Users\\VelocityUser\\Documents\\Training_models\\"]))\
         .grid(row=8)
 
     train_frame.grid(row=0)
@@ -76,8 +76,8 @@ def run_mode_activate():
     initial_frame.destroy()
 
     model_dirs = []
-    for file in os.listdir("Documents\\Training_models\\"):
-        d = os.path.join("Documents\\Training_models\\", file)
+    for file in os.listdir("C://Users\\VelocityUser\\Documents\\Training_models\\"):
+        d = os.path.join("C://Users\\VelocityUser\\Documents\\Training_models\\", file)
         if os.path.isdir(d):
             model_dirs.append(d)
 
@@ -90,7 +90,7 @@ def run_mode_activate():
     clicked = StringVar()
 
     # initial menu text
-    clicked.set("Model1")
+    clicked.set("Please select model from this dropdown list")
 
     # Create Dropdown menu
     drop = OptionMenu(run_frame, clicked, *options)
