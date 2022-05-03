@@ -123,7 +123,7 @@ def run_default():
 
 
 def run(argv):
-    crop_dir = 'C://Users\VelocityUser\Documents\detect_images'
+    crop_dir = 'C://Users\VelocityUser\Documents\D2K TDS A\TDS A-10'
 
     BIRD_SPECIES = ['BRPEA', 'LAGUA', 'MTRNA', 'TRHEA', 'BLSKA',
                     'BCNHA', 'REEGA', 'WHIBA', 'ROSPA',
