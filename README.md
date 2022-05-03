@@ -10,7 +10,7 @@
 <details open="open">
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#Team Audubon in 22SP"> ➤ Team Audubon in 22SP</a></li>
+    <li><a href="#Team Audubon in SP22"> ➤ Team Audubon in SP22</a></li>
     <li><a href="#prerequisites"> ➤ Prerequisites</a></li>
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
@@ -30,7 +30,7 @@
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- ABOUT THE PROJECT -->
-<h2 id="Team Audubon in 22SP"> Team Audubon in 22SP</h2>
+<h2 id="Team Audubon in SP22"> Team Audubon in SP22</h2>
 
 <p align="justify"> 
   In order to both improve the accuracy of bird counts as well as the speed, Houston Audubon and students from the D2K capstone course at Rice University
