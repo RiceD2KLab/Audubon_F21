@@ -132,7 +132,7 @@ The following open source packages are used in this project:
 
   <li>Execute the scripts as required.</li>
   
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Sp22_Audubon_Bird_Detection_Tutorial.ipynb) <br> 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/RiceD2KLab/Audubon_F21/blob/SP22/Sp22_Audubon_Bird_Detection_Tutorial.ipynb) <br> 
 
 See [train_net.py](train_net.py), [wandb_train_net.py](wandb_train_net.py), or [Colab Notebook](Sp22_Audubon_Bird_Detection_Tutorial.ipynb) for usage of code. 
 
