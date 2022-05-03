@@ -37,9 +37,9 @@ def train_mode_activate():
     max_iters.grid(row=4, column=1, padx=10, pady=5)
 
     Label(train_frame, text='Bayesian Tuning Iterations').grid(row=5, column=0, padx=10, pady=5)
-    max_iters = Entry(train_frame, width=40)
-    max_iters.insert(0, "40")
-    max_iters.grid(row=5, column=1, padx=10, pady=5)
+    bayesian_iters = Entry(train_frame, width=40)
+    bayesian_iters.insert(0, "40")
+    bayesian_iters.grid(row=5, column=1, padx=10, pady=5)
 
     Label(train_frame, text='Batch Size').grid(row=6, column=0, padx=10, pady=5)
     batch_size = Entry(train_frame, width=40)
@@ -57,6 +57,7 @@ def train_mode_activate():
                                                                                           img_ext.get(),
                                                                                           dir_ignore.get(),
                                                                                           num_workers.get(),
+                                                                                          bayesian_iters.get(),
                                                                                           max_iters.get(),
                                                                                           batch_size.get(),
                                                                                           output_dir.get()]))\
