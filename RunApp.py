@@ -4,6 +4,7 @@ import detect_only
 import os
 
 main_window = Tk()
+main_window.title("Rice University D2K Lab x Houston Audubon")
 main_window.geometry("800x300")
 initial_frame = Frame(main_window)
 train_frame = Frame(main_window)
@@ -64,7 +65,6 @@ def train_mode_activate():
         .grid(row=8)
 
     train_frame.grid(row=0)
-
 
 
 def train_button_click(args):
