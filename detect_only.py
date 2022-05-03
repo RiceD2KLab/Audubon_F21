@@ -226,9 +226,8 @@ def run(argv):
     register_datasets(dirs, img_ext, BIRD_SPECIES, bird_species_colors=BIRD_SPECIES_COLORS, unknown_bird_category=False)
 
     # change this to the specific directory of the fitting model
-    print(str(argv[0]))
-    print(os.listdir(str(argv[0])))
-    cfg.OUTPUT_DIR = str(argv[0]) + "\\" + os.listdir(str(argv[0])).sort()[-1]
+
+    cfg.OUTPUT_DIR = str(argv[0]) + "\\" + sorted(os.listdir(str(argv[0])))[-1]
 
     # print('validation inference:')
     val_precisions, val_max_recalls = get_precisions_recalls(cfg, predictor, "birds_species_Test")
