@@ -247,7 +247,7 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
 
   The high precision scores for all bird species using an IoU threshold of 0.50 is excellent, except for the minority category (“Roseate Spoonbill” and "White Ibis"), where the model drastically fails to classify. 
   
-  <li><b>Detection Results Example</b></li> 
+  <li><b>Experiment Example</b></li> 
     <p align="center">
     <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Cover%2520Image.JPEG">
   </p>
