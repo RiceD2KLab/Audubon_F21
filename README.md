@@ -85,7 +85,11 @@ The following open source packages are used in this project:
     ├── requirements.txt
     ├── data_exploration.py  
     ├── Audubon-Bird-Detection-Tutorial.ipynb
+    ├── startup.sh
+    ├── get_dist.py
     ├── train_net.py
+    ├── detect_only.py
+    
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
