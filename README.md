@@ -15,8 +15,14 @@
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
     <li><a href="#dataset"> ➤ Dataset</a></li>
-    <li><a href="#Data Science Pipeline"> ➤ Data Science Pipeline</a></li>
-    <li><a href="#results-and-discussion"> ➤ Results and Discussion</a></li>
+    <li>
+      <a href="#Data Science Pipeline"> ➤ Data Science Pipeline</a>
+      <ul>
+        <li><a href="#data-augmentation">Data Augmentation</a></li>
+        <li><a href="#Modeling">Modeling</a></li>
+        <li><a href="#Experiments">Experiments</a></li>
+      </ul>
+    </li>
     <li><a href="#contributors"> ➤ Contributors</a></li>
   </ol>
 </details>
@@ -222,7 +228,7 @@ Given that our dataset is unbalanced and has to be corrected. The idea is to giv
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- EXPERIMENTS -->
-<h2 id="experiments"> Experiments</h2>
+<h2 id="Experiments"> Experiments</h2>
 
 <p align="justify"> 
 
