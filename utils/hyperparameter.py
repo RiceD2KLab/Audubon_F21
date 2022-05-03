@@ -27,11 +27,11 @@ from detectron2.modeling import ROI_HEADS_REGISTRY
 # from utils.evaluation import PrecisionRecallEvaluator, get_precisions_recalls, plot_precision_recall
 
 # For google colab
-from Audubon_F21.utils.custom_loss import CustomFastRCNNOutputLayers
-from Audubon_F21.utils.config import add_retinanet_config, add_fasterrcnn_config
-from Audubon_F21.utils.dataloader import get_bird_only_dicts, get_bird_species_dicts, register_datasets
-from Audubon_F21.utils.trainer import Trainer, MyTrainer
-from Audubon_F21.utils.evaluation import PrecisionRecallEvaluator, get_precisions_recalls, plot_precision_recall
+from utils.custom_loss import CustomFastRCNNOutputLayers
+from utils.config import add_retinanet_config, add_fasterrcnn_config
+from utils.dataloader import get_bird_only_dicts, get_bird_species_dicts, register_datasets
+from utils.trainer import Trainer, MyTrainer
+from utils.evaluation import PrecisionRecallEvaluator, get_precisions_recalls, plot_precision_recall
 
 
 import json
