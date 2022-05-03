@@ -1,5 +1,6 @@
 from tkinter import *
 import Training_only
+import os
 
 main_window = Tk()
 main_window.geometry("500x300")
@@ -74,13 +75,16 @@ def run_mode_activate():
     initial_frame.pack_forget()
     initial_frame.destroy()
 
+    model_dirs = []
+    for file in os.listdir("Documents\\Training_models\\"):
+        d = os.path.join("Documents\\Training_models\\", file)
+        if os.path.isdir(d):
+            model_dirs.append(d)
+
     Label(run_frame, text='Trained Model:').grid(row=0, column=0, padx=10)
 
     # Dropdown menu options
-    options = [
-        "Model1",
-        "Model2"
-    ]
+    options = model_dirs
 
     # datatype of menu text
     clicked = StringVar()

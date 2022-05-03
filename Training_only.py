@@ -38,7 +38,7 @@ def run_default():
     # # # the output direction is "aug_dir"
     # #
     import shutil
-    from utils.augmentation import AugTrainingSet, dataset_aug
+    # from utils.augmentation import AugTrainingSet, dataset_aug
 
     # # dst_dir is the folder of training data(only after cropping)
     dst_dir = crop_dir + '/Train'
@@ -189,7 +189,6 @@ def run(argv):
     # # # the output direction is "aug_dir"
     # #
     import shutil
-    from utils.augmentation import AugTrainingSet, dataset_aug
 
     # # dst_dir is the folder of training data(only after cropping)
     dst_dir = crop_dir + '/Train'
