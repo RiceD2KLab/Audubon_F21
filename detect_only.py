@@ -168,7 +168,7 @@ def run(argv):
     # cfg.MODEL.WEIGHTS = f"./D2K_TDS_A_5_classes/multibirds_{model_name}/model_final.pth"
     # cfg.MODEL.WEIGHTS = tune_weight_dir + '/model_final.pth'
 
-    cfg.MODEL.WEIGHTS = str(argv[0]) + "\\" + os.listdir(str(argv[0])).sort()[-1] + "\\model_final.pth"
+    cfg.MODEL.WEIGHTS = str(argv[0]) + "\\" + sorted(os.listdir(str(argv[0])))[-1] + "\\model_final.pth"
 
     cfg.DATALOADER.NUM_WORKERS = 0
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
