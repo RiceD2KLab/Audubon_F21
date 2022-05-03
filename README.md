@@ -72,7 +72,7 @@ The following open source packages are used in this project:
     ├── .ipynb_checkpoints
     ├────── (..........)
     ├── FasterRCNNDenseNet
-    ├────── (Train Faster RCNN with DenseNet model)
+    ├────── (Train Faster RCNN with DenseNet backbone)
     ├── Flex_Faster_RCNN
     ├────── (Train Faster RCNN with flexible configurations and backbones)   
     ├── configs
