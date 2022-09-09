@@ -7,7 +7,18 @@ import os
 import shutil
 from pathlib import Path
 import random
+import glob
 
+def find_corr_img_file(ann_file):
+    """
+    Find the image file that has the same file prefix name as teh given file of other formats
+    """
+    file_ext = ann_file.split('.')[-1]
+    im_name_pattern = ann_file.replace('.'+file_ext, '.*')
+    im_name = [f for f in glob.glob(im_name_pattern) if f.lower().endswith(('.jpg', '.jpeg'))] # '.png', '.tiff', ...
+    assert len(im_name) == 1
+    return im_name[0]
+    
 
 def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     """
@@ -23,10 +34,7 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     info_dict['bbox'] = []
     info_dict['file_name'] = os.path.split(csv_path)[-1]
     # plotting function needs it, but in JPEG.
-    if test:
-        im = cv2.imread(csv_path.replace('csv', 'JPEG'))
-    else:
-        im = cv2.imread(csv_path.replace(annot_file_ext, 'JPG'))
+    im = cv2.imread(find_corr_img_file(csv_path))
 
     # append width, height, depth
     info_dict['img_size'] = im.shape
@@ -71,13 +79,9 @@ def dict_to_csv(info_dict, output_path, empty, img_ext= 'JPEG'):
             # className, description, xmin, ymin, width, height
             new_bbx_buffer.append([className, desc, int(xmin), int(ymin), int(xmax) - int(xmin), int(ymax) - int(ymin)])
     # Name of the file to save
-    if img_ext == 'JPEG':
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace('JPEG', 'csv'))
-    if img_ext == 'JPG':
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
-
-    if img_ext == 'bbx':
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
+    file_ext = info_dict["file_name"].split('.')[-1]
+    assert file_ext.lower() in ['jpeg', 'jpg', 'bbx'], 'Please check file extension!'
+    save_file_name = os.path.join(output_path, info_dict["file_name"].replace(file_ext, 'csv'))    
 
     # print(save_file_name)
     # write to files
@@ -147,7 +151,8 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     """
     info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
     img_height, img_width, _ = info_dict['img_size']
-    im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
+    
+    im = Image.open(find_corr_img_file(csv_file), 'r')
     file_name = csv_file.split('/')[-1][:-4]
     print(file_name)
     # go through the image from top left corner
@@ -219,7 +224,7 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
     if annot_file_ext == 'csv':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
         # TODO: only pass CSV files whose images are in the folder too
-    if annot_file_ext == 'bbx':
+    elif annot_file_ext == 'bbx':
         files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'bbx']
         # TODO: only pass BBX files whose images are in the folder too
     for f in tqdm(files, desc='Cropping files'):
