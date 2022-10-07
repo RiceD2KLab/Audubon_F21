@@ -165,6 +165,74 @@ def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
         # ax_iou75.legend(class_names, loc='best')
 
         plt.show()
+        
+        
+        
+        
+def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, figscale=2, dpi=200):
+    """
+    Plot precision-recall curves outputted by PrecisionRecallEvaluator, in a single plot
+    INPUTS:
+         precisions: [TxRxKxAxM] precision for every evaluation setting
+         max_recalls: [TxKxAxM] max recall for every evaluation setting
+         class_names: names of bird species registered.
+         class_colors: List of colors for corresponding to bird species
+    """
+    recall = np.linspace(0, 1, 101)
+    # fig, ax = plt.subplots()
+    # fig_iou50, ax_iou50 = plt.subplots()
+    # fig_iou75, ax_iou75 = plt.subplots()
+    
+    nclass = len(class_names)
+    nrow = np.floor(nclass**.5).astype(int)
+    ncol = np.ceil(nclass/nrow).astype(int)
+    
+    subplot_params = {'nrows': nrow, 'ncols': ncol, 'sharey':True, 'sharex':True, 
+                      'figsize':(figscale*ncol, figscale*nrow), 'dpi':dpi}
+    fig, axes = plt.subplots(**subplot_params)
+    axes = axes.flatten()
+    fig_iou50, axes_iou50 = plt.subplots(**subplot_params)
+    axes_iou50 = axes_iou50.flatten()
+
+    for c_indx, class_name in enumerate(class_names):
+        
+        ax = axes[c_indx]
+        avg_precision = np.mean(np.squeeze(precisions[:, :, c_indx, 0, -1]), axis=1)
+        max_recall = np.squeeze(max_recalls[:, c_indx, 0, -1])
+#         print(f"AP50 for {class_name}: {avg_precision[0]}")
+#         print(f"AP75 for {class_name}: {avg_precision[5]}")
+#         print(f"Max recall (IoU 50) for {class_name}: {max_recall[0]}")
+        ax.plot(max_recall, avg_precision)#, color=class_colors[c_indx])
+        ax.set(title=f"{class_name}")
+        if not c_indx%ncol:
+            ax.set(ylabel="Avg. Precision")
+        if c_indx >= (nrow-1)*ncol:
+            ax.set(xlabel="Max Recall")
+#         ax.legend(class_names, loc='best')
+        
+        ax_iou50 = axes_iou50[c_indx]
+        precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
+        ax_iou50.plot(recall, precisions_iou50)#, color=class_colors[c_indx])
+        ax_iou50.set(title=f"{class_name}")
+        if not c_indx%ncol:
+            ax_iou50.set(ylabel="Precision")
+        if c_indx >= (nrow-1)*ncol:    
+            ax_iou50.set(xlabel="Recall")
+#         ax_iou50.legend(class_names, loc='best')
+        
+        # precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
+        # precisions_iou75 = np.squeeze(precisions[5, :, c_indx, 0, -1])
+        # ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
+        # ax_iou75.set(title="Precision-Recall Curve (IoU = 0.75)",
+        #              ylabel="Precision",
+        #              xlabel="Recall")  
+        # ax_iou75.legend(class_names, loc='best')
+
+    fig.suptitle("Precision-Recall Curve (IoU = 0.5) for ")
+    plt.tight_layout()
+    plt.show()
+
+
 
 
 def non_max_suppression_fast(df, overlap_thresh = 0.5):

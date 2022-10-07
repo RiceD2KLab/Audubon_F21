@@ -1,5 +1,5 @@
 import pandas as pd
-from tqdm.autonotebook import tqdm
+from tqdm.auto import tqdm
 import cv2
 from PIL import Image, ImageDraw
 import csv
@@ -322,20 +322,22 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
     :param train_frac: fraction for training
     :param val_frac: fraction for validation, 1-train-val will be fraction for test
     """
-    p = Path(output_dir)
-    p1 = Path(os.path.join(output_dir, 'train'))
-    p2 = Path(os.path.join(output_dir, 'val'))
-    p3 = Path(os.path.join(output_dir, 'test'))
-
-    if not p.is_dir():
+    
+    #making Train, Test, Validate
+    phases = ['Train', 'Validate', 'Test']
+    [os.makedirs(os.path.join(output_dir,phase), exist_ok=True) for phase in phases]
+    
+    if not Path(output_dir).is_dir():
         print('The output directory should be an empty folder')
-    if not p1.is_dir():
-        print('Please create an empty folder named "train" inside the output folder')
-    if not p2.is_dir():
-        print('Please create an empty folder named "val" inside the output folder')
-    if not p3.is_dir():
-        print('Please create an empty folder named "test" inside the output folder')
+    
+    p1, p2, p3 = [os.path.join(output_dir,phase) for phase in phases]
+    for phase, p in zip(phases, [p1, p2, p3]):
+        if not Path(p).is_dir():
+            print('Please create an empty folder named "'+phase+'" inside the output folder')
 
+            
+    print(file_dir)
+            
     img_list = [f for f in os.listdir(file_dir) if f[-4:] == 'JPEG']
     # random.Random(4).shuffle(img_list)
     random.Random(seed).shuffle(img_list)
@@ -343,16 +345,20 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
     size = len(img_list)
     train_sz = int(size * train_frac)
     val_sz = int(size * val_frac)
+    
+    print(size, train_sz, val_sz)
+    print(len(img_list))
+    
     for idx in range(size):
         if idx < train_sz:
-            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'train'))
-            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'train'))
+            p = p1
         elif idx < train_sz + val_sz:
-            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'val'))
-            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'val'))
+            p = p2
         else:
-            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'test'))
-            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'test'))
+            p = p3
+        src_img, src_cvs = [os.path.join(file_dir, fn) for fn in (img_list[idx], csv_list[idx])]
+        [shutil.move(srcf, p) for srcf in (src_img, src_cvs)]
+        
 
 # Added by SP22 to avoid harsh cropping of birds at boundaries
 def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_size_y, output_dir, class_map={}, overlap=0.8, annot_file_ext='csv', file_dict={}, compute_sliding_size=False):
