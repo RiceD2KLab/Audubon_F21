@@ -1,3 +1,32 @@
+<h1 align="center"> TO BE UPDATED SOON! </h1>
+
+The current codebase will be updated soon to reflect the results found in the following paper: 
+
+[**Deep object detection for waterbird monitoring using aerial imagery**](https://arxiv.org/abs/2210.04868)<br/>
+Krish Kabra<sup>\*,1</sup>, 
+Alexander Xiong<sup>\*,1</sup>, 
+Wenbin Li<sup>\*,1</sup>, 
+Minxuan Luo<sup>1</sup>, 
+William Lu<sup>1</sup>, 
+Raul Garcia<sup>1</sup>, 
+Dhananjay Vijay<sup>1</sup>, 
+Jiahui Yu<sup>1</sup>, 
+Maojie Tang<sup>1</sup>, 
+Tianjiao Yu<sup>1</sup>, 
+Hank Arnold<sup>2</sup>, 
+Anna Vallery<sup>2</sup>, 
+Richard Gibbons<sup>3</sup>, 
+Arko Barman<sup>1</sup>
+<br/>
+<sup>\*</sup> equal contribution <br/>
+<sup>1</sup>Rice University, Houston, TX 77005, USA <br/>
+<sup>2</sup>Houston Audubon Society, Houston, TX 77079, USA <br/>
+<sup>3</sup>American Bird Conservancy, The Plains, VA 20198, USA <br/>
+
+Stay tuned!
+
+</br>
+
 <h1 align="center"> Team Audubon </h1>
 <h3 align="center"> Development of Machine Learning Algorithms for Precision Waterbird Monitoring </h3>  
 
