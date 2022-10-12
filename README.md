@@ -58,6 +58,7 @@ The following open source packages are used in this project:
 * Numpy
 * Pandas
 * Matplotlib
+* Torchvision
 * OpenCV 
 * Detectron2
 
@@ -67,8 +68,8 @@ The following open source packages are used in this project:
 
     code
     .
-    ├── .ipynb_checkpoints
-    ├────── (colab files)
+    ├── Classifier
+    ├────── (train ResNet-50 binary classifier)
     ├── FasterRCNNDenseNet
     ├────── (train Faster RCNN with DenseNet backbone)
     ├── Flex_Faster_RCNN
@@ -87,6 +88,7 @@ The following open source packages are used in this project:
     ├── startup.sh
     ├── train_net.py
     ├── detect_only.py
+    ├── train_only_script_22f.py
     
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -260,29 +262,31 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
 
 <p>
   
-  <b>Wenbin Li</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: wl56@rice.edu <a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/lwb56">@Wenbin</a> <br>
+  <b>Tony Gao</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: tg27@rice.edu <a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
   
-  <b>Tianjiao Yu</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ty37@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/TianjiaoYu">@Tianjiao</a> <br>
+  <b>Christopher Le</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ctl7@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
 
-  <b>Raul Garcia</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: rg66@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/raulgarcia66">@Raul</a> <br>
+  <b>Boning Li</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: bl41@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
 
-  <b>Dhananjay Vijay Singh</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: Dv17@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/dhananjaysingh2000">@Dhananjay</a> <br>
+  <b>Linfeng Lou</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ll90@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
   
-  <b>Jiahui Yu</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: jy89@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/KarenYu729">@Jiahui</a> <br>
+  <b>Haixiao Wang</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: hw68@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
+  
+  <b>Anna Vallery</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: avallery@houstonaudubon.org<a></a> <br>
 
-  <b>Maojie Tang</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: mt84@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/WaitDumplings">@Maojie</a> <br>
+  <b>Richard Gibbons Lu</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: rgibbons@houstonaudubon.org<a></a> <br>
   
   <b>Hank Arnold</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: hmarnold@msn.com<a></a> <br>
