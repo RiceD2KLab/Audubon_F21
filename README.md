@@ -173,7 +173,7 @@ See [train_net.py](train_net.py), or [Colab Notebook](https://colab.research.goo
 <h2 id="Data Science Pipeline"> Data Science Pipeline </h2>
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Pipeline.png?raw=true" width="600">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/utils/pipeLine/Pipeline.png?raw=true" width="600">
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
