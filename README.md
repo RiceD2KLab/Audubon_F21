@@ -208,6 +208,11 @@ but only original images will be used for evaluation and testing purposes.
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Flex_Faster_RCNN/fasterRCNN.png">
 </p>
 
+<li><b>ResNet-18</b></li>
+<p align="center">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/Classifier/resnet18.png">
+</p>
+
  <li><b>Bayesian Hyperparameters tuning</b></li>
 Model performance is heavily influenced by hyperparameters. Grid search or manual tuning both necessitate a lot of tuning skill and computational resources, which is why we employ bayesian hyperparameters tuning to address these two issues.This model’s entire procedure is defined as follows:
   <ul>
