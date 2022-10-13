@@ -213,7 +213,7 @@ but only original images will be used for evaluation and testing purposes.
 
 <li><b>ResNet-18</b></li>
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/Classifier/resnet18.png">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/Classifier/resnet18.png" width="700">
 </p>
 
   
@@ -221,7 +221,7 @@ but only original images will be used for evaluation and testing purposes.
 Use binary cross entropy loss function to train the binary classification model for terns:
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/Classifier/cross_entropy_loss.png" width="300">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/Classifier/cross_entropy_loss.png" width="400">
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
