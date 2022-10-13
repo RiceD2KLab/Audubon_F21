@@ -50,15 +50,17 @@
 <img src="https://raw.githubusercontent.com/numpy/numpy/9ee47e0ebe7e869f4ddcf1e3d18978fa23d43c1d/branding/logo/primary/numpylogo.svg" width="140">
 <img src="https://pandas.pydata.org/static/img/pandas.svg" width="150">
 <img src="https://matplotlib.org/_static/logo2.svg" width="150">
+<img src="https://www.vectorlogo.zone/logos/pytorch/pytorch-ar21.svg" width="150">
 <img src="https://github.com/opencv/opencv/blob/f86c8656a3bfa9219359faba16fd11091fbb7938/doc/js_tutorials/js_assets/opencv_logo.jpg?raw=true" width="75">
 <img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200">
+
 
 <!--This project is written in Python programming language. <br>-->
 The following open source packages are used in this project:
 * Numpy
 * Pandas
 * Matplotlib
-* Torchvision
+* PyTorch
 * OpenCV 
 * Detectron2
 
@@ -162,6 +164,7 @@ See [train_net.py](train_net.py), or [Colab Notebook](https://colab.research.goo
     <li><b>width</b>: width of a bounding box</li> 
     <li><b>height</b>: height of a bounding box</li> 
   </ul>
+  In Fall 22, Houston Audubon provided us with a small 300 MB dataset containing 10 images generated using a photogrammetry process. Each image is 10k x 10k high resolution with corresponding annotation files that feature 4 bird classes: Royal Terns, Sandwich Terns, non-nesting Royal Terns, and non-nesting Sandwich Terns. The annotation files consist of CSV files in the same format detailed above for bounding boxes as well as new CSV files containing indicator points for each labeled bird. The purpose of this dataset is to assist the training process with the fine-grained classification problem of Mixed Terns.
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -170,7 +173,7 @@ See [train_net.py](train_net.py), or [Colab Notebook](https://colab.research.goo
 <h2 id="Data Science Pipeline"> Data Science Pipeline </h2>
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/DataPipeLine.png?raw=true" width="600">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Pipeline.png?raw=true" width="600">
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
