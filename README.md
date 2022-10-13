@@ -151,7 +151,7 @@ See [train_net.py](train_net.py), or [Colab Notebook](https://colab.research.goo
 <h2 id="dataset"> Dataset</h2>
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Data.png?raw=true" width="600">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/utils/pipeLine/Data.png?raw=true" width="600">
 </p>
 
 <p> 
