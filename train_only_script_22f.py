@@ -162,12 +162,12 @@ custom_weight = []
 MODEL = 'retinanet'   
 model_output_dir = f'./output/Training_models/06_22_bay_tune_retina_{len(BIRD_SPECIES)}class_set_I_aug'
 
-if MODEL = 'retinanet' :
+if MODEL == 'faster_rcnn' :
     cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 8, 'BASE_LR': .01, 'GAMMA': 0.001,
                  'WARMUP_ITERS': 1, 'MAX_ITER': 1500,
                  'STEPS': [899], 'CHECKPOINT_PERIOD': 899, 'output_dir': model_output_dir,
                  'model_name': "faster_rcnn_R_50_FPN_1x", 'BIRD_SPECIES': BIRD_SPECIES, 'Custom': False}
-elif MODEL = 'faster_rcnn':
+elif MODEL == 'retinanet':
     cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 8, 'BASE_LR': .001, 'GAMMA': 0.01,
                  'WARMUP_ITERS': 1, 'MAX_ITER': 1500,
                  'STEPS': [899], 'CHECKPOINT_PERIOD': 899, 'output_dir': model_output_dir,

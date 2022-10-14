@@ -194,7 +194,9 @@ def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, 
     fig_iou50, axes_iou50 = plt.subplots(**subplot_params)
     axes_iou50 = axes_iou50.flatten()
 
+    display_metric = {'AP':{}, 'AR':{}}
     for c_indx, class_name in enumerate(class_names):
+        
         
         ax = axes[c_indx]
         avg_precision = np.mean(np.squeeze(precisions[:, :, c_indx, 0, -1]), axis=1)
@@ -227,10 +229,15 @@ def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, 
         #              ylabel="Precision",
         #              xlabel="Recall")  
         # ax_iou75.legend(class_names, loc='best')
+        
+        display_metric['AR'][class_name] = max_recall[0]
+        display_metric['AP'][class_name] = avg_precision[0]
 
     fig.suptitle("Precision-Recall Curve (IoU = 0.5) for ")
     plt.tight_layout()
     plt.show()
+    
+    return display_metric
 
 
 
