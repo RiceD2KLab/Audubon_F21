@@ -10,7 +10,7 @@
 <details open="open">
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#Team Audubon in SP22"> ➤ Team Audubon in SP22</a></li>
+    <li><a href="#Team Audubon in FL22"> ➤ Team Audubon in FL22</a></li>
     <li><a href="#prerequisites"> ➤ Prerequisites</a></li>
     <li><a href="#folder-structure"> ➤ Folder Structure</a></li>
     <li><a href="#installation"> ➤ Installation & Usage Instructions</a></li>
@@ -30,10 +30,10 @@
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- ABOUT THE PROJECT -->
-<h2 id="Team Audubon in SP22"> Team Audubon in SP22</h2>
+<h2 id="Team Audubon in FL22"> Team Audubon in FL22</h2>
 
 <p align="justify"> 
-  In order to both improve the accuracy of bird counts as well as the speed, Houston Audubon and students from the D2K capstone course at Rice University
+  In order to both improve the accuracy and speed of bird counts, Houston Audubon and students from the D2K capstone course at Rice University
   develop machine learning and computer vision algorithms for the detection of birds using images from UAVs, with the specific goals to:
   <ol> 
   <li> Count and survey the number of birds.
@@ -50,14 +50,17 @@
 <img src="https://raw.githubusercontent.com/numpy/numpy/9ee47e0ebe7e869f4ddcf1e3d18978fa23d43c1d/branding/logo/primary/numpylogo.svg" width="140">
 <img src="https://pandas.pydata.org/static/img/pandas.svg" width="150">
 <img src="https://matplotlib.org/_static/logo2.svg" width="150">
+<img src="https://www.vectorlogo.zone/logos/pytorch/pytorch-ar21.svg" width="150">
 <img src="https://github.com/opencv/opencv/blob/f86c8656a3bfa9219359faba16fd11091fbb7938/doc/js_tutorials/js_assets/opencv_logo.jpg?raw=true" width="75">
 <img src="https://raw.githubusercontent.com/facebookresearch/detectron2/main/.github/Detectron2-Logo-Horz.svg" width="200">
+
 
 <!--This project is written in Python programming language. <br>-->
 The following open source packages are used in this project:
 * Numpy
 * Pandas
 * Matplotlib
+* PyTorch
 * OpenCV 
 * Detectron2
 
@@ -67,8 +70,8 @@ The following open source packages are used in this project:
 
     code
     .
-    ├── .ipynb_checkpoints
-    ├────── (colab files)
+    ├── Classifier
+    ├────── (train ResNet-50 binary classifier)
     ├── FasterRCNNDenseNet
     ├────── (train Faster RCNN with DenseNet backbone)
     ├── Flex_Faster_RCNN
@@ -87,6 +90,7 @@ The following open source packages are used in this project:
     ├── startup.sh
     ├── train_net.py
     ├── detect_only.py
+    ├── train_only_script_22f.py
     
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -147,7 +151,7 @@ See [train_net.py](train_net.py), or [Colab Notebook](https://colab.research.goo
 <h2 id="dataset"> Dataset</h2>
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/Data.png?raw=true" width="600">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/utils/pipeLine/Data.png?raw=true" width="600">
 </p>
 
 <p> 
@@ -160,6 +164,7 @@ See [train_net.py](train_net.py), or [Colab Notebook](https://colab.research.goo
     <li><b>width</b>: width of a bounding box</li> 
     <li><b>height</b>: height of a bounding box</li> 
   </ul>
+  In Fall 22, Houston Audubon provided us with a small 300 MB dataset containing 10 images generated using a photogrammetry process. Each image is 10k x 10k high resolution with corresponding annotation files that feature 4 bird classes: Royal Terns, Sandwich Terns, non-nesting Royal Terns, and non-nesting Sandwich Terns. The annotation files consist of CSV files in the same format detailed above for bounding boxes as well as new CSV files containing indicator points for each labeled bird. The purpose of this dataset is to assist the training process with the fine-grained classification problem of Mixed Terns.
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -168,7 +173,7 @@ See [train_net.py](train_net.py), or [Colab Notebook](https://colab.research.goo
 <h2 id="Data Science Pipeline"> Data Science Pipeline </h2>
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/DataPipeLine.png?raw=true" width="600">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/utils/pipeLine/Pipeline.png?raw=true" width="600">
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -206,21 +211,17 @@ but only original images will be used for evaluation and testing purposes.
   <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/Flex_Faster_RCNN/fasterRCNN.png">
 </p>
 
- <li><b>Bayesian Hyperparameters tuning</b></li>
-Model performance is heavily influenced by hyperparameters. Grid search or manual tuning both necessitate a lot of tuning skill and computational resources, which is why we employ bayesian hyperparameters tuning to address these two issues.This model’s entire procedure is defined as follows:
-  <ul>
-  <li><b>(1)</b> To describe the uncertainty, compute the posterior belief u(x) using a surrogate Gaussian pro- cess to create an estimate of the mean and standard deviation around this estimate σ(x).</li>
-  <li><b>(2)</b>Calculate an acquisition function a(x) that is proportional to how advantageous it is to sample the next point in the range of values.</li>
-  <li><b>(3)</b> Locate the maximum point of this acquisition function and sample from there.</li>
-  <li><b>(4)</b> This process is repeated a certain number of times, commonly known as the optimization bud- get, until a pretty good point is reached.</li>
-    
-  </ul>
+<li><b>ResNet-18</b></li>
+<p align="center">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/Classifier/resnet18.png" width="700">
+</p>
+
   
- <li><b>Weighted loss function</b></li>
-Given that our dataset is unbalanced and has to be corrected. The idea is to give distinct classes in the loss function sample size-based weights so that the model can focus more on the minority classes during training. We propose a custom weighted Cross Entropy loss function for the network's classification layer:
+ <li><b>Binary Cross-Entropy loss function</b></li>
+Use binary cross entropy loss function to train the binary classification model for terns:
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/SP22/utils/pipeLine/WeightedLoss.png" width="300">
+  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/Classifier/cross_entropy_loss.png" width="400">
 </p>
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -260,29 +261,31 @@ Next, we train our model with new hyperparameters and evaluate it on test set.
 
 <p>
   
-  <b>Wenbin Li</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: wl56@rice.edu <a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/lwb56">@Wenbin</a> <br>
+  <b>Tony Gao</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: tg27@rice.edu <a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
   
-  <b>Tianjiao Yu</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ty37@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/TianjiaoYu">@Tianjiao</a> <br>
+  <b>Christopher Le</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ctl7@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
 
-  <b>Raul Garcia</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: rg66@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/raulgarcia66">@Raul</a> <br>
+  <b>Boning Li</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: bl41@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
 
-  <b>Dhananjay Vijay Singh</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: Dv17@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/dhananjaysingh2000">@Dhananjay</a> <br>
+  <b>Linfeng Lou</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: ll90@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
   
-  <b>Jiahui Yu</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: jy89@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/KarenYu729">@Jiahui</a> <br>
+  <b>Haixiao Wang</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: hw68@rice.edu<a></a> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: 
+  
+  <b>Anna Vallery</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: avallery@houstonaudubon.org<a></a> <br>
 
-  <b>Maojie Tang</b> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: mt84@rice.edu<a></a> <br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub: <a href="https://github.com/WaitDumplings">@Maojie</a> <br>
+  <b>Richard Gibbons Lu</b> <br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: rgibbons@houstonaudubon.org<a></a> <br>
   
   <b>Hank Arnold</b> <br>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: hmarnold@msn.com<a></a> <br>
