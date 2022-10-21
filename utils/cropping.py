@@ -8,6 +8,49 @@ import shutil
 from pathlib import Path
 import random
 import glob
+import numpy as np
+
+def correct_labels(raw_dir):
+    """
+        Clean the annotation labels: D2K 30 Codes 20221013.xlsx
+        
+        # MEGRT <--> Replaced by individual species (GREG/REEGWM/SNEG/WHIB/ROSP, etc)
+        # MTRNA <--> Replaced by individual tern species (ROTE/SATE/CATE/BGTE/LETE, etc)
+        # TCHEA --> TRHEA
+    """
+    for f in tqdm(glob.glob(raw_dir+'*.bbx')):
+        ann = pd.read_csv(f)
+        if 'AI Class (Original)' not in ann:
+            ann['AI Class (Original)'] = ann['AI Class']
+            ann_corr = []
+            for lab in ann['AI Class'].values:
+
+                if 0:#np.any([lab.startswith(s) for s in ['GREG','REEGWM','SNEG','WHIB','ROSP']]):
+                    # MEGRT <--> Replaced by individual species (GREG/REEGWM/SNEG/WHIB/ROSP, etc)
+                    lab_corr = 'MEGRT'
+                elif lab == 'ROTE' or lab == 'ROTN':
+                    # all royal terns 
+                    lab_corr = 'ROT'
+                elif lab == 'SANE' or lab == 'SATE':
+                    # all sandwich terns 
+                    lab_corr = 'SAT'
+                elif lab == 'TCHEA':
+                    # TCHEA --> TRHEA
+                    lab_corr = 'TRHEA'
+                elif lab == 'MTRNA':
+                    print('mixed tern warning!')
+                    lab_corr = lab
+                else:
+                    lab_corr = lab
+
+                ann_corr.append(lab_corr)
+
+            ann['AI Class'] = np.array(ann_corr)
+            ann.to_csv(f, index=False)
+        else:
+            print('dataset already corrected!')
+            break
+        
 
 def find_corr_img_file(ann_file):
     """
@@ -28,8 +71,11 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
                   xmax, ymax
     OUTPUT:
       info_dict -- an info dictionary
-    """
-    df = pd.read_csv(csv_path, header=0, names=["class_id", "class_name", "x", "y", "width", "height"])
+    """    
+    # load df and rename
+    df = pd.read_csv(csv_path, header=0, usecols=range(6), 
+                     names=["class_id", "class_name", "x", "y", "width", "height"])
+    
     info_dict = {}
     info_dict['bbox'] = []
     info_dict['file_name'] = os.path.split(csv_path)[-1]
@@ -43,10 +89,12 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
         # store bbx info for one object
         bbox = {}
         bbox['class'], bbox['desc'], bbox['xmin'], bbox['ymin'], w, h = df.iloc[i,]
+        
         if class_map != {}:
             bbox['class'] = class_map[bbox['desc']]
         bbox['xmax'] = bbox['xmin'] + w
         bbox['ymax'] = bbox['ymin'] + h
+        
         info_dict['bbox'].append(bbox)
     return info_dict
 
@@ -154,7 +202,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     
     im = Image.open(find_corr_img_file(csv_file), 'r')
     file_name = csv_file.split('/')[-1][:-4]
-    print(file_name)
+
     # go through the image from top left corner
     for i in range(img_height // crop_height + 1):
 

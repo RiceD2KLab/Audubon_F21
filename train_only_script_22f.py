@@ -24,7 +24,7 @@ import shutil
 from utils.augmentation import dataset_aug
 from utils.dataloader import register_datasets
 from utils.hyperparameter import main_hyper, main_fit
-from utils.cropping import crop_dataset, train_val_test_split
+from utils.cropping import crop_dataset, train_val_test_split, correct_labels
 
 
 """
@@ -40,59 +40,34 @@ Your dataset should be organized in the following format:
                 |-- annotation files [csv]
     
 """
+data_root = "./data/22F/"
+raw_dir = data_root + "raw/" 
+##################################################################################################################
+# clean the annotation labels: D2K 30 Codes 20221013.xlsx
+notes = pd.read_excel("./data/D2K 30 Codes 20221013.xlsx")
+correct_labels(raw_dir)
 
-data_dir = "./data/22S/raw/" 
 ################################################################################################################
 # only if we are cropping ourselves
 
 # make the cropped dataset
-dd_dir = "./data/22S/cropped/" 
-if not os.path.exists(dd_dir):
-    os.makedirs(dd_dir, exist_ok=True)
+tile_dir = data_root + "tiled/" 
+if not os.path.exists(tile_dir):
+    os.makedirs(tile_dir, exist_ok=True)
 
     #performing the cropping
-    crop_dataset(data_dir, dd_dir, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640)
+    crop_dataset(raw_dir, tile_dir, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640)
     
 #################################################################################################################
 # make the 3 directories
-crop_dir = "./data/22S/split/" #'./model_dataset'
+crop_dir = data_root + "split/" #'./model_dataset'
 if not os.path.exists(crop_dir):
     os.makedirs(crop_dir, exist_ok=True)
 
-    train_val_test_split(dd_dir, crop_dir, train_frac=0.7, val_frac=0.15, seed=4)
+    train_val_test_split(tile_dir, crop_dir, train_frac=0.7, val_frac=0.15, seed=4)
 
 # This is to change to bbx files into csv
 dirs = [d for d in os.listdir(crop_dir) if not d.startswith('.') and not d.startswith('_')]
-
-# ************** the data augmenation part in this section of the code *************************************
-# this data augmentation code only works on the training set!!!
-# the output direction is "aug_dir"
-# dst_dir is the folder of training data(only after cropping)
-
-dst_dir = crop_dir + '/Train/'
-# aug_dir is where we put image after doing data augmentation
-aug_dir = "./data/22S/temp/" 
-if not os.path.exists(aug_dir):
-    os.makedirs(aug_dir, exist_ok=True)
-    # Minimum portion of a bounding box being accepted in a subimage
-    overlap = 0.3
-    # List of species that we want to augment (PLEASE include the full name)
-    minor_species = ['BCNHA', 'BLSKA', 'BRPEA', 'BRPEC', 'BRPEF', 'BRPEJ', 'BRPEW', 'CAEGA', 'GBHEA', 
-                     'GBHEC', 'GBHEJ', 'GBHEN', 'GREGA', 'GREGC', 'LAGUF', 'MEGRT', 'MTRNF', 'OTHRA', 
-                     'REEGA', 'REEGWMA','ROSPA', 'SNEGA', 'TCHEA', 'TRHEA', 'WHIBA', 'WHIBC', 'WHIBN']
-    # Threshold of non-minor creatures existing in a subimage
-    thres = .4
-
-    # [horizontal filp, vertical flip, left rotate, right rotate, [brightness/contrast tunning, number of images produced]]
-    aug_command = [1, 1, 1, 0, [1, 2]]
-
-    dataset_aug(dst_dir, aug_dir, minor_species, overlap, thres, aug_command, img_ext='JPEG', annot_file_ext='csv',
-                crop_height=640, crop_width=640)
-    
-    # copy files from aug_list(certain files in aug_dir) to dst_dir (train data set)
-    aug_list = glob.glob(os.path.join(aug_dir, '*'))
-    for i in aug_list:
-        shutil.copy2(i, dst_dir) 
 
 # ************** Optional: Printing the distribution of the birds in each dataset ************
 fig, axes = plt.subplots(1,3,figsize=(15,10))
@@ -112,8 +87,9 @@ for ax,d in zip(axes, dirs):
     
 # ************** determine which bird species to train on *************************************
 # populating the species for training (that have more than 10 images)
-id_count = target_data["Train"]["class_id"].value_counts()
-BIRD_SPECIES = id_count.loc[id_count >= 10].index.values
+id_count = target_data["Validate"]["class_id"].value_counts()
+BIRD_SPECIES = id_count.loc[id_count >= 20].index.values
+
 
 # keep species that are in all train, val, and test sets
 BIRD_SPECIES = np.intersect1d(
@@ -125,7 +101,7 @@ BIRD_SPECIES = np.intersect1d(
 )
 
 # trash is not a bird
-BIRD_SPECIES = np.setdiff1d(BIRD_SPECIES, 'TRASH').tolist()
+BIRD_SPECIES = np.setdiff1d(BIRD_SPECIES, ['TRASH','OTHRA']).tolist()
 print(len(BIRD_SPECIES), BIRD_SPECIES)
 
 # populating the species map
@@ -136,11 +112,42 @@ for i, bird in enumerate(BIRD_SPECIES):
 print(SPECIES_MAP)
 birds_species_names = BIRD_SPECIES
 
+# ************** the data augmenation part in this section of the code *************************************
+# this data augmentation code only works on the training set!!!
+# the output direction is "aug_dir"
+# dst_dir is the folder of training data(only after cropping)
+
+dst_dir = crop_dir + '/Train/'
+# aug_dir is where we put image after doing data augmentation
+aug_dir = data_root + "temp/" 
+if not os.path.exists(aug_dir):
+    os.makedirs(aug_dir, exist_ok=True)
+    
+    # Minimum portion of a bounding box being accepted in a subimage
+    overlap = 0.3
+    
+    # List of species that we want to augment (PLEASE include the full name)
+    minor_species = [s for s in BIRD_SPECIES if s not in ['ROT', 'LAGUA', 'SAT', 'MTRNA', 'OTHRA']]
+    
+    # Threshold of non-minor creatures existing in a subimage
+    thres = .4
+
+    # [horizontal filp, vertical flip, left rotate, right rotate, [brightness/contrast tunning, number of images produced]]
+    aug_command = [1, 1, 1, 0, [0, 2]] #[1, 1, 1, 0, [1, 2]]
+
+    dataset_aug(dst_dir, aug_dir, minor_species, overlap, thres, aug_command, img_ext='JPEG', annot_file_ext='csv',
+                crop_height=640, crop_width=640)
+    
+    # copy files from aug_list(certain files in aug_dir) to dst_dir (train data set)
+    aug_list = glob.glob(os.path.join(aug_dir, '*'))
+    for i in aug_list:
+        shutil.copy2(i, dst_dir) 
+
+
 #########################################################################################################################
 # registering the data in detectron2
-ata_dir = crop_dir
 img_ext = '.JPEG'
-dirs_full = [os.path.join(data_dir, d) for d in os.listdir(data_dir) if not d.startswith('.') and not d.startswith('_')]
+dirs_full = [os.path.join(crop_dir, d) for d in os.listdir(crop_dir) if not d.startswith('.') and not d.startswith('_')]
 
 # Bird species used by object detector. Species contained in dataset that are
 # not contained in this list will be categorized as an "Unknown Bird"

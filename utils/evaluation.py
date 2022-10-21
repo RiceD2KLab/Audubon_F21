@@ -210,6 +210,8 @@ def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, 
             ax.set(ylabel="Avg. Precision")
         if c_indx >= (nrow-1)*ncol:
             ax.set(xlabel="Max Recall")
+        ax.set_ylim(-.1,1.1)
+        ax.set_xlim(-.1,1.1)
 #         ax.legend(class_names, loc='best')
         
         ax_iou50 = axes_iou50[c_indx]
@@ -220,6 +222,8 @@ def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, 
             ax_iou50.set(ylabel="Precision")
         if c_indx >= (nrow-1)*ncol:    
             ax_iou50.set(xlabel="Recall")
+        ax_iou50.set_ylim(-.1,1.1)
+        ax_iou50.set_xlim(-.1,1.1)
 #         ax_iou50.legend(class_names, loc='best')
         
         # precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
