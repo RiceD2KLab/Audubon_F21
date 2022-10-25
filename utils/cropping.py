@@ -122,7 +122,7 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
 
 # this function generates all the cropped images and all corresponding label txt files for a single file
 # file_dict stores cropped images info dict in one dictionary.
-def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}, img_ext):
+def crop_img(csv_file, crop_height, crop_width, output_dir, img_ext, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}):
     """
     This function crops one image and output corresponding labels.
     Currently, this function generates the cropped images AND the corresponding csv files to output_dir
