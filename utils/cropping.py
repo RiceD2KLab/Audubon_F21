@@ -9,7 +9,7 @@ from pathlib import Path
 import random
 
 
-def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
+def csv_to_dict(csv_path, class_map = {}, annot_file_ext='csv', im_ext = 'jpg'):
     """
     Function to extract an info dictionary from an xml file
     INPUT:
@@ -22,11 +22,8 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     info_dict = {}
     info_dict['bbox'] = []
     info_dict['file_name'] = os.path.split(csv_path)[-1]
-    # plotting function needs it, but in JPEG.
-    if test:
-        im = cv2.imread(csv_path.replace('csv', 'JPEG'))
-    else:
-        im = cv2.imread(csv_path.replace(annot_file_ext, 'JPG'))
+    
+    im = cv2.imread(csv_path.replace(annot_file_ext, im_ext))
 
     # append width, height, depth
     info_dict['img_size'] = im.shape
