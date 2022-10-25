@@ -1,15 +1,4 @@
-import pandas as pd
-from tqdm.autonotebook import tqdm
-import cv2
-from PIL import Image, ImageDraw
-import csv
-import os
-import shutil
-from pathlib import Path
-import random
-
-
-def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
+def csv_to_dict(csv_path, class_map = {}, annot_file_ext='csv', img_ext):
     """
     Function to extract an info dictionary from an xml file
     INPUT:
@@ -23,10 +12,8 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     info_dict['bbox'] = []
     info_dict['file_name'] = os.path.split(csv_path)[-1]
     # plotting function needs it, but in JPEG.
-    if test:
-        im = cv2.imread(csv_path.replace('csv', 'JPEG'))
-    else:
-        im = cv2.imread(csv_path.replace(annot_file_ext, 'JPG'))
+    
+    im = cv2.imread(csv_path.replace(annot_file_ext, img_ext))
 
     # append width, height, depth
     info_dict['img_size'] = im.shape
@@ -135,7 +122,7 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
 
 # this function generates all the cropped images and all corresponding label txt files for a single file
 # file_dict stores cropped images info dict in one dictionary.
-def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}):
+def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}, img_ext):
     """
     This function crops one image and output corresponding labels.
     Currently, this function generates the cropped images AND the corresponding csv files to output_dir
@@ -145,7 +132,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     annot_file_ext -- annotation file extension
     """
 
-    info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
+    info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext, img_ext = img_ext)
     img_height, img_width, _ = info_dict['img_size']
     im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
     # file_name = csv_file.split('/')[-1][:-4]
@@ -203,7 +190,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     return file_dict
 
 
-def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, crop_height=640, crop_width=640):
+def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv',img_ext, class_map = {}, crop_height=640, crop_width=640):
     """
     :param data_dir: image set directory
     :param output_dir: output directory
@@ -230,7 +217,7 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
 
     for f in tqdm(files, desc='Cropping files'):
         crop_img(csv_file=f, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir, class_map=class_map,
-                 annot_file_ext=annot_file_ext)
+                 annot_file_ext=annot_file_ext, img_ext = img_ext)
 
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
