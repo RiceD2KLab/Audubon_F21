@@ -6,89 +6,9 @@ from tqdm import tqdm
 from pathlib import Path
 from PIL import Image, ImageDraw
 from torchvision import transforms
+from Audubon_F21.utils.cropping import csv_to_dict, dict_to_csv
 
 
-def csv_to_dict(csv_path, class_map={}, test=False, annot_file_ext='csv'):
-    """
-    Function to extract an info dictionary from an xml file
-    INPUT:
-      csv_path -- path for an csv file, format of bndbox should be xmin, ymin,
-                  xmax, ymax
-    OUTPUT:
-      info_dict -- an info dictionary
-    """
-    df = pd.read_csv(csv_path, header=0, names=["class_id", "class_name", "x", "y", "width", "height"])
-    info_dict = {}
-    info_dict['bbox'] = []
-    info_dict['file_name'] = os.path.split(csv_path)[-1]
-    # plotting function needs it, but in JPEG.
-    if test:
-        im = cv2.imread(csv_path.replace('csv', 'JPEG'))
-    else:
-        im = cv2.imread(csv_path.replace(annot_file_ext, 'JPG'))
-
-    # append width, height, depth
-    info_dict['img_size'] = im.shape
-    # bndbox info
-    for i in range(len(df)):
-        # store bbx info for one object
-        bbox = {}
-        bbox['class'], bbox['desc'], bbox['xmin'], bbox['ymin'], w, h = df.iloc[i,]
-        if class_map != {}:
-            bbox['class'] = class_map[bbox['desc']]
-        bbox['xmax'] = bbox['xmin'] + w
-        bbox['ymax'] = bbox['ymin'] + h
-        info_dict['bbox'].append(bbox)
-    return info_dict
-
-
-def dict_to_csv(info_dict, output_path, empty, img_ext):
-    """
-    Function to convert (cropped images') info_dicts to annoatation csv files
-    INPUT:
-     info_dict -- output from the csv_to_dict function, containing bbox, filename, img_size
-     output_path -- folder path to store the converted csv files
-     empty -- default to be false
-     img_ext -- file extension specified for saved image
-    OUTPUT:
-      an csv file(corresponding for 1 image) saved to a folder. The bndbox info in the format of (className,
-      xmin, ymin, width, height)
-    """
-    new_bbx_buffer = []
-    schema = ['class_id', 'desc', 'x', 'y', 'width', 'height']
-    if not empty:
-        for obj in info_dict['bbox']:
-            if 'Nest' in obj['desc']:
-                # print(obj['desc'])
-                continue
-            if ('Flying' in obj['desc']) or ('Wings Spread' in obj['desc']):
-                obj['class'] = 'Fly'
-                obj['desc'] = 'Fly'
-            className = obj['class']
-            desc = obj['desc']
-            xmin = obj['xmin']
-            xmax = obj['xmax']
-            ymin = obj['ymin']
-            ymax = obj['ymax']
-            # className, description, xmin, ymin, width, height
-            new_bbx_buffer.append([className, desc, int(xmin), int(ymin), int(xmax) - int(xmin), int(ymax) - int(ymin)])
-    # Name of the file to save
-    if img_ext == 'JPEG':
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
-    if img_ext == 'JPG':
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
-    if img_ext == 'bbx':
-        save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
-
-    # print(save_file_name)
-    # write to files
-    with open(save_file_name, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([g for g in schema])
-        if not empty:
-            writer.writerows(new_bbx_buffer)
-
-            
 def flip_img(img, info_dict, output_dir, command, img_ext):
     """
     Function to flip image and reannotate the coordinates of the birds within
@@ -288,7 +208,7 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
     # Read csv file
     file_name = os.path.split(csv_file)[-1][:-4]
 
-    annot_dict = csv_to_dict(csv_path=csv_file, annot_file_ext=annot_file_ext)
+    annot_dict = csv_to_dict(csv_path=csv_file, annot_file_ext=annot_file_ext, img_ext = img_ext)
     annotation_lst = [list(x.values()) for x in annot_dict['bbox']]
 
     # Load image
