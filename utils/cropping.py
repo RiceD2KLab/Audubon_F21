@@ -144,7 +144,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, img_ext, class_map =
 
     info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext, img_ext = img_ext)
     img_height, img_width, _ = info_dict['img_size']
-    im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
+    im = Image.open(csv_file.replace(annot_file_ext, img_ext), 'r')
     # file_name = csv_file.split('/')[-1][:-4]
     file_name = info_dict['file_name'].split('.')[0]
     print('here', file_name)
