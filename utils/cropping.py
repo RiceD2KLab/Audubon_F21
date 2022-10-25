@@ -1,4 +1,4 @@
-def csv_to_dict(csv_path, class_map = {}, annot_file_ext='csv', img_ext):
+def csv_to_dict(csv_path, class_map = {}, annot_file_ext='csv', img_ext = 'jpg'):
     """
     Function to extract an info dictionary from an xml file
     INPUT:
