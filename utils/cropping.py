@@ -190,7 +190,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, img_ext, class_map =
     return file_dict
 
 
-def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv',img_ext, class_map = {}, crop_height=640, crop_width=640):
+def crop_dataset(data_dir, output_dir, img_ext, annot_file_ext = 'csv', class_map = {}, crop_height=640, crop_width=640):
     """
     :param data_dir: image set directory
     :param output_dir: output directory
