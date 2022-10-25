@@ -146,7 +146,7 @@ def confusion_matrix_report(data_cat_name, predictor, bird_species, img_ext = 'J
             if miss_bird / (annt_bbx.shape[0]) == 0:
                 w_img = Image.open(file)
                 # print(file.replace(img_ext, 'csv'))
-                annot_dict = csv_to_dict(csv_path=file.replace(img_ext, 'csv'), annot_file_ext='csv', im_ext = 'JPEG')
+                annot_dict = csv_to_dict(csv_path=file.replace(img_ext, 'csv'), annot_file_ext='csv', im_ext = 'JPG')
                 annt_list = [list(x.values()) for x in annot_dict['bbox']]
                 # if ('DJI' not in file.split('/')[-1]) or ('LBN' not in file.split('/')[-1]):
                 #     low_res.append(file.split('/')[-1])
