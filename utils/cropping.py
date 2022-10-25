@@ -326,11 +326,11 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
     val_sz = int(size * val_frac)
     for idx in range(size):
         if idx < train_sz:
-            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'train'))
-            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'train'))
+            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'Train'))
+            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'Train'))
         elif idx < train_sz + val_sz:
-            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'val'))
-            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'val'))
+            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'Validate'))
+            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'Validate'))
         else:
-            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'test'))
-            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'test'))
+            shutil.move(os.path.join(file_dir, img_list[idx]), os.path.join(output_dir, 'Test'))
+            shutil.move(os.path.join(file_dir, csv_list[idx]), os.path.join(output_dir, 'Test'))
