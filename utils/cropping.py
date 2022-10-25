@@ -304,9 +304,9 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
     :param val_frac: fraction for validation, 1-train-val will be fraction for test
     """
     p = Path(output_dir)
-    p1 = Path(os.path.join(output_dir, 'train'))
-    p2 = Path(os.path.join(output_dir, 'val'))
-    p3 = Path(os.path.join(output_dir, 'test'))
+    p1 = Path(os.path.join(output_dir, 'Train'))
+    p2 = Path(os.path.join(output_dir, 'Validate'))
+    p3 = Path(os.path.join(output_dir, 'Test'))
 
     if not p.is_dir():
         print('The output directory should be an empty folder')
