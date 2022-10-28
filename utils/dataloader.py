@@ -126,7 +126,8 @@ def get_bird_species_dicts(data_dir,class_names,unknown_bird_category, img_ext, 
   return dataset_dicts
 
 
-def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colors=None, unknown_bird_category=True):
+def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colors=None, 
+                      unknown_bird_category=True, phase=None):
   """
   Register dataset as part of Detectron2's dataset and metadataset catalogs
   For each dataset directory to be registered, a "bird-only" and "bird-species" dataset will be registered
@@ -141,6 +142,9 @@ def register_datasets(data_dirs, img_ext, birds_species_names, bird_species_colo
   """
   for data_dir in data_dirs:
     d = os.path.basename(data_dir)
+    if phase is not None and phase != d:
+        continue
+    
     # birds only
     if f"birds_only_{d}" in DatasetCatalog.list():
       DatasetCatalog.remove(f"birds_only_{d}")

@@ -186,7 +186,7 @@ def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, 
     nclass = len(class_names)
     nrow = np.floor(nclass**.5).astype(int)
     ncol = np.ceil(nclass/nrow).astype(int)
-    
+        
     subplot_params = {'nrows': nrow, 'ncols': ncol, 'sharey':True, 'sharex':True, 
                       'figsize':(figscale*ncol, figscale*nrow), 'dpi':dpi}
     fig, axes = plt.subplots(**subplot_params)
