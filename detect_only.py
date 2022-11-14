@@ -1,4 +1,4 @@
-from utils.cropping_hank import crop_dataset_img_only
+from utils.cropping import crop_dataset_img_only
 import os, sys, shutil, glob
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,22 +10,22 @@ from tqdm.autonotebook import tqdm
 import torch
 
 def run_default():
-    crop_dir = 'C://Users\VelocityUser\Documents\D2K TDS A\TDS A-10'
+    crop_dir = os.getcwd() + "/data/22F/split"
 
-    BIRD_SPECIES = ['BRPEA', 'LAGUA', 'MTRNA', 'TRHEA', 'BLSKA',
-                    'BCNHA', 'REEGA', 'WHIBA', 'ROSPA',
-                    'GBHEA']
+    BIRD_SPECIES = ["ROTE", "SANE"]
 
-    SPECIES_MAP = {0: 'BRPEA', 1: 'LAGUA', 2: 'MTRNA',
-                   3: 'TRHEA', 4: 'BLSKA', 5: 'BCNHA',
-                   6: 'REEGA', 7: 'WHIBA', 8: 'ROSPA', 9: 'GBHEA'}
+    # populating the species map
+    SPECIES_MAP = {}
+    for i, bird in enumerate(BIRD_SPECIES):
+        SPECIES_MAP[i] = bird
 
+    print(SPECIES_MAP)
     birds_species_names = BIRD_SPECIES
 
     # # perform tiling on images 8K images
     data_dir = 'C://Users\\VelocityUser\Documents\\D2K TDS B\\AI QC B'  # data directory folder
-    os.makedirs(os.getcwd() + '/AI_QC_test/crop', exist_ok=True)
-    output_dir = os.getcwd() + '/AI_QC_test/crop'
+    # os.makedirs(os.getcwd() + '/AI_QC_test/crop', exist_ok=True)
+    # output_dir = os.getcwd() + '/AI_QC_test/crop'
     img_ext = '.JPG'
     CROP_WIDTH = 640
     CROP_HEIGHT = 640
@@ -52,11 +52,9 @@ def run_default():
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.3  # set threshold for this model
 
     # location of the trained weights
-    # cfg.MODEL.WEIGHTS = f"./D2K_TDS_A_5_classes/multibirds_{model_name}/model_final.pth"
-    # cfg.MODEL.WEIGHTS = tune_weight_dir + '/model_final.pth'
+    cfg.MODEL.WEIGHTS = os.getcwd() + '/output/Training_models/06_22_bay_tune_retina_2class_set_I_aug/' \
+                                      'retinanet_R_50_FPN_1x-20221027-211223/model_final.pth'
 
-    cfg.MODEL.WEIGHTS = 'C://Users\\VelocityUser\\Documents\\Training_models\\03_24_bay_tune_10class_aug_B\\' \
-                        'faster_rcnn_R_50_FPN_1x-20220402-174351\\model_final.pth '
 
     cfg.DATALOADER.NUM_WORKERS = 0
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(BIRD_SPECIES)
@@ -85,13 +83,13 @@ def run_default():
     # registering the test dataset
     d = 1
 
-    train_set_dir = crop_dir + '\Test'
+    train_set_dir = crop_dir + '/Test'
     DatasetCatalog.register('test_set', lambda d=d: get_bird_species_dicts(train_set_dir, birds_species_names,
-                                                                           img_ext='.JPG', unknown_bird_category=True))
+                                                                           img_ext='.JPEG', unknown_bird_category=True))
     data = DatasetCatalog.get("test_set")
 
     # grab the confusion matrix
-    pred_total, truth_total = confusion_matrix_report(data, predictor, birds_species_names, img_ext='JPG')
+    pred_total, truth_total = confusion_matrix_report(data, predictor, birds_species_names, img_ext='JPEG')
 
     print(confusion_matrix(truth_total, pred_total))
     print(classification_report(truth_total, pred_total))
@@ -105,7 +103,7 @@ def run_default():
     from utils.dataloader import register_datasets
 
     data_dir = crop_dir
-    img_ext = '.JPG'
+    img_ext = '.JPEG'
     dirs = [os.path.join(data_dir, d) for d in os.listdir(data_dir)]
 
     BIRD_SPECIES_COLORS = [(255, 0, 0), (255, 153, 51), (0, 255, 0),

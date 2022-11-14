@@ -201,7 +201,7 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
     img_height, img_width, _ = info_dict['img_size']
     
     im = Image.open(find_corr_img_file(csv_file), 'r')
-    file_name = csv_file.split('/')[-1][:-4]
+    file_name = csv_file.split('\\')[-1][:-4]
 
     # go through the image from top left corner
     for i in range(img_height // crop_height + 1):
@@ -237,8 +237,8 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
             # however this only saves cropped images that contain birds
             if tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
                 c_img = im.crop((left, top, right, bottom))
-                c_img.save(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
-                image = Image.open(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
+                c_img.save(os.path.join(output_dir, 'Intermediate') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
+                image = Image.open(os.path.join(output_dir, 'Intermediate') + file_name + '_' + str(i) + '_' + str(j))
                 image.save(output_dir + '/' + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
 
     # output the file_dict to a folder of csv files containing labels for each cropped file

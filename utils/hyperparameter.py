@@ -108,6 +108,8 @@ def setup1(cfg_parms):
     return cfg
 
 # Set up the model for running the model with custom loss function
+import torch
+
 def setup_loss(cfg_parms):
     cfg = get_cfg()
     cfg.merge_from_file(model_zoo.get_config_file(f"COCO-Detection/{cfg_parms['model_name']}.yaml"))
@@ -126,17 +128,21 @@ def setup_loss(cfg_parms):
     cfg.SOLVER.STEPS = cfg_parms['STEPS']
     cfg.SOLVER.CHECKPOINT_PERIOD = cfg_parms['CHECKPOINT_PERIOD']
 
+    # Assumes unknown class has no count
+    w = cfg_parms['weight'].append(1.0)
     weight = torch.from_numpy(
-        np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1, 1, 1], dtype='float32')).to("cuda:0")
+        np.array(cfg_parms['weight'], dtype='float32')).to("cuda:0")
 
     # ROI_HEADS_REGISTRY = Registry("ROI_HEADS")
     # this function makes the custom loss function based off the distribution of the classes
     @ROI_HEADS_REGISTRY.register()
-    class MyStandardROIHeads(StandardROIHeads):
+    class CustomROIHeads(StandardROIHeads):
         def __init__(self, cfg, input_shape):
             # gpu_weight =
             super().__init__(cfg, input_shape,
                              box_predictor=CustomFastRCNNOutputLayers(cfg, input_shape, weight))
+
+    cfg.MODEL.ROI_HEADS.NAME = 'CustomROIHeads'
 
     # naming needs to be updated
     cfg.OUTPUT_DIR = os.path.join(cfg_parms['output_dir'],
@@ -300,7 +306,11 @@ def main_hyper(cfg_parms, iterations):
 
 # only one model fit
 def main_fit(cfg_parms):
-    cfg = setup1(cfg_parms)
+    if cfg_parms["Custom"] == True:
+        cfg = setup_loss(cfg_parms)
+    else:
+        cfg = setup1(cfg_parms)
+
 
     train(cfg)
 

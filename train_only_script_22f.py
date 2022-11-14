@@ -40,27 +40,28 @@ Your dataset should be organized in the following format:
                 |-- annotation files [csv]
     
 """
-data_root = "./data/22F/"
-raw_dir = data_root + "raw/" 
+root = os.getcwd()
+data_root = root + "/data/22F"
+raw_dir = data_root + "/raw"
 ##################################################################################################################
 # clean the annotation labels: D2K 30 Codes 20221013.xlsx
-notes = pd.read_excel("./data/D2K 30 Codes 20221013.xlsx")
-correct_labels(raw_dir)
+# notes = pd.read_excel("./data/D2K 30 Codes 20221013.xlsx")
+# correct_labels(raw_dir)
 
 ################################################################################################################
 # only if we are cropping ourselves
 
 # make the cropped dataset
-tile_dir = data_root + "tiled/" 
+tile_dir = data_root + "/tiled"
 if not os.path.exists(tile_dir):
     os.makedirs(tile_dir, exist_ok=True)
 
     #performing the cropping
-    crop_dataset(raw_dir, tile_dir, annot_file_ext = 'bbx', crop_height = 640, crop_width = 640)
+    crop_dataset(raw_dir, tile_dir, annot_file_ext = 'csv', crop_height = 640, crop_width = 640)
     
 #################################################################################################################
 # make the 3 directories
-crop_dir = data_root + "split/" #'./model_dataset'
+crop_dir = data_root + "/split" #'./model_dataset'
 if not os.path.exists(crop_dir):
     os.makedirs(crop_dir, exist_ok=True)
 
@@ -100,10 +101,9 @@ BIRD_SPECIES = np.intersect1d(
     )
 )
 
-# trash is not a bird
-BIRD_SPECIES = np.setdiff1d(BIRD_SPECIES, ['TRASH','OTHRA']).tolist()
-print(len(BIRD_SPECIES), BIRD_SPECIES)
+BIRD_SPECIES = ['ROTE', 'SANE'] # Hard coded for now due to type error
 
+print(len(BIRD_SPECIES), BIRD_SPECIES)
 # populating the species map
 SPECIES_MAP = {}
 for i, bird in enumerate(BIRD_SPECIES):
@@ -112,36 +112,36 @@ for i, bird in enumerate(BIRD_SPECIES):
 print(SPECIES_MAP)
 birds_species_names = BIRD_SPECIES
 
-# ************** the data augmenation part in this section of the code *************************************
+# ************** the data augmentation part in this section of the code *************************************
 # this data augmentation code only works on the training set!!!
 # the output direction is "aug_dir"
 # dst_dir is the folder of training data(only after cropping)
 
-dst_dir = crop_dir + '/Train/'
+# dst_dir = crop_dir + '/Train/'
 # aug_dir is where we put image after doing data augmentation
-aug_dir = data_root + "temp/" 
-if not os.path.exists(aug_dir):
-    os.makedirs(aug_dir, exist_ok=True)
-    
-    # Minimum portion of a bounding box being accepted in a subimage
-    overlap = 0.3
-    
-    # List of species that we want to augment (PLEASE include the full name)
-    minor_species = [s for s in BIRD_SPECIES if s not in ['ROT', 'LAGUA', 'SAT', 'MTRNA', 'OTHRA']]
-    
-    # Threshold of non-minor creatures existing in a subimage
-    thres = .4
-
-    # [horizontal filp, vertical flip, left rotate, right rotate, [brightness/contrast tunning, number of images produced]]
-    aug_command = [1, 1, 1, 0, [0, 2]] #[1, 1, 1, 0, [1, 2]]
-
-    dataset_aug(dst_dir, aug_dir, minor_species, overlap, thres, aug_command, img_ext='JPEG', annot_file_ext='csv',
-                crop_height=640, crop_width=640)
-    
-    # copy files from aug_list(certain files in aug_dir) to dst_dir (train data set)
-    aug_list = glob.glob(os.path.join(aug_dir, '*'))
-    for i in aug_list:
-        shutil.copy2(i, dst_dir) 
+# aug_dir = data_root + "temp/"
+# if not os.path.exists(aug_dir):
+#     os.makedirs(aug_dir, exist_ok=True)
+#
+#     # Minimum portion of a bounding box being accepted in a subimage
+#     overlap = 0.3
+#
+#     # List of species that we want to augment (PLEASE include the full name)
+#     minor_species = [s for s in BIRD_SPECIES if s not in ['ROT', 'LAGUA', 'SAT', 'MTRNA', 'OTHRA']]
+#
+#     # Threshold of non-minor creatures existing in a subimage
+#     thres = .4
+#
+#     # [horizontal filp, vertical flip, left rotate, right rotate, [brightness/contrast tunning, number of images produced]]
+#     aug_command = [1, 1, 1, 0, [0, 2]] #[1, 1, 1, 0, [1, 2]]
+#
+#     dataset_aug(dst_dir, aug_dir, minor_species, overlap, thres, aug_command, img_ext='JPEG', annot_file_ext='csv',
+#                 crop_height=640, crop_width=640)
+#
+#     # copy files from aug_list(certain files in aug_dir) to dst_dir (train data set)
+#     aug_list = glob.glob(os.path.join(aug_dir, '*'))
+#     for i in aug_list:
+#         shutil.copy2(i, dst_dir)
 
 
 #########################################################################################################################
@@ -163,19 +163,22 @@ register_datasets(dirs_full, img_ext, BIRD_SPECIES, bird_species_colors=BIRD_SPE
 # training the bird species model using Faster R-CNN
 torch.cuda.empty_cache()
 
-custom_weight = []
+# Weight for loss function (Unknown class should not be included in dist)
+dist = target_data["Train"]["class_id"].value_counts()
+custom_weight = (np.log(max(dist)/dist) + 1).to_list()
 
 # name of the model output: {retinanet, faster_rcnn}
-MODEL = 'retinanet'   
+MODEL = 'faster_rcnn'
 model_output_dir = f'./output/Training_models/06_22_bay_tune_retina_{len(BIRD_SPECIES)}class_set_I_aug'
 
 if MODEL == 'faster_rcnn' :
     cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 8, 'BASE_LR': .01, 'GAMMA': 0.001,
                  'WARMUP_ITERS': 1, 'MAX_ITER': 1500,
                  'STEPS': [899], 'CHECKPOINT_PERIOD': 899, 'output_dir': model_output_dir,
-                 'model_name': "faster_rcnn_R_50_FPN_1x", 'BIRD_SPECIES': BIRD_SPECIES, 'Custom': False}
+                 'model_name': "faster_rcnn_R_50_FPN_1x", 'BIRD_SPECIES': BIRD_SPECIES, 'Custom': True,
+                 'weight': custom_weight}
 elif MODEL == 'retinanet':
-    cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 8, 'BASE_LR': .001, 'GAMMA': 0.01,
+    cfg_parms = {'NUM_WORKERS': 0, 'IMS_PER_BATCH': 4, 'BASE_LR': .001, 'GAMMA': 0.01,
                  'WARMUP_ITERS': 1, 'MAX_ITER': 1500,
                  'STEPS': [899], 'CHECKPOINT_PERIOD': 899, 'output_dir': model_output_dir,
                  'model_name': "retinanet_R_50_FPN_1x", 'BIRD_SPECIES': BIRD_SPECIES, 'Custom': False}
@@ -183,8 +186,8 @@ else:
     raise    
 tuned_cfg_params = cfg_parms
 
-# # hyperparameter tunning
-# tuned_cfg_params = main_hyper(cfg_parms, iterations=20)  # Baysian iters
+# # hyperparameter tuning
+# tuned_cfg_params = main_hyper(cfg_parms, iterations=20)  # Bayesian iters
 # tuned_cfg_params['MAX_ITER'] = tuned_cfg_params['MAX_ITER'] + 100
 tune_weight_dir, loss = main_fit(tuned_cfg_params)
 
