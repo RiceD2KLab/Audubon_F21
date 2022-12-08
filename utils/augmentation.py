@@ -190,10 +190,12 @@ def color_img(img, info_dict, output_dir, command, img_ext):
 
 
 def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, overlap, thres, aug_command, img_ext,
-              annot_file_ext):
+              annot_file_ext, skip_prob):
     """
     Function to perform data augmentation on one image file
+    
     INPUT:
+    --------
       csv_file -- image annotation file
       crop_height/crop_width -- tile size
       output_dir -- augmented images and annotations output directory
@@ -203,7 +205,10 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
       minor_species -- species that we want to augment
       img_ext -- file extension specified for saved image
       annot_file_ext -- annotation file extension
+      skip_prob -- probability of skipping
+      
     OUTPUT:
+    --------
       automatically save cropped tiles and annotation files
     """
     # Read csv file
@@ -231,7 +236,10 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
         center_w, center_h = (minor["xmin"] + minor["xmax"]) // 2, (minor["ymin"] + minor["ymax"]) // 2
 
         # Cropping dimensions
-        left, top, right, bottom = center_w - 0.5 * crop_width, center_h - 0.5 * crop_width, center_w + 0.5 * crop_width, center_h + 0.5 * crop_height
+        left   = center_w - 0.5 * crop_width
+        top    = center_h - 0.5 * crop_height
+        right  = center_w + 0.5 * crop_width
+        bottom = center_h + 0.5 * crop_height
         if left < 0:
             left, right = 0, crop_width
         if right > width:
@@ -275,14 +283,11 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
             if bbx['class'] not in minor_species:
                 non_minor += 1
 
-        if non_minor / (len(file_dict['bbox'])) > thres:
+        if non_minor / (len(file_dict['bbox'])) > thres or np.random.random_sample() < skip_prob:
             continue
         else:
             valid_i += 1
             file_dict["file_name"] = file_name + "_" + str(valid_i).zfill(2) + "."+img_ext
-            # cropped.save(output_dir + "/" + file_name + "_" + str(valid_i).zfill(2) + "."+img_ext)
-            # # print(file_dict["file_name"] )
-            # dict_to_csv(file_dict, output_path=output_dir, empty=False, img_ext=img_ext)
 
             # Flipping, rotation and color manipulation
             flip_img(img=cropped, info_dict=file_dict, output_dir=output_dir, command=aug_command[0:2], img_ext= img_ext)
@@ -291,17 +296,32 @@ def aug_minor(csv_file, crop_height, crop_width, output_dir, minor_species, over
 
 
 def dataset_aug(input_dir, output_dir, minor_species, overlap, thres, aug_command, img_ext, annot_file_ext,
-                crop_height=640, crop_width=640):
+                crop_height = 640, crop_width = 640, skip_prob = 0):
     """
     Function to perform data augmentation on a dataset
+
     INPUT:
-      input_dir -- input directory of images and annotation files
+    --------
+      input_dir  -- input directory of images and annotation files
       output_dir -- output directory of augmented images and annotation files
+      minor_species -- species to augment
+      
     OUTPUT:
-      automatically save cropped tiles and annotation files
+    --------
+      calls a helper function 
     """
     files = [os.path.join(input_dir, file) for file in os.listdir(input_dir) if file[-3:] == annot_file_ext]
     for file in tqdm(files, desc='Aug_files'):
-        aug_minor(csv_file=file, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir,
-                  minor_species=minor_species, overlap=overlap, thres=thres, annot_file_ext=annot_file_ext,
-                  img_ext=img_ext, aug_command=aug_command)
+        aug_minor(
+            csv_file       = file, 
+            crop_height    = crop_height, 
+            crop_width     = crop_width, 
+            output_dir     = output_dir,
+            minor_species  = minor_species, 
+            overlap        = overlap, 
+            thres          = thres, 
+            annot_file_ext = annot_file_ext,
+            img_ext        = img_ext, 
+            aug_command    = aug_command, 
+            skip_prob      = skip_prob
+        )

@@ -3,7 +3,6 @@ import torch
 
 from detectron2.engine.hooks import HookBase
 import detectron2.utils.comm as comm
-from detectron2.utils.events import EventWriter, get_event_storage
 from detectron2.data import DatasetMapper, build_detection_test_loader
 from detectron2.engine import DefaultTrainer
 from detectron2.evaluation import COCOEvaluator, DatasetEvaluators
@@ -47,36 +46,7 @@ class ValidationLossHook(HookBase):
         is_final = next_iter == self.trainer.max_iter
         if is_final or (self._period > 0 and next_iter % self._period == 0):
             self._do_loss_eval()
-          # mean_loss = self._do_loss_eval()
-          # storage = get_event_storage()
-          # storage.put_scalar('val_loss', np.mean(mean_loss) )
-          # with open('val_iter.txt', 'a+') as f:
-          #     f.write('min val loss: ' + str(np.mean(mean_loss)) + ' at iter: ' + str(self.trainer.iter) + '\n')
-        #
         self.trainer.storage.put_scalars(timetest=12) 
-
-
-class Trainer(DefaultTrainer):
-    @classmethod
-    def build_evaluator(cls, cfg, dataset_name, output_folder=None):
-        if output_folder is None:     
-            return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=cfg.OUTPUT_DIR)])
-        else: 
-            return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=output_folder)])
-
-    def build_hooks(self): 
-        hooks = super().build_hooks()
-        hooks.append(ValidationLossHook(
-                                  self.model,
-                                  build_detection_test_loader(
-                                      self.cfg,
-                                      self.cfg.DATASETS.TEST[0], # assume first testing dataset is validation dataset
-                                      DatasetMapper(self.cfg,True)
-                                      ), 
-                                  eval_period = 20,
-                                  )
-        )
-        return hooks
 
 
 class MyTrainer(DefaultTrainer):
@@ -98,62 +68,3 @@ class MyTrainer(DefaultTrainer):
             )
         ))
         return hooks
-
-
-# TODO: error when wandb is not installed on computer. Commenting functions for now
-
-# # TODO: add visualization hook to see visual performance during training
-# class WAndBWriter(EventWriter):
-#     import wandb
-#     """
-#     Write all scalars to a wandb tool.
-#     Code adapted from: https://github.com/facebookresearch/detectron2/issues/774#issuecomment-776944522
-#     """
-
-#     def __init__(self, window_size: int = 20):
-#         self._window_size = window_size
-
-#     def write(self):
-#         storage = get_event_storage()
-#         stats = {}
-#         for k, v in storage.latest_with_smoothing_hint(self._window_size).items():
-#             stats[k.replace("/", "-")] = v[0]
-#         wandb.log(stats, step=storage.iter)
-
-#         if len(storage._vis_data) >= 1:
-#             for img_name, img, step_num in storage._vis_data:\
-#                 wandb.log({img_name: img}, step=step_num)
-
-#     def close(self):
-#         pass
-
-
-# class WAndBTrainer(DefaultTrainer):
-#     @classmethod
-#     def build_evaluator(cls, cfg, dataset_name, output_folder=None):
-#         if output_folder is None:
-#             return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=cfg.OUTPUT_DIR)])
-#         else:
-#             return DatasetEvaluators([COCOEvaluator(dataset_name, output_dir=output_folder)])
-
-
-#     def build_hooks(self):
-#         hooks = super().build_hooks()
-#         hooks.append(ValidationLossHook(
-#                                   self.model,
-#                                   build_detection_test_loader(
-#                                       self.cfg,
-#                                       self.cfg.DATASETS.TEST[0], # assume first testing dataset is validation dataset
-#                                       DatasetMapper(self.cfg,True)
-#                                       ),
-#                                   eval_period = 20,
-#                                   )
-#         )
-
-#         return hooks
-
-
-#     def build_writers(self):
-#         writers = super().build_writers()
-#         writers.append(WAndBWriter())
-#         return writers

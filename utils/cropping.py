@@ -18,7 +18,7 @@ def correct_labels(raw_dir):
         # MTRNA <--> Replaced by individual tern species (ROTE/SATE/CATE/BGTE/LETE, etc)
         # TCHEA --> TRHEA
     """
-    for f in tqdm(glob.glob(raw_dir+'*.bbx')):
+    for f in glob.glob(raw_dir+'*.bbx'):
         ann = pd.read_csv(f)
         if 'AI Class (Original)' not in ann:
             ann['AI Class (Original)'] = ann['AI Class']
@@ -47,14 +47,15 @@ def correct_labels(raw_dir):
 
             ann['AI Class'] = np.array(ann_corr)
             ann.to_csv(f, index=False)
+            print('Label correction finished!')
         else:
-            print('dataset already corrected!')
+            print('Labels already corrected!')
             break
         
 
 def find_corr_img_file(ann_file):
     """
-    Find the image file that has the same file prefix name as teh given file of other formats
+        Find the image file that has the same file prefix name as teh given file of other formats
     """
     file_ext = ann_file.split('.')[-1]
     im_name_pattern = ann_file.replace('.'+file_ext, '.*')
@@ -65,12 +66,11 @@ def find_corr_img_file(ann_file):
 
 def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
     """
-    Function to extract an info dictionary from an xml file
-    INPUT:
-      csv_path -- path for an csv file, format of bndbox should be xmin, ymin,
-                  xmax, ymax
-    OUTPUT:
-      info_dict -- an info dictionary
+        Function to extract an info dictionary from an xml file
+        INPUT:
+          csv_path -- path for an csv file, format of bndbox should be xmin, ymin, xmax, ymax
+        OUTPUT:
+          info_dict -- an info dictionary
     """    
     # load df and rename
     df = pd.read_csv(csv_path, header=0, usecols=range(6), 
@@ -101,23 +101,18 @@ def csv_to_dict(csv_path, class_map = {}, test=False, annot_file_ext='csv'):
 
 def dict_to_csv(info_dict, output_path, empty, img_ext= 'JPEG'):
     """
-    Function to convert (cropped images') info_dicts to annoatation csv files
-    INPUT:
-     info_dict -- output from the csv_to_dict function, containing bbox, filename, img_size
-     output_path -- folder path to store the converted csv files
-    OUTPUT:
-      an csv file(corresponding for 1 image) saved to a folder. The bndbox info in the format of (className,
-      xmin, ymin, width, height)
+        Function to convert (cropped images') info_dicts to annoatation csv files
+        INPUT:
+         info_dict -- output from the csv_to_dict function, containing bbox, filename, img_size
+         output_path -- folder path to store the converted csv files
+        OUTPUT:
+          an csv file(corresponding for 1 image) saved to a folder. The bndbox info in the format of (className,
+          xmin, ymin, width, height)
     """
     new_bbx_buffer = []
     schema = ['class_id', 'desc', 'x', 'y', 'width', 'height']
     if not empty:
         for obj in info_dict['bbox']:
-            # if 'Nest' in obj['desc']:
-            #     continue
-            # if ('Flying' in obj['desc']) or ('Wings Spread' in obj['desc']):
-            #     obj['class'] = 'Fly'
-            #     obj['desc'] = 'Fly'
             className = obj['class']
             desc = obj['desc']
             xmin = obj['xmin']
@@ -142,14 +137,14 @@ def dict_to_csv(info_dict, output_path, empty, img_ext= 'JPEG'):
 
 def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
     """
-    THIS FUNCTION calculate the new positions of bndbox in cropped img and append them to file_dict,
-    which is an info dict for that cropped img.
+        THIS FUNCTION calculate the new positions of bndbox in cropped img and append them to file_dict,
+        which is an info dict for that cropped img.
 
-    INPUTS:
-    left, right, top, bottom -- params for the python crop img function, coordinates for tiles.
-    origin is top left.
-    info_dict -- the info_dict we get from the csv_to_dict function.
-    overlap -- threshold for keeping a bbox.
+        INPUTS:
+        left, right, top, bottom -- params for the python crop img function, coordinates for tiles.
+        origin is top left.
+        info_dict -- the info_dict we get from the csv_to_dict function.
+        overlap -- threshold for keeping a bbox.
     """
     # file_dict stores info of one subimage as a dictionary. keys indicate original file name and subimage position.
     subimage_suffix = str(i) + '_' + str(j)
@@ -190,12 +185,13 @@ def tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_widt
 # file_dict stores cropped images info dict in one dictionary.
 def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, overlap=0.2, annot_file_ext='csv', file_dict={}):
     """
-    This function crops one image and output corresponding labels.
-    Currently, this function generates the cropped images AND the corresponding csv files to output_dir
-    INPUT:
-    crop_height, crop_weight -- desired patch size.
-    overlap -- threshold for keeping bbx.
-    annot_file_ext -- annotation file extension
+        This function crops one image and output corresponding labels.
+        Currently, this function generates the cropped images AND the corresponding csv files to output_dir
+        
+        INPUT:
+            crop_height, crop_weight -- desired patch size.
+            overlap -- threshold for keeping bbx.
+            annot_file_ext -- annotation file extension
     """
     info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
     img_height, img_width, _ = info_dict['img_size']
@@ -253,11 +249,11 @@ def crop_img(csv_file, crop_height, crop_width, output_dir, class_map = {}, over
 
 def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, crop_height=640, crop_width=640):
     """
-    :param data_dir: image set directory
-    :param output_dir: output directory
-    :param annot_file_ext: annotation file extension
-    :param crop_height: image height after tiling, default 640
-    :param crop_width: image width after tiling, default 640
+        :param data_dir: image set directory
+        :param output_dir: output directory
+        :param annot_file_ext: annotation file extension
+        :param crop_height: image height after tiling, default 640
+        :param crop_width: image width after tiling, default 640
     """
 
     # intermediate folder for cropped images
@@ -279,87 +275,6 @@ def crop_dataset(data_dir, output_dir, annot_file_ext = 'csv', class_map = {}, c
         crop_img(csv_file=f, crop_height=crop_height, crop_width=crop_width, output_dir=output_dir, class_map=class_map,
                  annot_file_ext=annot_file_ext)
 
-    shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
-
-
-def crop_img_only(img_file_path, output_path, crop_height, crop_width, sliding_size):
-    """
-    This function crops one image with an adjustable overlap
-    INPUT:
-    crop_height, crop_weight -- desired patch size.
-    """
-    # append width, height, depth
-    im = cv2.imread(img_file_path)
-    img_height, img_width, _ = im.shape
-    im = Image.open(img_file_path, 'r')
-    _, file_name_full = os.path.split(img_file_path)
-    file_name, _ = os.path.splitext(file_name_full)
-    # go through the image from top left corner
-    for i in range((img_height - crop_height) // sliding_size + 2):
-
-        for j in range((img_width - crop_width) // sliding_size + 2):
-
-            if j < ((img_width - crop_width) // sliding_size + 1) and i < (
-                    (img_height - crop_height) // sliding_size + 1):
-                left = j * sliding_size
-                right = crop_width + j * sliding_size
-                top = i * sliding_size
-                bottom = crop_height + i * sliding_size
-
-            elif j == ((img_width - crop_width) // sliding_size + 1) and i < (
-                    (img_height - crop_height) // sliding_size + 1):
-                left = img_width - crop_width
-                right = img_width
-                top = i * sliding_size
-                bottom = crop_height + i * sliding_size
-
-            # if rectangles left on edges, take subimage of crop_height*crop_width by taking a part from within.
-            elif i == ((img_height - crop_height) // sliding_size + 1) and j < (
-                    (img_width - crop_width) // sliding_size + 1):
-                left = j * sliding_size
-                right = crop_width + j * sliding_size
-                top = img_height - crop_height
-                bottom = img_height
-
-            else:
-                left = img_width - crop_width
-                right = img_width
-                top = img_height - crop_height
-                bottom = img_height
-
-            c_img = im.crop((left, top, right, bottom))
-            c_img.save(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
-            image = Image.open(os.path.join(output_path, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
-            image.save(os.path.join(output_path, file_name + '_' + str(i) + '_' + str(j) + '.JPEG'))
-
-
-def crop_dataset_img_only(data_dir, img_ext, output_dir, crop_height=640, crop_width=640, sliding_size=400):
-    """
-    This function crops image dataset with adjustable sliding size. Bounding boxes are not cropped alongside images.
-    Function is to be used during final pipeline stage for prediction
-    INPUTS:
-        :param data_dir: image set directory
-        :param img_ext: image file extension eg. ".JPG"
-        :param output_dir: output directory
-        :param crop_height: image height after tiling, default 640
-        :param crop_width: image width after tiling, default 640
-        :param sliding_size: sliding size between each crop, default 400
-    """
-    
-    # intermediate folder for cropped images
-    if not os.path.exists(output_dir):
-        print(f"Creating output directory at: {output_dir}")
-        os.makedirs(output_dir)
-        os.makedirs(os.path.join(output_dir, 'Intermediate'))
-    elif not os.path.exists(os.path.join(output_dir, 'Intermediate')):
-        os.makedirs(os.path.join(output_dir, 'Intermediate'))
-    
-    # Load CSV files
-    files = [d for d in os.listdir(data_dir) if os.path.splitext(d)[1] == img_ext]
-    for f in tqdm(files):
-        f = os.path.join(data_dir, f)
-        crop_img_only(f, output_dir, crop_height, crop_width, sliding_size)
-    # remove intermediate folder
     shutil.rmtree(os.path.join(output_dir, 'Intermediate'))
 
 
@@ -407,123 +322,3 @@ def train_val_test_split(file_dir, output_dir, train_frac=0.8, val_frac=0.1, see
         src_img, src_cvs = [os.path.join(file_dir, fn) for fn in (img_list[idx], csv_list[idx])]
         [shutil.move(srcf, p) for srcf in (src_img, src_cvs)]
         
-
-# Added by SP22 to avoid harsh cropping of birds at boundaries
-def crop_img_trainer(csv_file, crop_height, crop_width, sliding_size_x, sliding_size_y, output_dir, class_map={}, overlap=0.8, annot_file_ext='csv', file_dict={}, compute_sliding_size=False):
-    """
-    Function description.
-    From other function: 'This function crops one image and output corresponding labels.
-    Currently, this function generates the cropped images AND the corresponding csv files to output_dir'
-    INPUT:
-        crop_height, crop_weight -- desired patch size.
-        overlap -- threshold for keeping bbx.
-        annot_file_ext -- annotation file extension
-    """
-    info_dict = csv_to_dict(csv_file, class_map, annot_file_ext=annot_file_ext)
-    img_height, img_width, _ = info_dict['img_size']
-    im = Image.open(csv_file.replace(annot_file_ext, 'JPG'), 'r')
-    file_name = os.path.split(csv_file)[-1][:-4]
-
-    if compute_sliding_size:
-        max_w = 0
-        max_h = 0
-        for b in info_dict['bbox']:
-            if b['xmax'] - b['xmin'] > max_w:
-                max_w = b['xmax'] - b['xmin']
-                print("max_w: ", max_w, "\nxmax: ", b['xmax'], "\nxmin: ", b['xmin'])
-            if b['ymax'] - b['ymin'] > max_h:
-                max_h = b['ymax'] - b['ymin']
-                print("max_h: ", max_h, "\nymax: ", b['ymax'], "\nymin: ", b['ymin'])
-        if max_w > 0 and max_h > 0:
-            sliding_size_x = crop_width - max_w
-            sliding_size_y = crop_height - max_h
-
-    # go through the image from top left corner
-    for i in range((img_height - crop_height) // sliding_size_y + 2):
-        for j in range((img_width - crop_width) // sliding_size_x + 2):
-
-            if j < ((img_width - crop_width) // sliding_size_x + 1) and i < (
-                    (img_height - crop_height) // sliding_size_y + 1):
-                left = j * sliding_size_x
-                right = crop_width + j * sliding_size_x
-                top = i * sliding_size_y
-                bottom = crop_height + i * sliding_size_y
-
-            elif j == ((img_width - crop_width) // sliding_size_x + 1) and i < (
-                    (img_height - crop_height) // sliding_size_y + 1):
-                left = img_width - crop_width
-                right = img_width
-                top = i * sliding_size_y
-                bottom = crop_height + i * sliding_size_y
-
-            # if rectangles left on edges, take subimage of crop_height*crop_width by taking a part from within.
-            elif i == ((img_height - crop_height) // sliding_size_y + 1) and j < (
-                    (img_width - crop_width) // sliding_size_x + 1):
-                left = j * sliding_size_x
-                right = crop_width + j * sliding_size_x
-                top = img_height - crop_height
-                bottom = img_height
-
-            else:
-                left = img_width - crop_width
-                right = img_width
-                top = img_height - crop_height
-                bottom = img_height
-
-            # this only saves subimages that have birds
-            if tile_annot(left, right, top, bottom, info_dict, i, j, crop_height, crop_width, overlap, file_dict):
-                # print('Generating segmentation at position: ', left, top, right, bottom)
-
-                c_img = im.crop((left, top, right, bottom))
-                c_img.save(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j), 'JPEG')
-                image = Image.open(os.path.join(output_dir, 'Intermediate/') + file_name + '_' + str(i) + '_' + str(j))
-                image.save(output_dir + '/' + file_name + '_' + str(i) + '_' + str(j) + '.JPEG')
-                # image.save(os.path.join(output_dir, file_name + '_' + str(i) + '_' + str(j) + '.JPEG'))
-
-
-    # output the file_dict to a folder of csv files containing labels for each cropped file
-    for b in file_dict:
-        if file_dict[b]['bbox'] == []:
-            continue
-        else:
-            dict_to_csv(file_dict[b], empty=False, output_path=output_dir)
-
-    return file_dict
-
-
-def crop_dataset_trainer(data_dir, output_dir, annot_file_ext='csv', class_map={}, crop_height=640, crop_width=640, sliding_size_x=440, sliding_size_y=440, compute_sliding_size=False):
-    """
-    Function description.
-    INPUTS:
-        data_dir: image set directory
-        output_dir: output directory
-        annot_file_ext: annotation file extension
-        crop_height: image height after tiling, default 640
-        crop_width: image width after tiling, default 640
-        sliding_size_x: DESCRIBE, default 440
-        sliding_size_y: DESCRIBE, default 440
-        compute_sliding_size: If true, computes max sliding size to avoid having cropping birds, default false
-    """
-
-    # Intermediate directory for cropped images
-    if not os.path.exists(output_dir):
-        print(f"Creating output directory at: {output_dir}")
-        os.makedirs(output_dir)
-        os.makedirs(os.path.join(output_dir, 'Intermediate'))
-    elif not os.path.exists(os.path.join(output_dir, 'Intermediate')):
-        os.makedirs(os.path.join(output_dir, 'Intermediate'))
-
-    # Load CSV files
-    if annot_file_ext == 'csv':
-        files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'csv']
-        # TODO: only pass CSV files whose images are in the folder too (update original function too)
-    if annot_file_ext == 'bbx':
-        files = [os.path.join(data_dir, f) for f in os.listdir(data_dir) if f[-3:] == 'bbx']
-        # TODO: only pass BBX files whose images are in the folder too (update original function too)
-    for f in tqdm(files, desc='Cropping files'):
-        crop_img_trainer(csv_file=f, crop_height=crop_height, crop_width=crop_width, sliding_size_x=sliding_size_x,
-                         sliding_size_y=sliding_size_y, output_dir=output_dir, class_map=class_map,
-                         annot_file_ext=annot_file_ext, compute_sliding_size=compute_sliding_size)
-
-    # Remove intermediate directory
-    shutil.rmtree(os.path.join(output_dir, 'Intermediate'))

@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm.autonotebook import tqdm
 import cv2
@@ -7,38 +8,33 @@ import itertools
 import detectron2.utils.comm as comm
 from pycocotools.cocoeval import COCOeval
 from detectron2.evaluation.fast_eval_api import COCOeval_opt
-from detectron2.evaluation import inference_on_dataset
 from detectron2.evaluation.coco_evaluation import COCOEvaluator
+from detectron2.evaluation import inference_on_dataset
 from detectron2.data import build_detection_test_loader
-import pandas as pd
-
-# import json
-# import torch
-# from torchvision import transforms, datasets
-# from tqdm import tqdm
-# from torch import nn
-# import torch.nn.functional as F
 
 
 class PrecisionRecallEvaluator(COCOEvaluator):
     """
     Evaluate all Precision-Recall metrics for instance detection obtained from detectron2 COCOEvalulator
     """
-    def __init__(self,dataset_name,output_dir=None):
-        super().__init__(dataset_name, output_dir=output_dir)
+    def __init__(self,dataset_name,output_dir = None):
+        super().__init__(dataset_name, output_dir = output_dir)
 
     def evaluate(self, img_ids=None):
         """
         Args:
-            img_ids: a list of image IDs to evaluate on. Default to None for the whole dataset
+        --------
+        img_ids: a list of image IDs to evaluate on. Default to None for the whole dataset
+            
         Outputs: (see COCOEval API for details)
-            precisions  - [TxRxKxAxM] precision for every evaluation setting
-            recalls    - [TxKxAxM] max recall for every evaluation setting
+        --------
+        precisions - [TxRxKxAxM] precision for every evaluation setting
+        recalls    - [TxKxAxM] max recall for every evaluation setting
 
         """
         if self._distributed:
             comm.synchronize()
-            predictions = comm.gather(self._predictions, dst=0)
+            predictions = comm.gather(self._predictions, dst = 0)
             predictions = list(itertools.chain(*predictions))
 
             if not comm.is_main_process():
@@ -50,7 +46,7 @@ class PrecisionRecallEvaluator(COCOEvaluator):
             self._logger.warning("[COCOEvaluator] Did not receive valid predictions.")
             return {}
 
-        coco_eval = self._coco_eval_predictions(predictions, img_ids=img_ids)
+        coco_eval = self._coco_eval_predictions(predictions, img_ids = img_ids)
 
         if coco_eval is None:
             self._logger.warn("No predictions from the model!")
@@ -122,67 +118,48 @@ def get_precisions_recalls(cfg, predictor, dataset_name):
     return inference_on_dataset(predictor.model, data_loader, evaluator)
 
 
-def plot_precision_recall(precisions, max_recalls, class_names, class_colors):
+def plot_precision_recall_single(precisions, max_recalls, class_names, class_colors, thresh=50, figscale=1, dpi=200):
     """
-    Plot precision-recall curves outputted by PrecisionRecallEvaluator
-    INPUTS:
-         precisions: [TxRxKxAxM] precision for every evaluation setting
-         max_recalls: [TxKxAxM] max recall for every evaluation setting
-         class_names: names of bird species registered.
-         class_colors: List of colors for corresponding to bird species
-    """
-    recall = np.linspace(0, 1, 101)
-    # fig, ax = plt.subplots()
-    # fig_iou50, ax_iou50 = plt.subplots()
-    # fig_iou75, ax_iou75 = plt.subplots()
-    for c_indx, class_name in enumerate(class_names):
-        fig, ax = plt.subplots()
-        fig_iou50, ax_iou50 = plt.subplots()
-        avg_precision = np.mean(np.squeeze(precisions[:, :, c_indx, 0, -1]), axis=1)
-        print(f"AP50 for {class_name}: {avg_precision[0]}")
-        print(f"AP75 for {class_name}: {avg_precision[5]}")
-        max_recall = np.squeeze(max_recalls[:, c_indx, 0, -1])
-        print(f"Max recall (IoU 50) for {class_name}: {max_recall[0]}")
-        # ax.plot(max_recall, avg_precision, color=class_colors[c_indx])
-        ax.plot(max_recall, avg_precision)
-        precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
-        # ax_iou50.plot(recall, precisions_iou50, color=class_colors[c_indx])
-        ax_iou50.plot(recall, precisions_iou50)
-        # precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
-        # precisions_iou75 = np.squeeze(precisions[5, :, c_indx, 0, -1])
-        # ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
-
-        ax.set(ylabel="Avg. Precision",
-               xlabel="Max Recall")
-        ax_iou50.set(title=f"Precision-Recall Curve (IoU = 0.5) for {class_name}",
-                     ylabel="Precision",
-                     xlabel="Recall")
-        # ax_iou75.set(title="Precision-Recall Curve (IoU = 0.75)",
-        #              ylabel="Precision",
-        #              xlabel="Recall")
-        # ax.legend(class_names, loc='best')
-        # ax_iou50.legend(class_names, loc='best')
-        # ax_iou75.legend(class_names, loc='best')
-
-        plt.show()
-        
-        
-        
-        
-def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, figscale=2, dpi=200):
-    """
-    Plot precision-recall curves outputted by PrecisionRecallEvaluator, in a single plot
-    INPUTS:
-         precisions: [TxRxKxAxM] precision for every evaluation setting
-         max_recalls: [TxKxAxM] max recall for every evaluation setting
-         class_names: names of bird species registered.
-         class_colors: List of colors for corresponding to bird species
-    """
-    recall = np.linspace(0, 1, 101)
-    # fig, ax = plt.subplots()
-    # fig_iou50, ax_iou50 = plt.subplots()
-    # fig_iou75, ax_iou75 = plt.subplots()
+    In single plot, plot precision-recall curves outputted by PrecisionRecallEvaluator
     
+    INPUTS:
+    --------
+    precisions  : [TxRxKxAxM] precision for every evaluation setting
+    max_recalls : [TxKxAxM] max recall for every evaluation setting
+    class_names : names of bird species registered.
+    class_colors: List of colors for corresponding to bird species
+    """
+    i0 = {50: 0, 75: 5}
+    recall = np.linspace(0, 1, 101)
+    fig, axes = plt.subplots(1, 2, figsize = (12, 6), dpi = dpi)
+    for c_indx, class_name in enumerate(class_names):
+        avg_precision = np.mean(np.squeeze(precisions[:, :, c_indx, 0, -1]), axis=1)
+        max_recall    = np.squeeze(max_recalls[:, c_indx, 0, -1])
+        axes[0].plot(max_recall, avg_precision, color=class_colors[c_indx], 
+                label=f"{class_name}: AP={avg_precision[i0[thresh]]:.2f}, Max recall={max_recall[i0[thresh]]:.2f}")
+        axes[0].set(ylabel="Avg. Precision", xlabel="Max Recall")
+        
+        precisions_iou = np.squeeze(precisions[i0[thresh], :, c_indx, 0, -1])
+        axes[1].plot(recall, precisions_iou, color=class_colors[c_indx], label=f"{class_name}")
+        axes[1].set(ylabel="Precision", xlabel="Recall")
+        
+    axes[0].legend(loc='best')
+    plt.show()
+        
+        
+def plot_precision_recall(precisions, max_recalls, class_names, class_colors, thresh=50, figscale=2, dpi=200):
+    """
+    In subplots, plot precision-recall curves outputted by PrecisionRecallEvaluator
+    
+    INPUTS:
+    --------
+    precisions  : [TxRxKxAxM] precision for every evaluation setting
+    max_recalls : [TxKxAxM] max recall for every evaluation setting
+    class_names : names of bird species registered.
+    class_colors: List of colors for corresponding to bird species
+    """
+    i0 = {50: 0, 75: 5}
+    recall = np.linspace(0, 1, 101)
     nclass = len(class_names)
     nrow = np.floor(nclass**.5).astype(int)
     ncol = np.ceil(nclass/nrow).astype(int)
@@ -191,70 +168,58 @@ def plot_precision_recall_2(precisions, max_recalls, class_names, class_colors, 
                       'figsize':(figscale*ncol, figscale*nrow), 'dpi':dpi}
     fig, axes = plt.subplots(**subplot_params)
     axes = axes.flatten()
-    fig_iou50, axes_iou50 = plt.subplots(**subplot_params)
-    axes_iou50 = axes_iou50.flatten()
+    fig_iou, axes_iou = plt.subplots(**subplot_params)
+    axes_iou = axes_iou.flatten()
 
     display_metric = {'AP':{}, 'AR':{}}
     for c_indx, class_name in enumerate(class_names):
-        
-        
         ax = axes[c_indx]
         avg_precision = np.mean(np.squeeze(precisions[:, :, c_indx, 0, -1]), axis=1)
         max_recall = np.squeeze(max_recalls[:, c_indx, 0, -1])
-#         print(f"AP50 for {class_name}: {avg_precision[0]}")
-#         print(f"AP75 for {class_name}: {avg_precision[5]}")
-#         print(f"Max recall (IoU 50) for {class_name}: {max_recall[0]}")
-        ax.plot(max_recall, avg_precision)#, color=class_colors[c_indx])
-        ax.set(title=f"{class_name}")
+        
+        ax.plot(max_recall, avg_precision)
+        ax.set(title = f"{class_name}")
         if not c_indx%ncol:
-            ax.set(ylabel="Avg. Precision")
+            ax.set(ylabel = "Avg. Precision")
         if c_indx >= (nrow-1)*ncol:
-            ax.set(xlabel="Max Recall")
+            ax.set(xlabel = "Max Recall")
         ax.set_ylim(-.1,1.1)
         ax.set_xlim(-.1,1.1)
-#         ax.legend(class_names, loc='best')
         
-        ax_iou50 = axes_iou50[c_indx]
-        precisions_iou50 = np.squeeze(precisions[0, :, c_indx, 0, -1])
-        ax_iou50.plot(recall, precisions_iou50)#, color=class_colors[c_indx])
-        ax_iou50.set(title=f"{class_name}")
+        ax_iou = axes_iou[c_indx]
+        precisions_iou = np.squeeze(precisions[i0[thresh], :, c_indx, 0, -1])
+        ax_iou.plot(recall, precisions_iou)
+        ax_iou.set(title = f"{class_name}")
         if not c_indx%ncol:
-            ax_iou50.set(ylabel="Precision")
+            ax_iou.set(ylabel = "Precision")
         if c_indx >= (nrow-1)*ncol:    
-            ax_iou50.set(xlabel="Recall")
-        ax_iou50.set_ylim(-.1,1.1)
-        ax_iou50.set_xlim(-.1,1.1)
-#         ax_iou50.legend(class_names, loc='best')
+            ax_iou.set(xlabel = "Recall")
+        ax_iou.set_ylim(-.1,1.1)
+        ax_iou.set_xlim(-.1,1.1)
         
-        # precisions_iou75 = np.squeeze(test_precisions[5, :, c_indx, 0, -1])
-        # precisions_iou75 = np.squeeze(precisions[5, :, c_indx, 0, -1])
-        # ax_iou75.plot(recall, precisions_iou75, color=class_colors[c_indx])
-        # ax_iou75.set(title="Precision-Recall Curve (IoU = 0.75)",
-        #              ylabel="Precision",
-        #              xlabel="Recall")  
-        # ax_iou75.legend(class_names, loc='best')
-        
-        display_metric['AR'][class_name] = max_recall[0]
-        display_metric['AP'][class_name] = avg_precision[0]
+        display_metric['AR'][class_name] = max_recall[i0[thresh]]
+        display_metric['AP'][class_name] = avg_precision[i0[thresh]]
 
-    fig.suptitle("Precision-Recall Curve (IoU = 0.5) for ")
+    fig.suptitle(f"Precision-Recall Curve (IoU = {thresh/100})")
     plt.tight_layout()
     plt.show()
     
     return display_metric
 
 
-
-
 def non_max_suppression_fast(df, overlap_thresh = 0.5):
     """
     Perform non-maximal supression for bounding boxes
     Adapted from https://www.pyimagesearch.com/2015/02/16/faster-non-maximum-suppression-python/
-    INPUTS
-        df -- pandas dataframe containing bounding boxes
-        overlapThresh -- overlapping IoU threshold to be used for rejection (default: 0.5)
-    OUTPUT
-        df -- pandas dataframe containing bounding boxes after NMS
+    
+    INPUTS:
+    --------
+    df -- pandas dataframe containing bounding boxes
+    overlapThresh -- overlapping IoU threshold to be used for rejection (default: 0.5)
+    
+    OUTPUT:
+    --------
+    df -- pandas dataframe containing bounding boxes after NMS
     """
     boxes = df['boxes']
     if len(boxes) == 0:
@@ -282,8 +247,7 @@ def non_max_suppression_fast(df, overlap_thresh = 0.5):
         h = np.maximum(yy2 - yy1 + 1, 0)
         overlap = (w * h) / area[idxs[:last]]
         idxs = np.delete(idxs, np.concatenate(([last], np.where(overlap > overlap_thresh)[0])))
-    # return only the bounding boxes that were picked using the
-    # integer data type
+    # return only the bounding boxes that were picked using the integer data type
     return df.iloc[pick]
 
 
