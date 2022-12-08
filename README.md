@@ -145,13 +145,18 @@ Some classes contain only few instances.
 We cleaned up the data and ended up with over 20 classes (including distinct Royal and Sandwich Terns) on which we trained a multi-species bird detector. 
 </p>
 
+<p align="center">
+  <img src="./figs/covimg.JPEG" width="400">
+</p>
+
+
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 <!-- DATA SCIENCE PIPELINE -->
 <h2 id="Data Science Pipeline"> Data Science Pipeline </h2>
 
 <p align="center">
-  <img src="https://github.com/RiceD2KLab/Audubon_F21/blob/FL22/utils/pipeLine/Pcovimg.JPEG?raw=true" width="400">
+  <img src="./figs/Pipeline.png" width="400">
 </p>
 
 <p> For more details, please refer to our report. *Coming soon!* </p>
