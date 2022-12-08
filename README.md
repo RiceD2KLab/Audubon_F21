@@ -156,7 +156,7 @@ We cleaned up the data and ended up with over 20 classes (including distinct Roy
 <h2 id="Data Science Pipeline"> Data Science Pipeline </h2>
 
 <p align="center">
-  <img src="./figs/Pipeline.png" width="400">
+  <img src="./figs/Pipeline.png" width="600">
 </p>
 
 <p> For more details, please refer to our report. *Coming soon!* </p>
