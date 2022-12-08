@@ -1,1 +1,0 @@
-## Image/Logo Database

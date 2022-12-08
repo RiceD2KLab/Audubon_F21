@@ -35,8 +35,8 @@ from utils.cropping import crop_dataset, train_val_test_split, correct_labels
                     `-- annotation files [csv]
 '''
 
-data_root = './data/22All/'
-notes = pd.read_excel('./data/D2K 30 Codes 20221013.xlsx')
+data_root = './data/22F/'
+#notes = pd.read_excel('./data/D2K 30 Codes 20221013.xlsx')
 
 #########################################################
 ## I. Data processing: tiling, split, and augmentation ##
@@ -78,10 +78,11 @@ for ax,d in zip(axes, dirs):
     id_counts[::-1].plot.barh(ax=ax)
 plt.savefig('datadist.png')
 
-# determine on which bird species (e.g., that have more than 20 val images) to train
+# determine on which bird species (e.g., that have more than 15 val images) to train
 # please tune the threshold according to the data distributiona and to your need
+id_count_thresh = 200  #multispecies=15; terns=200 
 id_count = target_data['Validate']['class_id'].value_counts()
-bird_spcs_use = id_count.loc[id_count >= 15].index.values
+bird_spcs_use = id_count.loc[id_count >= id_count_thresh].index.values
 
 # keep only species that are in all train, val, and test sets
 bird_spcs_use = np.intersect1d(

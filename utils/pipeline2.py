@@ -64,7 +64,7 @@ class TernsDataset(Dataset):
     
     
 def train_model(batch_size, n_epochs, learningRate, model, cost_function, 
-                optimizer, scheduler, train_loader, val_loader, device):
+                optimizer, scheduler, train_loader, val_loader, save_to, device):
 
     # Move the model and cost function to GPU (if needed).
     model = model.to(device)
@@ -155,7 +155,7 @@ def train_model(batch_size, n_epochs, learningRate, model, cost_function,
         # Save the parameters for the best accuracy on the validation set so far.
         if logs['val_accuracy'] > best_accuracy:
             best_accuracy = logs['val_accuracy']
-            torch.save(model.state_dict(), 'best_model_so_far.pth')
+            torch.save(model.state_dict(), save_to)
 
         # Update the plot with new logging information.
         liveloss.update(logs)
@@ -166,5 +166,5 @@ def train_model(batch_size, n_epochs, learningRate, model, cost_function,
             scheduler.step()
 
     # Load the model parameters for the one that achieved the best val accuracy.
-    model.load_state_dict(torch.load('best_model_so_far.pth'))    
+    model.load_state_dict(torch.load(save_to))    
     return model

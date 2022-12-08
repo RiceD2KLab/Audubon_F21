@@ -180,17 +180,16 @@ class Detectron2GradCAM():
     model_file : str
         detectron2 model file path
     """
-    def __init__(self, config_file, model_file, cfg_parms):
-        self.cfg = self._setup_cfg(config_file, model_file, cfg_parms)
+    def __init__(self, config_file, model_file, cfg_parms, device = "cuda"):
+        self.cfg = self._setup_cfg(config_file, model_file, cfg_parms, device)
         
-    def _setup_cfg(self, config_file, model_file, cfg_parms):
+    def _setup_cfg(self, config_file, model_file, cfg_parms, device):
         # load from file and configure
         cfg = get_cfg()
         cfg.merge_from_file(config_file)
-
         cfg.MODEL.ROI_HEADS.NUM_CLASSES = len(cfg_parms['BIRD_SPECIES'])
         cfg.MODEL.WEIGHTS = model_file
-        cfg.MODEL.DEVICE = 'cpu' #"cuda"
+        cfg.MODEL.DEVICE  = device
         cfg.freeze()
         return cfg
 

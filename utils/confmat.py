@@ -4,9 +4,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import cv2
 from tqdm.auto import tqdm
-import matplotlib.pyplot as plt
 import numpy as np
 import itertools
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def iou(box1, box2):
@@ -175,7 +176,10 @@ def plot_confusion_matrix(cm, target_names, cmap = None, normalize = True, figur
     else:
         fig, ax = figure
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
-    fig.colorbar(im)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+
+    fig.colorbar(im, cax=cax, orientation='vertical')
 
     if target_names is not None:
         tick_marks = np.arange(len(target_names))
@@ -198,5 +202,4 @@ def plot_confusion_matrix(cm, target_names, cmap = None, normalize = True, figur
 
     ax.set_ylabel('True label')
     ax.set_xlabel(f'Predicted label')#\naccuracy={accuracy:0.2f}; misclass={accuracy:0.2f}')
-    plt.tight_layout()
-    plt.show()
+    
