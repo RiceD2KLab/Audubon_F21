@@ -106,13 +106,13 @@
   <li><b>View and evaluate training results.</b></li>
       
   ```linux
-  $ jupyter botebook MultiSpec-MonitorEvalCAM.ipynb
+  $ jupyter notebook MultiSpec-MonitorEvalCAM.ipynb
   ```
       
   <li><b>Try out the 2-stage pipeline for terns.</b></li>
       
   ```linux
-  $ jupyter botebook Terns-FullPipelineWithClas.ipynb
+  $ jupyter notebook Terns-FullPipelineWithClas.ipynb
   ```
       
   </ol>
