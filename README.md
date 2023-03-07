@@ -3,7 +3,7 @@
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ## Project description
-Houston Audubon uses drone photography to monitor populations of colonial waterbirds in the Texas Gulf Coast. Researchers need to comb through drone images and manually count up birds by species class, which can take weeks for even one high resolution image. Seeking to automate this process, Houston Audubon partnered with the Data to Knowledge (D2K) lab at Rice University. Student teams have developed an object detection based deep learning model that can automatically detect birds within a UAV image and classify their species. This semester, we are continuing the project with two main objecitves:
+Houston Audubon uses drone photography to monitor populations of colonial waterbirds in the Texas Gulf Coast. Researchers need to comb through high resolution images and manually count up birds by species class, which can take weeks for even one image. Seeking to automate the annotation process, Houston Audubon partnered with the Data to Knowledge (D2K) lab at Rice University. Student teams have developed an object detection based deep learning model that can automatically detect birds within a drone image and classify their species. This semester, we are continuing the project with two main objecitves:
   1. Improve species classification capabilities of the model.
   2. Develop an AI-assisted waterbird annotation tool.
 
