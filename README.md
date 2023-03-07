@@ -24,6 +24,7 @@ The following open source packages are used in this project:
   - utils || Directory containing helper functions for data processing and exploration
     - data_processsing.py
     - data_vis.py
+  - audubon_midpoint_demo.ipynb || Colab notebook containing a demonstration of data processing, data exploration and building a bird detection model
   - README.md
   - const.py || File containing constant parameters, such as hierarchical bird groups
   - requirements.txt || List of dependencies
