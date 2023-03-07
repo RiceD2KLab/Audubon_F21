@@ -1,0 +1,5 @@
+!pip install -qq numpy
+!pip install -qq pandas
+!pip install -qq matplotlib
+!pip install -qq tqdm
+!pip3 install -qq torch torchvision 
