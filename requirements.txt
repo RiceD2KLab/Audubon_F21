@@ -1,5 +1,5 @@
-!pip install -qq numpy
-!pip install -qq pandas
-!pip install -qq matplotlib
-!pip install -qq tqdm
-!pip3 install -qq torch torchvision 
+!pip install -qq numpy~=1.22.4
+!pip install -qq pandas~=1.3.5
+!pip install -qq matplotlib~=3.5.3
+!pip install -qq tqdm~=4.64.1
+!pip3 install -qq torch torchvision~=0.14.1+cu116
