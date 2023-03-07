@@ -89,7 +89,7 @@ The dataset is stored in Google Drive, and must be accessed using the !gdown com
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ## Bird detector usage instructions
-Currently, we have completed the data processing, data exploration and train/test/split steps of our pipeline. We are working on data wrangling for the bird detection and species classification models. We have created a basic bird detector model, but we still need to optimize the model by using data wrangling techniques and tuning hyperparameters. 
+Currently, we have completed the data processing, data exploration and train/test/split steps of our pipeline. We are working on data wrangling for the bird detection and species classification models. We have created a basic bird detector model, which uses a Faster-RCNN architecture with a ResNet50 backbone network. We still need to optimize the model by using data wrangling techniques and tuning hyperparameters. 
 
 We have created a demonstration notebook containing steps for data preprocessing, data exploration, train/test/split, and training a bird detector. 
 
