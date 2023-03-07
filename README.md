@@ -74,6 +74,13 @@ Each annotated UAV image has a corresponding CSV file containing bird annotation
   - Smallest y coordinate in the bounding box
   - Width of the bounding box
   - Height of the bounding box
+  
+In order to access the dataset in Colab, use the following code:
+
+'''
+  !gdown -q "1hoP1ev8Npj5m0MZWZU7LpjU9c8JYYoFe&confirm=t"
+  !unzip -q './F21-S22-Combined-D2K-Audubon.zip' -d './data/'
+'''
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
