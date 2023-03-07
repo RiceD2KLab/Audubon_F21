@@ -36,7 +36,7 @@ The following open source packages are used in this project:
  ### Clone the repository
 
   ```linux
-  git clone https://github.com/RiceD2KLab/Audubon_F21.git
+  git clone -b SP23 https://github.com/RiceD2KLab/Audubon_F21.git
   ```
  ### Install Pytorch
 
