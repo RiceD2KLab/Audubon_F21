@@ -21,13 +21,13 @@ The following open source packages are used in this project:
 
 ## Folder structure
  
-  - utils (directory containing helper functions for data processing and exploration)
+  - utils || Directory containing helper functions for data processing and exploration
     - data_processsing.py
     - data_vis.py
   - README.md
-  - const.py (file containing constant Python parameters, such as hierarchical bird groups)
-  - requirements.txt (installation code for Python packages)
-  - train.py (file containing helper functions for building bird detection model)
+  - const.py || File containing constant Python parameters, such as hierarchical bird groups
+  - requirements.txt || List of dependencies
+  - train.py || File containing helper functions for building bird detection model
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
