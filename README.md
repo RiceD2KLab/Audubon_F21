@@ -25,9 +25,9 @@ The following open source packages are used in this project:
     - data_processsing.py
     - data_vis.py
   - README.md
-  - const.py || File containing constant Python parameters, such as hierarchical bird groups
+  - const.py || File containing constant parameters, such as hierarchical bird groups
   - requirements.txt || List of dependencies
-  - train.py || File containing helper functions for building bird detection model
+  - train.py || File containing helper functions for building a bird detection model
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -84,13 +84,13 @@ In order to access the dataset in Colab, use the following code:
   !unzip -q './F21-S22-Combined-D2K-Audubon.zip' -d '[desired folder in working directory]' 
 ```
 
-The dataset is stored in Google Drive, and must be accessed using the !gdown command. 
+The dataset is stored in Google Drive, and must be accessed using the !gdown command. For a demonstration. see the notebook linked below.
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ## Bird detector usage instructions
 Currently, we have completed the data processing, data exploration and train/test/split steps of our pipeline. We are working on data wrangling for the bird detection and species classification models. We have created a basic bird detector model, but we still need to optimize the model by using data wrangling techniques and tuning hyperparameters. 
 
-We have created a demonstration notebook containing steps for data preprocessing, data exploration, train/test/split, and training the bird detector. 
+We have created a demonstration notebook containing steps for data preprocessing, data exploration, train/test/split, and training a bird detector. 
 
 Open the [Colab link](https://colab.research.google.com/drive/1wU5k5jI9TlPWy3CzXb4gabZ__YB-Cp97?usp=sharing) to run the demonstration notebook.
