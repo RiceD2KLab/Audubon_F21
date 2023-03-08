@@ -43,7 +43,7 @@ class BirdDataset(torch.utils.data.Dataset):
                     - 'labels': A PyTorch tensor containing the class labels for each object in the image. For the bird-only detector, there is only one class.
                     - 'image_id': A PyTorch tensor containing the unique identifier for the image.
                     - 'area': A PyTorch tensor containing the area of each bounding box. 
-                    - 'iscrowd': A PyTorch tesor containing booleans for whether each object is a crowd.  
+                    - 'iscrowd': A PyTorch tensor containing booleans for whether each object is a crowd.  
         '''
         # file path
         img_path, csv_path = self.img_files[idx], self.csv_files[idx]
