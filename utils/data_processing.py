@@ -16,7 +16,7 @@ def get_file_names(path, extension):
     
     Input:
         path : Directory path to search for files (in string format).
-        extension : File extension to match (in string format).
+        extension : File extension to match (in string format). In our case, .csv for annotations or .jpg for images.
     Output:
         A sorted list of file names that match the specified file extension.
     '''
