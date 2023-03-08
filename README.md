@@ -85,7 +85,7 @@ In order to access the dataset in Colab, use the following code:
   !unzip -q './F21-S22-Combined-D2K-Audubon.zip' -d '[desired folder in working directory]' 
 ```
 
-The dataset is stored in Google Drive, and must be accessed using the !gdown command. For a demonstration. see the notebook linked below.
+The dataset is stored in Google Drive, and must be accessed using the !gdown command. For a demonstration, see the notebook linked below.
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
