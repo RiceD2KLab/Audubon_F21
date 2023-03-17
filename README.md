@@ -8,7 +8,7 @@ Houston Audubon uses drone photography to monitor populations of colonial waterb
   2. Develop an AI-assisted waterbird annotation tool.
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-  
+
 ## Prerequisites
 The following open source packages are used in this project:
   - Numpy
@@ -20,7 +20,7 @@ The following open source packages are used in this project:
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ## Folder structure
- 
+
   - utils || Directory containing helper functions for data processing and exploration
     - data_processsing.py
     - data_vis.py
@@ -42,17 +42,17 @@ The following open source packages are used in this project:
  ### Install Pytorch
 
   <a href="https://pytorch.org/get-started/locally/">Installation instructions here</a> <br>
-  
+
   Requirements: Linux or macOS with Python ≥ 3.6
-  
+
   ```linux
   pip3 install torch==1.13.1+cu116 torchvision==0.14.1+cu116 -f https://download.pytorch.org/whl/cu102/torch_stable.html
   ```
-  
+
  ### Install other dependencies
 
   The Python version is 3.8.16 and users can install the required packages using the following command:
-  
+
   ```linux
   pip install requirements.txt
   ```
@@ -62,7 +62,7 @@ The following open source packages are used in this project:
 ## Data science pipeline
 Our pipeline is split into three sections: data wrangling, modeling, and model evaluation. Before wrangling, we will split the data into training, validation and testing groups. Overall, we plan to use a similar data science pipeline as past groups. This is especially true for the bird detector, given the model is already highly accurate. This semester we will focus on improving the bird classifier and developing the output (annotation tool).
 
-<img src="pipeline.png">
+<img src="imgs/pipeline.png">
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -77,7 +77,7 @@ Each annotated UAV image has a corresponding CSV file containing bird annotation
   - Smallest y coordinate in the bounding box
   - Width of the bounding box
   - Height of the bounding box
-  
+
 In order to access the dataset in Colab, use the following code:
 
 ```

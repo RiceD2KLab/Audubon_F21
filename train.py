@@ -9,9 +9,9 @@ from tqdm import tqdm
 import torchvision
 from PIL import Image
 from torchvision.transforms import functional as F
-from audubon.const import COL_NAMES
-from audubon.utils.data_processing import csv_to_df
-from audubon.utils.data_processing import coordinate_to_box
+from Audubon_F21.const import COL_NAMES
+from Audubon_F21.utils.data_processing import csv_to_df
+from Audubon_F21.utils.data_processing import coordinate_to_box
 
 
 class BirdDataset(torch.utils.data.Dataset):
@@ -158,5 +158,5 @@ def train_model(model, optimizer, trainloader, testloader, n_epochs, device):
             optimizer.zero_grad()
             losses.backward()
             optimizer.step()
-        print("Epoch:", epoch + 1, "| Loss:", epoch_loss.item())
+        print("Epoch:", epoch + 1, "| Loss:", epoch_loss)
         print()
