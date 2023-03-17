@@ -11,24 +11,26 @@ Houston Audubon uses drone photography to monitor populations of colonial waterb
 
 ## Prerequisites
 The following open source packages are used in this project:
-  - Numpy
-  - Pandas
-  - Matplotlib
-  - PyTorch
-  - tqdm
+  - `numpy`
+  - `pandas`
+  - `matplotlib`
+  - `torch`
+  - `tqdm`
+  - `cv2`
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ## Folder structure
 
-  - utils || Directory containing helper functions for data processing and exploration
-    - data_processsing.py
-    - data_vis.py
-  - audubon_midpoint_demo.ipynb || Colab notebook containing a demonstration of data processing, data exploration and building a bird detection model
-  - README.md
-  - const.py || File containing constant parameters, such as column names and hierarchical bird groups
-  - requirements.txt || List of dependencies
-  - train.py || File containing helper functions for building a bird detection model
+  - `utils` || Directory containing helper functions for data processing and exploration
+    - `data_processsing.py`
+    - `data_vis.py`
+    - `crop.py`
+  - `audubon_midpoint_demo.ipynb` || Colab notebook containing a demonstration of data processing, data exploration and building a bird detection model
+  - `README.md`
+  - `const.py` || File containing constant parameters, such as column names and hierarchical bird groups
+  - `requirements.txt` || List of dependencies
+  - `train.py` || File containing helper functions for building a bird detection model
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -81,8 +83,8 @@ Each annotated UAV image has a corresponding CSV file containing bird annotation
 In order to access the dataset in Colab, use the following code:
 
 ```
-  !gdown -q "1hoP1ev8Npj5m0MZWZU7LpjU9c8JYYoFe&confirm=t" 
-  !unzip -q './F21-S22-Combined-D2K-Audubon.zip' -d '[desired folder in working directory]' 
+!gdown -q "1hoP1ev8Npj5m0MZWZU7LpjU9c8JYYoFe&confirm=t" 
+!unzip -q './F21-S22-Combined-D2K-Audubon.zip' -d '[desired folder in working directory]' 
 ```
 
 The dataset is stored in Google Drive, and must be accessed using the !gdown command. For a demonstration, see the notebook linked below.
