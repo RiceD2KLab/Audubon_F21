@@ -9,9 +9,9 @@ from tqdm import tqdm
 import torchvision
 from PIL import Image
 from torchvision.transforms import functional as F
-from Audubon_F21.const import COL_NAMES
-from Audubon_F21.utils.data_processing import csv_to_df
-from Audubon_F21.utils.data_processing import coordinate_to_box
+from .const import COL_NAMES
+from .utils.data_processing import csv_to_df
+from .utils.data_processing import coordinate_to_box
 
 
 class BirdDataset(torch.utils.data.Dataset):

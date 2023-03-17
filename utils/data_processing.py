@@ -128,7 +128,3 @@ def coordinate_to_box(x_1, y_1, width, height):
     box = [x_1, y_1, x_2, y_2]
 
     return box
-
-def cropping():
-    ''' Crop image bird only and resize into fixed shape '''
-    pass #Still need to create

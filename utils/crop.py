@@ -68,7 +68,7 @@ def dict_to_csv(info_dict, output_path, empty, img_ext= 'JPEG'):
         save_file_name = os.path.join(output_path, info_dict["file_name"].replace('JPEG', 'csv'))
     if img_ext == 'JPG':
         #img_ext='jpg'
-        print(os.path.join(output_path, info_dict["file_name"]))
+        # print(os.path.join(output_path, info_dict["file_name"]))
         save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))
     if img_ext == 'bbx':
         save_file_name = os.path.join(output_path, info_dict["file_name"].replace(img_ext, 'csv'))

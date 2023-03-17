@@ -3,14 +3,10 @@ Constants for the project
 '''
 from PIL import Image
 
-# Constants saving information
-FILES = {}
-FRAMES = {}
-
 # Fixed parameters
 SAVE_FIG = True
 Image.MAX_IMAGE_PIXELS = 1000000000
-DPI = 1000
+DPI = 500
 COL_NAMES = ["class_id", "class_name", "x", "y", "width", "height"]
 GROUPS = {"BRPE": ["BRPEA", "BRPEC", "BRPEJ", "BRPEW", "BRPEF"],
           "LAGU": ["LAGUA", "LAGUF", "LAGUJ"],

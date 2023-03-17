@@ -4,8 +4,8 @@ Data visualization
 
 import matplotlib.pyplot as plt
 from matplotlib import patches
-from Audubon_F21.utils.data_processing import csv_to_df
-from Audubon_F21.const import COL_NAMES, SAVE_FIG, DPI
+from .data_processing import csv_to_df
+from ..const import COL_NAMES, SAVE_FIG
 
 #######################################################################################
 # Data visualization
@@ -67,14 +67,14 @@ def plot_boxes(jpg_name, bbx_name, title, path):
         A plot of the image overlaid with annotation boxes.
     '''
     image = plt.imread(jpg_name)
-    num_row, num_col, dummy_channel = image.shape
+    # num_row, num_col, dummy_channel = image.shape
     annos = csv_to_df(bbx_name, COL_NAMES).to_dict()
 
     # plot image
-    fig, axs = plt.subplots(figsize=(num_col / DPI, num_row / DPI), dpi=DPI)  
+    fig, axs = plt.subplots()  
     axs.imshow(image, origin='lower')
     axs.set_axis_off()
-    axs.set_title(title)
+    # axs.set_title(title)
     # draw bounding boxes (rectangles)
     for idx in range(len(annos["x"])):
         rect = patches.Rectangle((annos["x"][idx], annos["y"][idx]), 
