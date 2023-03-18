@@ -160,3 +160,4 @@ def train_model(model, optimizer, trainloader, testloader, n_epochs, device):
             optimizer.step()
         print("Epoch:", epoch + 1, "| Loss:", epoch_loss)
         print()
+        evaluate_model(model, testloader, device)
