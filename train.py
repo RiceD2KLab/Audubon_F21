@@ -4,6 +4,7 @@ https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 torchvision.models.detection.faster_rcnn 
 '''
 
+import numpy as np
 import torch
 from tqdm import tqdm
 import torchvision
@@ -141,8 +142,12 @@ def get_model_and_optim(choice='fasterrcnn_resnet50_fpn'):
     optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
     return model, optimizer
 
-def train_model(model, optimizer, trainloader, testloader, n_epochs, device):
+def train_model(model, optimizer, 
+                trainloader, testloader, 
+                n_epochs, device, save_path, model_name):
     ''' Train a model and print loss for each epoch '''
+    train_loss_list = []
+    test_loss_list = []
     model = model.to(device)
     for epoch in range(n_epochs):
         model.train()
@@ -158,6 +163,36 @@ def train_model(model, optimizer, trainloader, testloader, n_epochs, device):
             optimizer.zero_grad()
             losses.backward()
             optimizer.step()
-        print("Epoch:", epoch + 1, "| Loss:", epoch_loss)
+        train_loss_list.append(epoch_loss)
+        test_loss = evaluate_model(model, testloader, device)
+        test_loss_list.append(test_loss)
+        print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
         print()
-        evaluate_model(model, testloader, device)
+    
+    model.save_state_dict(save_path + model_name + '.pth')
+    return train_loss_list, test_loss_list
+
+def evaluate_model(model, testloader, device):
+    ''' Evaluate a model on the test dataset '''
+    model.eval()
+    test_loss = 0
+    with torch.no_grad():
+        for batch, (images, targets) in enumerate(tqdm(testloader, desc="Evaluating", leave=True, ncols=80)):
+            images = list(image.to(device) for image in images)
+            targets = [{key: val.to(device) for key, val in target.items()} for target in targets]
+            
+            loss_dict = model(images, targets)
+            losses = sum(loss for loss in loss_dict.values())
+            test_loss += losses
+            
+            # outputs = model(images)
+            # for output, target in zip(outputs, targets):
+            #     boxes = output['boxes'].data.cpu().numpy()
+            #     scores = output['scores'].data.cpu().numpy()
+            #     labels = output['labels'].data.cpu().numpy()
+            #     boxes = boxes[scores >= 0.5].astype(np.int32)
+            #     scores = scores[scores >= 0.5]
+            #     labels = labels[scores >= 0.5]
+    
+    return test_loss
+        

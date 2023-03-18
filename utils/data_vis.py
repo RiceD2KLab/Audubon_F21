@@ -86,3 +86,21 @@ def plot_boxes(jpg_name, bbx_name, title, path):
         fig.savefig(path + title + '.jpg', bbox_inches='tight')
 
     return fig
+
+def plot_training_curves(train_loss, test_loss, path, title):
+    """ Plot regression train and test loss """
+    fig, axs = plt.subplots()
+    axs.plot(train_loss, label="Training loss")
+    axs.plot(test_loss, label="Test loss")
+    axs.set_xlabel("Number of epochs")
+    axs.set_ylabel("Loss")
+    axs.legend()
+
+    if SAVE_FIG:
+        fig.savefig(path + title + '.pdf', bbox_inches='tight')
+
+    return fig
+
+def plot_confusion_matrix():
+    ''' Plot a confusion matrix '''
+    pass
