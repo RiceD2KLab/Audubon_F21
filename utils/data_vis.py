@@ -51,7 +51,7 @@ def plot_distribution(data_frame, col_name,
     axs.invert_yaxis()
     axs.bar_label(chart)
     if SAVE_FIG:
-        fig.savefig(path + title + '.pdf')
+        fig.savefig(path + title + '.pdf', bbox_inches='tight')
     return fig
 
 def plot_boxes(jpg_name, bbx_name, title, path):
@@ -83,6 +83,6 @@ def plot_boxes(jpg_name, bbx_name, title, path):
         axs.add_patch(rect)
 
     if SAVE_FIG:
-        fig.savefig(path + title + '.jpg')
+        fig.savefig(path + title + '.jpg', bbox_inches='tight')
 
     return fig
