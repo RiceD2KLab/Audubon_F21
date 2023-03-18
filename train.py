@@ -117,13 +117,13 @@ def get_bird_dataloaders(train_files, test_files):
     # Use our dataset and defined transformations
     trainset = BirdDataset(train_files, F.to_tensor)
     trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=2, shuffle=True, num_workers=4,
+        trainset, batch_size=2, shuffle=True, num_workers=2,
         collate_fn=bird_collate_fn # Set collate function to our custom function
     ) 
 
     testset = BirdDataset(test_files, F.to_tensor)
     testloader = torch.utils.data.DataLoader(
-        testset, batch_size=1, shuffle=False, num_workers=4,
+        testset, batch_size=1, shuffle=False, num_workers=2,
         collate_fn=bird_collate_fn 
     ) 
     return trainloader, testloader
