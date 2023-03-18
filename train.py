@@ -117,7 +117,7 @@ def get_bird_dataloaders(train_files, test_files):
     # Use our dataset and defined transformations
     trainset = BirdDataset(train_files, F.to_tensor)
     trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=2, shuffle=True, num_workers=2,
+        trainset, batch_size=1, shuffle=True, num_workers=2,
         collate_fn=bird_collate_fn # Set collate function to our custom function
     ) 
 
@@ -158,41 +158,47 @@ def train_model(model, optimizer,
 
             loss_dict = model(images, targets)
             losses = sum(loss for loss in loss_dict.values())
-            epoch_loss += losses
+            epoch_loss += losses.item()
 
             optimizer.zero_grad()
             losses.backward()
             optimizer.step()
+        
+        test_loss = get_test_loss(model, testloader, device)
         train_loss_list.append(epoch_loss)
-        test_loss = evaluate_model(model, testloader, device)
         test_loss_list.append(test_loss)
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
         print()
     
-    model.save_state_dict(save_path + model_name + '.pth')
-    return train_loss_list, test_loss_list
+    predictions = get_predictions(model, testloader, device)
+    torch.save(model.state_dict(), save_path + model_name + '.pth')
+    return train_loss_list, test_loss_list, predictions
 
-def evaluate_model(model, testloader, device):
+def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''
-    model.eval()
     test_loss = 0
     with torch.no_grad():
-        for batch, (images, targets) in enumerate(tqdm(testloader, desc="Evaluating", leave=True, ncols=80)):
+        for batch, (images, targets) in enumerate(testloader):
             images = list(image.to(device) for image in images)
             targets = [{key: val.to(device) for key, val in target.items()} for target in targets]
-            
+
             loss_dict = model(images, targets)
+            # print(loss_dict)
             losses = sum(loss for loss in loss_dict.values())
-            test_loss += losses
-            
-            # outputs = model(images)
-            # for output, target in zip(outputs, targets):
-            #     boxes = output['boxes'].data.cpu().numpy()
-            #     scores = output['scores'].data.cpu().numpy()
-            #     labels = output['labels'].data.cpu().numpy()
-            #     boxes = boxes[scores >= 0.5].astype(np.int32)
-            #     scores = scores[scores >= 0.5]
-            #     labels = labels[scores >= 0.5]
+            test_loss += losses.item()
     
     return test_loss
-        
+    
+def get_predictions(model, testloader, device):
+    ''' Get predictions for the test dataset '''
+    model.eval()
+    predictions = []
+    with torch.no_grad():
+        for batch, (images, targets) in enumerate(testloader):
+            images = list(image.to(device) for image in images)
+            targets = [{key: val.to(device) for key, val in target.items()} for target in targets]
+
+            outputs = model(images)
+            outputs = [{key: val.to('cpu') for key, val in out.items()} for out in outputs]
+            predictions.append(outputs)
+    return predictions
