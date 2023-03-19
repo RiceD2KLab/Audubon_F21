@@ -105,10 +105,6 @@ def plot_training_curves(train_loss, test_loss, path, title):
 
     return fig
 
-def plot_confusion_matrix():
-    ''' Plot a confusion matrix '''
-    pass
-
 def show(imgs):
     ''' Show a list of images '''
     if not isinstance(imgs, list):
@@ -129,3 +125,7 @@ def visualize_predictions(file_paths, output, path, title, score_threshold=0.8):
     fig = show(result)
     if SAVE_FIG:
         fig.savefig(path + title + '.jpg', bbox_inches='tight')
+
+def plot_confusion_matrix():
+    ''' Plot a confusion matrix '''
+    pass

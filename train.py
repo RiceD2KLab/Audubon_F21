@@ -13,7 +13,17 @@ from torchvision.transforms import functional as F
 from .const import COL_NAMES
 from .utils.data_processing import csv_to_df
 from .utils.data_processing import coordinate_to_box
+from .detection import transforms as T
 
+def get_transform(train):
+    ''' Transformations to apply to images'''
+    transforms = []
+    transforms.append(T.PILToTensor())
+    transforms.append(T.ConvertImageDtype(torch.float))
+    if train:
+        transforms.append(T.RandomHorizontalFlip(0.5))
+        transforms.append(T.RandomPhotometricDistort())
+    return T.Compose(transforms)
 
 class BirdDataset(torch.utils.data.Dataset):
     ''' Container for bird dataset '''
@@ -81,7 +91,7 @@ class BirdDataset(torch.utils.data.Dataset):
         target["iscrowd"] = iscrowd
 
         if self.transforms is not None:
-            img = self.transforms(img)
+            img, target = self.transforms(img, target)
         
         return img, target
 
@@ -115,13 +125,13 @@ def get_bird_dataloaders(train_files, test_files):
         testloader: A dataloader for the test data.
     '''
     # Use our dataset and defined transformations
-    trainset = BirdDataset(train_files, F.to_tensor)
+    trainset = BirdDataset(train_files, get_transform(train=True))
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=1, shuffle=True, num_workers=2,
         collate_fn=bird_collate_fn # Set collate function to our custom function
     ) 
 
-    testset = BirdDataset(test_files, F.to_tensor)
+    testset = BirdDataset(test_files, get_transform(train=False))
     testloader = torch.utils.data.DataLoader(
         testset, batch_size=1, shuffle=False, num_workers=2,
         collate_fn=bird_collate_fn 
