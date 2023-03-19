@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 import numpy as np
 import pycocotools.mask as mask_util
 import torch
-import utils
+from . import utils
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
@@ -21,6 +21,7 @@ class CocoEvaluator:
         self.coco_eval = {}
         for iou_type in iou_types:
             self.coco_eval[iou_type] = COCOeval(coco_gt, iouType=iou_type)
+            # self.coco_eval[iou_type].params.maxDets = [1, 10, 200]
 
         self.img_ids = []
         self.eval_imgs = {k: [] for k in iou_types}

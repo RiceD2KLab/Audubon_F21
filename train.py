@@ -9,11 +9,13 @@ import torch
 from tqdm import tqdm
 import torchvision
 from PIL import Image
-from torchvision.transforms import functional as F
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from .const import COL_NAMES
 from .utils.data_processing import csv_to_df
 from .utils.data_processing import coordinate_to_box
 from .detection import transforms as T
+from .detection.coco_eval import CocoEvaluator
+from .detection.coco_utils import get_coco_api_from_dataset
 
 def get_transform(train):
     ''' Transformations to apply to images'''
@@ -138,7 +140,7 @@ def get_bird_dataloaders(train_files, test_files):
     ) 
     return trainloader, testloader
 
-def get_model_and_optim(choice='fasterrcnn_resnet50_fpn'):
+def get_model_and_optim(choice='fasterrcnn_resnet50_fpn', num_classes=2):
     '''
     Input:
         choice: Model choice (we will be using faster R-CNN with a ResNet50 backbone)
@@ -148,13 +150,16 @@ def get_model_and_optim(choice='fasterrcnn_resnet50_fpn'):
     '''
     if choice == 'fasterrcnn_resnet50_fpn':
         model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='DEFAULT')
+        in_features = model.roi_heads.box_predictor.cls_score.in_features
+        model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+
     params = [param for param in model.parameters() if param.requires_grad]
     optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
     return model, optimizer
 
-def train_model(model, optimizer, 
-                trainloader, testloader, 
-                n_epochs, device, save_path, model_name):
+def train_model_audubon(model, optimizer, 
+                        trainloader, testloader, 
+                        n_epochs, device, save_path, model_name):
     ''' Train a model and print loss for each epoch '''
     train_loss_list = []
     test_loss_list = []
@@ -181,9 +186,9 @@ def train_model(model, optimizer,
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
         print()
     
-    predictions = get_predictions(model, testloader, device)
-    torch.save(model.state_dict(), save_path + model_name + '.pth')
-    return train_loss_list, test_loss_list, predictions
+    predictions, stats = get_predic_and_eval(model, testloader, device)
+    torch.save(model, save_path + model_name + '.pth')
+    return train_loss_list, test_loss_list, predictions, stats
 
 def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''
@@ -200,14 +205,25 @@ def get_test_loss(model, testloader, device):
     
     return test_loss / len(testloader)
     
-def get_predictions(model, testloader, device):
+def get_predic_and_eval(model, testloader, device):
     ''' Get predictions for the test dataset '''
     model.eval()
+    coco = get_coco_api_from_dataset(testloader.dataset)
+    iou_types = ["bbox"]
+    coco_evaluator = CocoEvaluator(coco, iou_types)
     predictions = []
-    with torch.no_grad():
-        for batch, (images, targets) in enumerate(testloader):
-            images = list(image.to(device) for image in images)
-            outputs = model(images)
-            predictions += outputs
     
-    return predictions
+    for batch, (images, targets) in enumerate(testloader):
+        images = list(img.to(device) for img in images)
+        outputs = model(images)
+        outputs = [{key: val.to(device) for key, val in out.items()} for out in outputs]
+        predictions += outputs
+        res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
+        coco_evaluator.update(res)
+    
+    coco_evaluator.accumulate()
+    coco_evaluator.summarize()
+
+    stats = coco_evaluator.coco_eval['bbox'].stats
+
+    return predictions, stats

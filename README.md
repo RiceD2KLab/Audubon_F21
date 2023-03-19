@@ -17,6 +17,7 @@ The following open source packages are used in this project:
   - `torch`
   - `tqdm`
   - `cv2`
+  - `pycocotools`
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
