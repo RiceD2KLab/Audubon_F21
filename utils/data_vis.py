@@ -2,8 +2,12 @@
 Data visualization 
 '''
 
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import patches
+from torchvision.io import read_image
+from torchvision.utils import draw_bounding_boxes
+import torchvision.transforms.functional as F
 from .data_processing import csv_to_df
 from ..const import COL_NAMES, SAVE_FIG
 
@@ -104,3 +108,24 @@ def plot_training_curves(train_loss, test_loss, path, title):
 def plot_confusion_matrix():
     ''' Plot a confusion matrix '''
     pass
+
+def show(imgs):
+    ''' Show a list of images '''
+    if not isinstance(imgs, list):
+        imgs = [imgs]
+    fig, axs = plt.subplots(ncols=len(imgs), squeeze=False)
+    for idx, img in enumerate(imgs):
+        img = img.detach()
+        img = F.to_pil_image(img)
+        axs[0, idx].imshow(np.asarray(img))
+        axs[0, idx].set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
+    return fig
+
+def visualize_predictions(file_paths, output, path, title, score_threshold=0.8):
+    ''' Visualize predictions for the test dataset '''
+    fig = read_image(file_paths)
+    result = draw_bounding_boxes(fig, output['boxes'][output['scores'] > score_threshold],
+                                 colors='blue', width=5)
+    fig = show(result)
+    if SAVE_FIG:
+        fig.savefig(path + title + '.jpg', bbox_inches='tight')

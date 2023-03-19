@@ -163,7 +163,8 @@ def train_model(model, optimizer,
             optimizer.zero_grad()
             losses.backward()
             optimizer.step()
-        
+        epoch_loss = epoch_loss / len(trainloader)
+
         test_loss = get_test_loss(model, testloader, device)
         train_loss_list.append(epoch_loss)
         test_loss_list.append(test_loss)
@@ -187,7 +188,7 @@ def get_test_loss(model, testloader, device):
             losses = sum(loss for loss in loss_dict.values())
             test_loss += losses.item()
     
-    return test_loss
+    return test_loss / len(testloader)
     
 def get_predictions(model, testloader, device):
     ''' Get predictions for the test dataset '''
@@ -196,9 +197,7 @@ def get_predictions(model, testloader, device):
     with torch.no_grad():
         for batch, (images, targets) in enumerate(testloader):
             images = list(image.to(device) for image in images)
-            targets = [{key: val.to(device) for key, val in target.items()} for target in targets]
-
             outputs = model(images)
-            outputs = [{key: val.to('cpu') for key, val in out.items()} for out in outputs]
-            predictions.append(outputs)
+            predictions += outputs
+    
     return predictions
