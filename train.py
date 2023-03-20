@@ -238,7 +238,7 @@ def get_predic_and_eval(model, testloader, device):
     torch.set_num_threads(1)
     model.eval()
     coco = get_coco_api_from_dataset(testloader.dataset)
-    iou_types = ["keypoints"]
+    iou_types = ["bbox"]
     coco_evaluator = CocoEvaluator(coco, iou_types)
     predictions = []
     
