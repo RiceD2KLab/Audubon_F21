@@ -124,7 +124,7 @@ def visualize_predictions(file_paths, output, path, title, score_threshold=0.8):
     img = read_image(file_paths)
     result = draw_bounding_boxes(img, output['boxes'][output['scores'] > score_threshold],
                                  colors='blue', width=5)
-    fig = show(result)
+    fig = show(result, title)
     if SAVE_FIG:
         fig.savefig(path + title + '.jpg', bbox_inches='tight')
 
