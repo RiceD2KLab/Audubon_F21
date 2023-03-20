@@ -4,6 +4,7 @@ https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 torchvision.models.detection.faster_rcnn 
 '''
 
+import numpy as np
 import torch
 from tqdm import tqdm
 import torchvision
@@ -181,10 +182,12 @@ def get_model_and_optim(num_classes, model_choice='fasterrcnn_resnet50_fpn'):
 
 def train_model_audubon(model, optimizer, 
                         trainloader, testloader, 
-                        n_epochs, device, save_path, model_name, save_every=1):
+                        n_epochs, device, save_path, model_name, save_every=10):
     ''' Train a model and print loss for each epoch '''
     train_loss_list = []
     test_loss_list = []
+    stat_arr = []
+    epochs = []
     model = model.to(device)
     for epoch in range(n_epochs):
         model.train()
@@ -209,11 +212,12 @@ def train_model_audubon(model, optimizer,
         print()
         if (epoch + 1) % save_every == 0 or epoch == n_epochs - 1:
             torch.save(model.state_dict(), save_path + model_name + '_' + str(epoch + 1) + '.pth')
-
-    predictions, stats = get_predic_and_eval(model, testloader, device)
+            predictions, stats = get_predic_and_eval(model, testloader, device)
+            stat_arr.append(stats)
+            epochs.append(epoch + 1)
     
     # torch.save(model, save_path + model_name + '.pth')
-    return train_loss_list, test_loss_list, predictions, stats
+    return train_loss_list, test_loss_list, predictions, np.array(stats), epochs
 
 def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''

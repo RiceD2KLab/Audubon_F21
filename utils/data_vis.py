@@ -108,6 +108,23 @@ def plot_training_curves(train_loss, test_loss, path, title):
 
     return fig
 
+def plot_precision_recall(stat_arr, epochs, path, title):
+    """ Plot regression train and test loss """
+    fig, axs = plt.subplots()
+    axs.plot(epochs, stat_arr[:, 0], label="Precision with IoU=0.5")
+    axs.plot(epochs, stat_arr[:, 1], label="Precision with IoU=0.75")
+    axs.plot(epochs, stat_arr[:, 2], label="Recall with IoU=0.5")
+    axs.plot(epochs, stat_arr[:, 3], label="Recall with IoU=0.75")
+    axs.set_xlabel("Number of epochs")
+    axs.set_ylabel("Precision and recall")
+    axs.set_title(title)
+    axs.legend()
+
+    if SAVE_FIG:
+        fig.savefig(path + title + '.pdf', bbox_inches='tight')
+
+    return fig
+
 def show(img):
     ''' Show an image '''
     n_channels, height, width = img.shape
