@@ -209,7 +209,7 @@ def train_model_audubon(model, optimizer,
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
         
         # Evaluate model every 10 epochs
-        if (epoch + 1) % 10 == 0 or epoch == n_epochs - 1:
+        if (epoch + 1) % 1 == 0 or epoch == n_epochs - 1:
             predictions, stats = get_predic_and_eval(model, testloader, device)
             stat_arr.append(stats)
         print()
@@ -234,6 +234,8 @@ def get_test_loss(model, testloader, device):
     
 def get_predic_and_eval(model, testloader, device):
     ''' Get predictions for the test dataset '''
+    n_threads = torch.get_num_threads()
+    torch.set_num_threads(1)
     model.eval()
     coco = get_coco_api_from_dataset(testloader.dataset)
     iou_types = ["bbox"]
@@ -242,14 +244,20 @@ def get_predic_and_eval(model, testloader, device):
     
     for batch, (images, targets) in enumerate(testloader):
         images = list(img.to(device) for img in images)
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
         outputs = model(images)
         outputs = [{key: val.to(device) for key, val in out.items()} for out in outputs]
         predictions += outputs
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
         coco_evaluator.update(res)
     
+    # gather the stats from all processes
+    coco_evaluator.synchronize_between_processes()
+
     coco_evaluator.accumulate()
     coco_evaluator.summarize()
+    torch.set_num_threads(n_threads)
 
     stats = coco_evaluator.coco_eval['bbox'].stats
 
