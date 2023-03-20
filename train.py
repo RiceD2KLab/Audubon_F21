@@ -238,6 +238,8 @@ def get_predic_and_eval(model, testloader, device):
     ''' Get predictions for the test dataset '''
     n_threads = torch.get_num_threads()
     torch.set_num_threads(1)
+
+    cpu_device = torch.device("cpu")
     model.eval()
     coco = get_coco_api_from_dataset(testloader.dataset)
     iou_types = ["bbox"]
@@ -249,7 +251,7 @@ def get_predic_and_eval(model, testloader, device):
         if torch.cuda.is_available():
             torch.cuda.synchronize()
         outputs = model(images)
-        # outputs = [{key: val.to(device) for key, val in out.items()} for out in outputs]
+        outputs = [{key: val.to(cpu_device) for key, val in out.items()} for out in outputs]
         predictions += outputs
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
         coco_evaluator.update(res)
