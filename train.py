@@ -181,7 +181,7 @@ def get_model_and_optim(num_classes, model_choice='fasterrcnn_resnet50_fpn'):
 
 def train_model_audubon(model, optimizer, 
                         trainloader, testloader, 
-                        n_epochs, device, save_path, model_name):
+                        n_epochs, device, save_path, model_name, print_every=1):
     ''' Train a model and print loss for each epoch '''
     train_loss_list = []
     test_loss_list = []
@@ -209,7 +209,7 @@ def train_model_audubon(model, optimizer,
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
         
         # Evaluate model every 10 epochs
-        if (epoch + 1) % 1 == 0 or epoch == n_epochs - 1:
+        if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
             predictions, stats = get_predic_and_eval(model, testloader, device)
             stat_arr.append(stats)
         print()
@@ -238,7 +238,7 @@ def get_predic_and_eval(model, testloader, device):
     torch.set_num_threads(1)
     model.eval()
     coco = get_coco_api_from_dataset(testloader.dataset)
-    iou_types = ["bbox"]
+    iou_types = ["keypoints"]
     coco_evaluator = CocoEvaluator(coco, iou_types)
     predictions = []
     
