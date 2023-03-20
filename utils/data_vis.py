@@ -100,6 +100,7 @@ def plot_training_curves(train_loss, test_loss, path, title):
     axs.plot(test_loss, label="Test loss")
     axs.set_xlabel("Number of epochs")
     axs.set_ylabel("Loss")
+    axs.set_title(title)
     axs.legend()
 
     if SAVE_FIG:
@@ -107,10 +108,11 @@ def plot_training_curves(train_loss, test_loss, path, title):
 
     return fig
 
-def show(img):
+def show(img, title):
     ''' Show an image '''
     n_channels, height, width = img.shape
     fig, axs = plt.subplots(figsize=(width / DPI, height / DPI), dpi=DPI)
+    axs.set_title(title)
     img = img.detach()
     img = F.to_pil_image(img)
     axs.imshow(np.asarray(img))
