@@ -210,7 +210,7 @@ def train_model_audubon(model, optimizer,
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
         
         # Evaluate model every 10 epochs
-        if epoch % 10 == 0 or epoch == n_epochs - 1:
+        if (epoch + 1) % 10 == 0 or epoch == n_epochs - 1:
             predictions, stats = get_predic_and_eval(model, testloader, device)
             stat_arr.append(stats)
         print()
