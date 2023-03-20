@@ -4,15 +4,13 @@ https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html
 torchvision.models.detection.faster_rcnn 
 '''
 
-import numpy as np
 import torch
 from tqdm import tqdm
 import torchvision
 from PIL import Image
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from .const import COL_NAMES
-from .utils.data_processing import csv_to_df
-from .utils.data_processing import coordinate_to_box
+from .const import COL_NAMES, GROUPS, GROUP_LABELS, SPECIES_LABELS
+from .utils.data_processing import csv_to_df, add_col, coordinate_to_box
 from .detection import transforms as T
 from .detection.coco_eval import CocoEvaluator
 from .detection.coco_utils import get_coco_api_from_dataset
@@ -29,7 +27,7 @@ def get_transform(train):
 
 class BirdDataset(torch.utils.data.Dataset):
     ''' Container for bird dataset '''
-    def __init__(self, files, transforms=None):
+    def __init__(self, files, choice, transforms=None):
         '''
         Initializes a dataset class instance with image and CSV file names.
         
@@ -39,6 +37,7 @@ class BirdDataset(torch.utils.data.Dataset):
         '''
         self.img_files = files['jpg']
         self.csv_files = files['csv']
+        self.choice = choice # "bird_only", "group", or "species" 
         self.transforms = transforms
 
     def __getitem__(self, idx):
@@ -63,10 +62,23 @@ class BirdDataset(torch.utils.data.Dataset):
         
         # image
         img = Image.open(img_path).convert("RGB")
-        
-        # boxes
         box_frame = csv_to_df(csv_path, COL_NAMES)
         num_objs = len(box_frame)
+        
+        # Add group IDs
+        values_dict = {}
+        for key, vals in GROUPS.items():
+            for val in vals:
+                values_dict[val] = key
+                
+        box_frame = add_col(box_frame, 'group_id', 'class_id', values_dict)
+        box_frame = add_col(box_frame, 'group_label', 'group_id', GROUP_LABELS)
+        box_frame = add_col(box_frame, 'species_label', 'class_id', SPECIES_LABELS)
+        
+        # labels
+        labels = self.map_label(num_objs, box_frame, self.choice)
+        
+        # boxes
         boxes = []
         for row_idx in range(num_objs):
             x_1 = box_frame.iloc[row_idx]['x']
@@ -75,9 +87,7 @@ class BirdDataset(torch.utils.data.Dataset):
             height = box_frame.iloc[row_idx]['height']
             boxes.append(coordinate_to_box(x_1, y_1, width, height))
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
-        
-        # For bird-only detector, there is only one class 
-        labels = torch.ones((num_objs,), dtype=torch.int64)
+
         image_id = torch.tensor([idx])
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
 
@@ -99,6 +109,19 @@ class BirdDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.img_files)
+
+    def map_label(self, num_objs, targets_df, choice):
+        ''' 
+        Maps the class labels to the names of the bird species. 
+        '''
+        # For bird-only detector, there is only one class 
+        if choice == 'bird_only':
+            labels = torch.ones((num_objs,), dtype=torch.int64)
+        elif choice == 'group':
+            labels = torch.tensor(targets_df['group_label'].values, dtype=torch.int64)
+        elif choice == 'species':
+            labels = torch.tensor(targets_df['species_label'].values, dtype=torch.int64)
+        return labels
     
 def bird_collate_fn(batch):
     ''' 
@@ -114,7 +137,7 @@ def bird_collate_fn(batch):
     '''
     return tuple(zip(*batch))
 
-def get_bird_dataloaders(train_files, test_files):
+def get_bird_dataloaders(train_files, test_files, choice):
     '''
     Returns the dataloaders for the train and test datasets.
   
@@ -127,20 +150,20 @@ def get_bird_dataloaders(train_files, test_files):
         testloader: A dataloader for the test data.
     '''
     # Use our dataset and defined transformations
-    trainset = BirdDataset(train_files, get_transform(train=True))
+    trainset = BirdDataset(train_files, choice, get_transform(train=True))
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=1, shuffle=True, num_workers=2,
         collate_fn=bird_collate_fn # Set collate function to our custom function
     ) 
 
-    testset = BirdDataset(test_files, get_transform(train=False))
+    testset = BirdDataset(test_files, choice, get_transform(train=False))
     testloader = torch.utils.data.DataLoader(
         testset, batch_size=1, shuffle=False, num_workers=2,
         collate_fn=bird_collate_fn 
     ) 
     return trainloader, testloader
 
-def get_model_and_optim(choice='fasterrcnn_resnet50_fpn', num_classes=2):
+def get_model_and_optim(num_classes, model_choice='fasterrcnn_resnet50_fpn'):
     '''
     Input:
         choice: Model choice (we will be using faster R-CNN with a ResNet50 backbone)
@@ -148,7 +171,7 @@ def get_model_and_optim(choice='fasterrcnn_resnet50_fpn', num_classes=2):
         model: A pre-trained faster R-CNN model using a ResNet50 backbone network
         optimizer: A stochastic gradient descent (SGD) optimizer with learning rate 0.005, momentum 0.9, and weight decay 0.0005
     '''
-    if choice == 'fasterrcnn_resnet50_fpn':
+    if model_choice == 'fasterrcnn_resnet50_fpn':
         model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='DEFAULT')
         in_features = model.roi_heads.box_predictor.cls_score.in_features
         model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
