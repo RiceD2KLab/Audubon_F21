@@ -7,7 +7,7 @@ import pycocotools.mask as mask_util
 import torch
 from . import utils
 from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
+from .custom_cocoeval import COCOeval
 
 
 class CocoEvaluator:
