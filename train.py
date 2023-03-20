@@ -181,11 +181,10 @@ def get_model_and_optim(num_classes, model_choice='fasterrcnn_resnet50_fpn'):
 
 def train_model_audubon(model, optimizer, 
                         trainloader, testloader, 
-                        n_epochs, device, save_path, model_name, print_every=1):
+                        n_epochs, device, save_path, model_name, save_every=1):
     ''' Train a model and print loss for each epoch '''
     train_loss_list = []
     test_loss_list = []
-    stat_arr = []
     model = model.to(device)
     for epoch in range(n_epochs):
         model.train()
@@ -207,15 +206,14 @@ def train_model_audubon(model, optimizer,
         train_loss_list.append(epoch_loss)
         test_loss_list.append(test_loss)
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
-        
-        # Evaluate model every 10 epochs
-        if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
-            predictions, stats = get_predic_and_eval(model, testloader, device)
-            stat_arr.append(stats)
         print()
+        if (epoch + 1) % save_every == 0 or epoch == n_epochs - 1:
+            torch.save(model.state_dict(), save_path + model_name + '_' + str(epoch + 1) + '.pth')
+
+    predictions, stats = get_predic_and_eval(model, testloader, device)
     
-    torch.save(model, save_path + model_name + '.pth')
-    return train_loss_list, test_loss_list, predictions, stat_arr
+    # torch.save(model, save_path + model_name + '.pth')
+    return train_loss_list, test_loss_list, predictions, stats
 
 def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''
@@ -236,7 +234,6 @@ def get_predic_and_eval(model, testloader, device):
     ''' Get predictions for the test dataset '''
     n_threads = torch.get_num_threads()
     torch.set_num_threads(1)
-    cpu_device = torch.device("cpu")
     model.eval()
     coco = get_coco_api_from_dataset(testloader.dataset)
     iou_types = ["bbox"]
@@ -248,7 +245,7 @@ def get_predic_and_eval(model, testloader, device):
         if torch.cuda.is_available():
             torch.cuda.synchronize()
         outputs = model(images)
-        outputs = [{key: val.to(cpu_device) for key, val in out.items()} for out in outputs]
+        # outputs = [{key: val.to(device) for key, val in out.items()} for out in outputs]
         predictions += outputs
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
         coco_evaluator.update(res)
