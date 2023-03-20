@@ -186,6 +186,7 @@ def train_model_audubon(model, optimizer,
     ''' Train a model and print loss for each epoch '''
     train_loss_list = []
     test_loss_list = []
+    stat_arr = []
     model = model.to(device)
     for epoch in range(n_epochs):
         model.train()
@@ -207,11 +208,15 @@ def train_model_audubon(model, optimizer,
         train_loss_list.append(epoch_loss)
         test_loss_list.append(test_loss)
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
+        
+        # Evaluate model every 10 epochs
+        if epoch % 10 == 0 or epoch == n_epochs - 1:
+            predictions, stats = get_predic_and_eval(model, testloader, device)
+            stat_arr.append(stats)
         print()
     
-    predictions, stats = get_predic_and_eval(model, testloader, device)
     torch.save(model, save_path + model_name + '.pth')
-    return train_loss_list, test_loss_list, predictions, stats
+    return train_loss_list, test_loss_list, predictions, stat_arr
 
 def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''

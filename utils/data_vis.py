@@ -108,11 +108,10 @@ def plot_training_curves(train_loss, test_loss, path, title):
 
     return fig
 
-def show(img, title):
+def show(img):
     ''' Show an image '''
     n_channels, height, width = img.shape
     fig, axs = plt.subplots(figsize=(width / DPI, height / DPI), dpi=DPI)
-    axs.set_title(title)
     img = img.detach()
     img = F.to_pil_image(img)
     axs.imshow(np.asarray(img))
@@ -124,7 +123,7 @@ def visualize_predictions(file_paths, output, path, title, score_threshold=0.8):
     img = read_image(file_paths)
     result = draw_bounding_boxes(img, output['boxes'][output['scores'] > score_threshold],
                                  colors='blue', width=5)
-    fig = show(result, title)
+    fig = show(result)
     if SAVE_FIG:
         fig.savefig(path + title + '.jpg', bbox_inches='tight')
 
