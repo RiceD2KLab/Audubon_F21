@@ -15,6 +15,12 @@ from .detection import transforms as T
 from .detection.coco_eval import CocoEvaluator
 from .detection.coco_utils import get_coco_api_from_dataset
 
+# Add group IDs
+VALUES_DICT = {}
+for key, vals in GROUPS.items():
+    for val in vals:
+        VALUES_DICT[val] = key
+
 def get_transform(train):
     ''' Transformations to apply to images'''
     transforms = []
@@ -65,16 +71,6 @@ class BirdDataset(torch.utils.data.Dataset):
         box_frame = csv_to_df(csv_path, COL_NAMES)
         num_objs = len(box_frame)
         
-        # Add group IDs
-        values_dict = {}
-        for key, vals in GROUPS.items():
-            for val in vals:
-                values_dict[val] = key
-                
-        box_frame = add_col(box_frame, 'group_id', 'class_id', values_dict)
-        box_frame = add_col(box_frame, 'group_label', 'group_id', GROUP_LABELS)
-        box_frame = add_col(box_frame, 'species_label', 'class_id', SPECIES_LABELS)
-        
         # labels
         labels = self.map_label(num_objs, box_frame, self.choice)
         
@@ -118,8 +114,11 @@ class BirdDataset(torch.utils.data.Dataset):
         if choice == 'bird_only':
             labels = torch.ones((num_objs,), dtype=torch.int64)
         elif choice == 'group':
+            targets_df = add_col(targets_df, 'group_id', 'class_id', VALUES_DICT)
+            targets_df = add_col(targets_df, 'group_label', 'group_id', GROUP_LABELS)
             labels = torch.tensor(targets_df['group_label'].values, dtype=torch.int64)
         elif choice == 'species':
+            targets_df = add_col(targets_df, 'species_label', 'class_id', SPECIES_LABELS)
             labels = torch.tensor(targets_df['species_label'].values, dtype=torch.int64)
         return labels
     
