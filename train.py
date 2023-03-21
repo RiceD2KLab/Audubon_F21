@@ -186,6 +186,8 @@ def train_model_audubon(model, optimizer,
     ''' Train a model and print loss for each epoch '''
     train_loss_list = []
     test_loss_list = []
+    stat_list = []
+    epoch_list = []
     model = model.to(device)
     for epoch in range(n_epochs):
         model.train()
@@ -209,10 +211,12 @@ def train_model_audubon(model, optimizer,
         print("Epoch:", epoch + 1, "| Train loss:", epoch_loss, "| Test loss:", test_loss)
         print()
         if (epoch + 1) % save_every == 0 or epoch == n_epochs - 1:
+            predictions, stats = get_predic_and_eval(model, testloader, device)
             torch.save(model.state_dict(), save_path + model_name + '_' + str(epoch + 1) + '.pth')
-    
-    predictions = get_predictions(model, testloader, device)
-    return train_loss_list, test_loss_list, predictions
+            stat_list.append(stats)
+            epoch_list.append(epoch + 1)
+
+    return train_loss_list, test_loss_list, predictions, (np.array(stat_list), epoch_list)
 
 def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''
@@ -240,4 +244,37 @@ def get_predictions(model, testloader, device):
         outputs = model(images)
         predictions += outputs
     return predictions
+
+def get_predic_and_eval(model, testloader, device):
+    ''' Get predictions for the test dataset '''
+    n_threads = torch.get_num_threads()
+    torch.set_num_threads(1)
+
+    cpu_device = torch.device("cpu")
+    model.eval()
+    coco = get_coco_api_from_dataset(testloader.dataset)
+    iou_types = ["bbox"]
+    coco_evaluator = CocoEvaluator(coco, iou_types)
+    predictions = []
+    
+    for batch, (images, targets) in enumerate(testloader):
+        images = list(img.to(device) for img in images)
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        outputs = model(images)
+        outputs = [{key: val.to(cpu_device) for key, val in out.items()} for out in outputs]
+        predictions += outputs
+        res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
+        coco_evaluator.update(res)
+    
+    # gather the stats from all processes
+    coco_evaluator.synchronize_between_processes()
+
+    coco_evaluator.accumulate()
+    coco_evaluator.summarize()
+    torch.set_num_threads(n_threads)
+
+    stats = coco_evaluator.coco_eval['bbox'].stats
+
+    return predictions, stats
 
