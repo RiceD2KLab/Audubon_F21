@@ -242,8 +242,6 @@ def get_predictions(model, testloader, device):
     predictions = []
     for batch, (images, targets) in enumerate(testloader):
         images = list(img.to(device) for img in images)
-        if torch.cuda.is_available():
-            torch.cuda.synchronize()
         outputs = model(images)
         predictions += outputs
     return predictions
@@ -251,7 +249,8 @@ def get_predictions(model, testloader, device):
 def get_eval(model, testloader, device):
     ''' Get eval for the test dataset '''
     n_threads = torch.get_num_threads()
-    torch.set_num_threads(1)
+    print(f"Using {n_threads} threads for inference")
+    torch.set_num_threads(n_threads)
 
     cpu_device = torch.device("cpu")
     model.eval()
@@ -273,7 +272,6 @@ def get_eval(model, testloader, device):
 
     coco_evaluator.accumulate()
     coco_evaluator.summarize()
-    torch.set_num_threads(n_threads)
 
     stats = coco_evaluator.coco_eval['bbox'].stats
 
