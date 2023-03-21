@@ -163,7 +163,7 @@ def get_bird_dataloaders(train_files, test_files, choice):
     ) 
     return trainloader, testloader
 
-def get_model_and_optim(num_classes, model_choice='fasterrcnn_resnet50_fpn'):
+def get_model_and_optim(num_classes, l_r, model_choice='fasterrcnn_resnet50_fpn'):
     '''
     Input:
         choice: Model choice (we will be using faster R-CNN with a ResNet50 backbone)
@@ -177,7 +177,7 @@ def get_model_and_optim(num_classes, model_choice='fasterrcnn_resnet50_fpn'):
         model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
     params = [param for param in model.parameters() if param.requires_grad]
-    optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
+    optimizer = torch.optim.SGD(params, lr=l_r, momentum=0.9, weight_decay=0.0005)
     return model, optimizer
 
 def train_model_audubon(model, optimizer, 
@@ -239,10 +239,12 @@ def get_test_loss(model, testloader, device):
 def get_predictions(model, testloader, device, idx):
     ''' Get predictions for the test dataset ''' 
     model.eval()
-    images, targets = testloader.dataset[idx]
-    images = list(img.to(device) for img in images)
-    predictions = model(images)
-    return predictions
+    for batch, (images, targets) in enumerate(testloader):
+        if batch == idx:
+            images = list(img.to(device) for img in images)
+            predictions = model(images)
+        break
+    return predictions[0]
 
 def get_eval(model, testloader, device):
     ''' Get eval for the test dataset '''
