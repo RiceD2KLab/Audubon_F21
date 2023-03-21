@@ -215,11 +215,11 @@ def train_model_audubon(model, optimizer,
             torch.save(model.state_dict(), save_path + model_name + '_' + str(epoch + 1) + '.pth')
             stat_list.append(stats)
             epoch_list.append(epoch + 1)
-    
-    predictions = get_predictions(model, testloader, device)
+
+    # predictions = get_predictions(model, testloader, device) # This line will cause out of memory error
     record = (np.array(stat_list), epoch_list)
 
-    return train_loss_list, test_loss_list, predictions, record
+    return train_loss_list, test_loss_list, record
 
 def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''
@@ -236,15 +236,15 @@ def get_test_loss(model, testloader, device):
     
     return test_loss / len(testloader)
     
-def get_predictions(model, testloader, device):
-    ''' Get predictions for the test dataset '''
-    model.eval()
-    predictions = []
-    for batch, (images, targets) in enumerate(testloader):
-        images = list(img.to(device) for img in images)
-        outputs = model(images)
-        predictions += outputs
-    return predictions
+# def get_predictions(model, testloader, device):
+#     ''' Get predictions for the test dataset '''
+#     model.eval()
+#     predictions = []
+#     for batch, (images, targets) in enumerate(testloader):
+#         images = list(img.to(device) for img in images)
+#         outputs = model(images)
+#         predictions += outputs
+#     return predictions
 
 def get_eval(model, testloader, device):
     ''' Get eval for the test dataset '''
