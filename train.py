@@ -242,9 +242,8 @@ def get_predictions(model, testloader, device, idx):
     for batch, (images, targets) in enumerate(testloader):
         if batch == idx:
             images = list(img.to(device) for img in images)
-            predictions = model(images)
-        break
-    return predictions[0]
+            prediction = model(images)
+    return prediction
 
 def get_eval(model, testloader, device):
     ''' Get eval for the test dataset '''
