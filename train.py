@@ -137,7 +137,7 @@ def bird_collate_fn(batch):
     '''
     return tuple(zip(*batch))
 
-def get_bird_dataloaders(train_files, test_files, choice):
+def get_bird_dataloaders(train_files, test_files, batch_size, choice):
     '''
     Returns the dataloaders for the train and test datasets.
   
@@ -152,13 +152,13 @@ def get_bird_dataloaders(train_files, test_files, choice):
     # Use our dataset and defined transformations
     trainset = BirdDataset(train_files, choice, get_transform(train=True))
     trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=1, shuffle=True, num_workers=2,
+        trainset, batch_size=batch_size, shuffle=True, num_workers=2,
         collate_fn=bird_collate_fn # Set collate function to our custom function
     ) 
 
     testset = BirdDataset(test_files, choice, get_transform(train=False))
     testloader = torch.utils.data.DataLoader(
-        testset, batch_size=1, shuffle=False, num_workers=2,
+        testset, batch_size=batch_size, shuffle=False, num_workers=2,
         collate_fn=bird_collate_fn 
     ) 
     return trainloader, testloader
