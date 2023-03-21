@@ -215,8 +215,9 @@ def train_model_audubon(model, optimizer,
             torch.save(model.state_dict(), save_path + model_name + '_' + str(epoch + 1) + '.pth')
             stat_list.append(stats)
             epoch_list.append(epoch + 1)
+    record = (np.array(stat_list), epoch_list)
 
-    return train_loss_list, test_loss_list, predictions, (np.array(stat_list), epoch_list)
+    return train_loss_list, test_loss_list, predictions, record
 
 def get_test_loss(model, testloader, device):
     ''' Evaluate a model on the test dataset '''
