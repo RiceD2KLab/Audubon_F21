@@ -236,15 +236,13 @@ def get_test_loss(model, testloader, device):
     
     return test_loss / len(testloader)
     
-# def get_predictions(model, testloader, device):
-#     ''' Get predictions for the test dataset '''
-#     model.eval()
-#     predictions = []
-#     for batch, (images, targets) in enumerate(testloader):
-#         images = list(img.to(device) for img in images)
-#         outputs = model(images)
-#         predictions += outputs
-#     return predictions
+def get_predictions(model, testloader, device, idx):
+    ''' Get predictions for the test dataset '''
+    model.eval()
+    images, targets = testloader.dataset[idx]
+    images = list(img.to(device) for img in images)
+    predictions = model(images)
+    return predictions
 
 def get_eval(model, testloader, device):
     ''' Get eval for the test dataset '''
