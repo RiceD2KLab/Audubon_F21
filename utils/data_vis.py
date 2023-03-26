@@ -21,7 +21,7 @@ def get_cmap(num, name='tab20c'):
     return plt.cm.get_cmap(name, num)
 
 def plot_distribution(data_frame, col_name, 
-                      info, path, font_size, filt=None):
+                      info, path, filt=None):
     ''' 
     Plot a barchart of the value counts of a column in a dataframe.
     
@@ -51,8 +51,8 @@ def plot_distribution(data_frame, col_name,
     fig, axs = plt.subplots(figsize=(10, 6))
     chart = axs.barh(idx_list, val_list, color=color_list)
     axs.set_title(title)
-    axs.set_xlabel(x_label, fontsize = font_size)
-    axs.set_ylabel(y_label, fontsize = font_size)
+    axs.set_xlabel(x_label)
+    axs.set_ylabel(y_label)
     axs.invert_yaxis()
     axs.bar_label(chart)
     if SAVE_FIG:
