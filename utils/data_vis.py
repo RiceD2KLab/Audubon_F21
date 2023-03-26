@@ -95,7 +95,18 @@ def plot_boxes(jpg_name, bbx_name, title, path):
     return fig
 
 def plot_training_curves(train_loss, test_loss, path, title):
-    """ Plot regression train and test loss """
+    """ 
+    Plot train and test loss for each training epoch of a model.
+    
+    Input:
+        train_loss : A list of training losses for each epoch. 
+        test_loss: A list of test losses for each epoch. 
+        path : A path to save the plot.
+        title: The title of the plot (string).
+    
+    Output:
+        A line chart illustrating the train and test loss for each training epoch.
+    """
     fig, axs = plt.subplots()
     axs.plot(train_loss, label="Training loss")
     axs.plot(test_loss, label="Test loss")
@@ -110,7 +121,15 @@ def plot_training_curves(train_loss, test_loss, path, title):
     return fig
 
 def plot_precision_recall(stat_arr, epochs, path, title):
-    """ Plot regression train and test loss """
+    """ 
+    Plot the precision and recall at different IoU thresholds for each training epoch of a model.  
+    
+    Input:
+        stat_arr: An array containing the precision and recall values for IoU thresholds of 0.5 and 0.75 for each epoch. 
+        epochs: A list of epoch numbers.
+        path: The path to save the plot (string).
+        title: The title of the plot (string). 
+    """
     fig, axs = plt.subplots()
     axs.plot(epochs, stat_arr[:, 0], label="Precision with IoU=0.5")
     axs.plot(epochs, stat_arr[:, 1], label="Precision with IoU=0.75")
@@ -127,7 +146,15 @@ def plot_precision_recall(stat_arr, epochs, path, title):
     return fig
 
 def show(img):
-    ''' Show an image '''
+    ''' 
+    Show an image.
+    
+    Input:
+        img: A Torch tensor representing an image.
+        
+    Outputs:
+        fig: The figure object displaying the image. 
+    '''
     n_channels, height, width = img.shape
     fig, axs = plt.subplots(figsize=(width / DPI, height / DPI), dpi=DPI)
     img = img.detach()
@@ -137,7 +164,19 @@ def show(img):
     return fig
 
 def visualize_predictions(file_paths, output, path, title, score_threshold=0.8):
-    ''' Visualize predictions for the test dataset '''
+    ''' 
+    Visualize bounding box predictions for the test dataset.
+    
+    Input:
+        file_paths: A list of file paths (string) to the images in the test dataset.
+        output: A dictionary containing the predictions made by the model. 
+        path: The directory where the output image should be saved (string).
+        title: The title of the output image (string).
+        score_threshold: The minimum score threshold for drawing bounding boxes. Defaults to 0.8. 
+        
+    Output:
+        fig: Each image overlaid with predicted bounding boxes. 
+    '''
     img = read_image(file_paths)
     result = draw_bounding_boxes(img, output['boxes'][output['scores'] > score_threshold],
                                  colors='blue', width=5)
