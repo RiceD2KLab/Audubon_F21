@@ -97,4 +97,4 @@ Currently, we have completed the data processing, data exploration and train/tes
 
 We have created a demonstration notebook containing steps for data preprocessing, data exploration, train/test/split, and training a bird detector. 
 
-Open the [Colab link](https://colab.research.google.com/drive/1wU5k5jI9TlPWy3CzXb4gabZ__YB-Cp97?usp=sharing) to run the demonstration notebook.
+Open the [Colab link](https://colab.research.google.com/drive/1fX0P7MlUBt2rgEvnwX7u7j4OnZMwNPG_?usp=sharing) to run the demonstration notebook.
