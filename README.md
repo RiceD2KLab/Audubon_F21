@@ -27,11 +27,11 @@ The following open source packages are used in this project:
     - `data_processsing.py`
     - `data_vis.py`
     - `crop.py`
-  - `audubon_midpoint_demo.ipynb` || Colab notebook containing a demonstration of data processing, data exploration and building a bird detection model
+  - `audubon_midpoint_demo.ipynb` || Colab notebook containing a demonstration of data processing, data exploration and building a bird-only detection model
   - `README.md`
   - `const.py` || File containing constant parameters, such as column names and hierarchical bird groups
   - `requirements.txt` || List of dependencies
-  - `train.py` || File containing helper functions for building a bird detection model
+  - `train.py` || File containing helper functions for building a bird-only detection model
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
