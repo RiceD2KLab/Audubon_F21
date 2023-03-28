@@ -12,6 +12,14 @@ from .custom_cocoeval import COCOeval
 
 class CocoEvaluator:
     def __init__(self, coco_gt, iou_types):
+        """
+        Initializes a CocoEvaluator object.
+
+        Input:
+            coco_gt (COCO): The COCO object representing the ground truth.
+            iou_types (list or tuple): The IoU types to be evaluated. It should be a list or tuple of strings,
+            where each string represents an IoU type. Possible values are 'bbox', 'segm', and 'keypoints'.
+        """
         if not isinstance(iou_types, (list, tuple)):
             raise TypeError(f"This constructor expects iou_types of type list or tuple, instead  got {type(iou_types)}")
         coco_gt = copy.deepcopy(coco_gt)
@@ -27,6 +35,14 @@ class CocoEvaluator:
         self.eval_imgs = {k: [] for k in iou_types}
 
     def update(self, predictions):
+        """
+        Updates the CocoEvaluator object with the given predictions for a set of images.
+
+        Input:
+            predictions (dict): A dictionary of predicted bounding boxes and corresponding confidence scores for each image, 
+            where the keys are the image IDs and the values are lists of dictionaries representing the predicted bounding 
+            boxes and confidence scores for each object in the image.
+        """
         img_ids = list(np.unique(list(predictions.keys())))
         self.img_ids.extend(img_ids)
 
@@ -43,6 +59,10 @@ class CocoEvaluator:
             self.eval_imgs[iou_type].append(eval_imgs)
 
     def synchronize_between_processes(self):
+        """
+        Concatenates evaluation results computed by different processes and create a common coco eval object. 
+        Updates the evaluation results and the existing coco eval object in-place.
+        """
         for iou_type in self.iou_types:
             self.eval_imgs[iou_type] = np.concatenate(self.eval_imgs[iou_type], 2)
             create_common_coco_eval(self.coco_eval[iou_type], self.img_ids, self.eval_imgs[iou_type])
