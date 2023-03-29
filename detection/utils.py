@@ -9,11 +9,20 @@ import torch.distributed as dist
 
 
 class SmoothedValue:
-    """Track a series of values and provide access to smoothed values over a
-    window or the global series average.
+    """
+    Helper function for tracking a series of values and providing access to smoothed values over a window or the global series average.
+    Will be used to track key metrics during training and testing for deep learning models.
     """
 
     def __init__(self, window_size=20, fmt=None):
+        """
+        Creates an instance of a series of values using a "deque" (double ended queue).
+        Deques are a data structure which allow elements to be added/removed on both ends. 
+
+        Input:
+            window_size (int): The size of the moving window used to calculate the average. Default is 20.
+            fmt (str): The string format used to print the output. Default is "{median:.4f} ({global_avg:.4f})".
+        """
         if fmt is None:
             fmt = "{median:.4f} ({global_avg:.4f})"
         self.deque = deque(maxlen=window_size)
@@ -22,6 +31,13 @@ class SmoothedValue:
         self.fmt = fmt
 
     def update(self, value, n=1):
+        """
+        Updates the deque with a chosen value, and updates the count of elements.
+        
+        Input:
+            value: The new value to add to the deque.
+            n: Specifies how many times to add the value. Default is 1. 
+        """
         self.deque.append(value)
         self.count += n
         self.total += value * n
@@ -41,27 +57,64 @@ class SmoothedValue:
 
     @property
     def median(self):
+        """
+        Computes the median of values in the deque.
+        
+        Output:
+            The median value of the deque.
+        """
         d = torch.tensor(list(self.deque))
         return d.median().item()
 
     @property
     def avg(self):
+        """
+        Computes the mean of values in the sliding window.
+        
+        Output:
+            The mean value of the sliwing window.
+        """
         d = torch.tensor(list(self.deque), dtype=torch.float32)
         return d.mean().item()
 
     @property
     def global_avg(self):
+        """
+        Computes the global average of all values that have been added to the deque instance.
+        
+        Output:
+            The global average of all values that have been added to the sliding window.
+        """
         return self.total / self.count
 
     @property
     def max(self):
+        """
+        Returns the maximum value in the deque.
+        
+        Output:
+            The maximum value in the deque.
+        """
         return max(self.deque)
 
     @property
     def value(self):
+        """
+        Returns the most recent value added to the deque.
+        
+        Output:
+            The most recent value added to the deque.
+        """
         return self.deque[-1]
 
     def __str__(self):
+        """
+        Returns key statistics of the deque.
+        
+        Output:
+            A formatted string containing the deque median, sliding window average, global average, maximum  value
+            and most recent value.
+        """
         return self.fmt.format(
             median=self.median, avg=self.avg, global_avg=self.global_avg, max=self.max, value=self.value
         )
@@ -69,11 +122,13 @@ class SmoothedValue:
 
 def all_gather(data):
     """
-    Run all_gather on arbitrary picklable data (not necessarily tensors)
-    Args:
+    Run all_gather on arbitrary picklable data (not necessarily tensors).
+    
+    Input:
         data: any picklable object
-    Returns:
-        list[data]: list of data gathered from each rank
+    
+    Output:
+        list[data]: list of data gathered from each process.
     """
     world_size = get_world_size()
     if world_size == 1:
@@ -85,12 +140,15 @@ def all_gather(data):
 
 def reduce_dict(input_dict, average=True):
     """
+    Reduce the values in the dictionary from all processes so that all processes
+    have the averaged results.
+    
     Args:
         input_dict (dict): all the values will be reduced
         average (bool): whether to do average or sum
-    Reduce the values in the dictionary from all processes so that all processes
-    have the averaged results. Returns a dict with the same fields as
-    input_dict, after reduction.
+    
+    Output:
+        A dict with the same fields as input_dict, after reduction.
     """
     world_size = get_world_size()
     if world_size < 2:
@@ -111,7 +169,12 @@ def reduce_dict(input_dict, average=True):
 
 
 class MetricLogger:
+    """
+    This class provides a way to track metrics during training and testing for a deep learning model.
+    """
     def __init__(self, delimiter="\t"):
+        """
+        """
         self.meters = defaultdict(SmoothedValue)
         self.delimiter = delimiter
 
