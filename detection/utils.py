@@ -10,7 +10,7 @@ import torch.distributed as dist
 
 class SmoothedValue:
     """
-    Helper function for tracking a series of values and providing access to smoothed values over a window or the global series average.
+    Provides helper functions for tracking a series of values and providing access to smoothed values over a window or the global series average.
     Will be used to track key metrics during training and testing for deep learning models.
     """
 
@@ -143,7 +143,7 @@ def reduce_dict(input_dict, average=True):
     Reduce the values in the dictionary from all processes so that all processes
     have the averaged results.
     
-    Args:
+    Input:
         input_dict (dict): all the values will be reduced
         average (bool): whether to do average or sum
     
@@ -174,6 +174,10 @@ class MetricLogger:
     """
     def __init__(self, delimiter="\t"):
         """
+        Creates an instance of a metric that will be tracked during training and testing. 
+        
+        Input:
+            Delimiter:   
         """
         self.meters = defaultdict(SmoothedValue)
         self.delimiter = delimiter
