@@ -43,8 +43,10 @@ def crop_to_bounding_boxes(dataset, output_dir):
             x_ = max(0, x + width // 2 - crop_dim // 2)
             y_ = max(0, y + height // 2 - crop_dim // 2)
             cropped_img = img[y_:y_+crop_dim, x_:x_+crop_dim]
+            # Save cropped image to temporary directory
             cropped_path = os.path.join(temp_dir, f'{i}_{j}.jpg')
             plt.imsave(cropped_path, cropped_img)
+            # Save corresponding annotation to temporary directory
             annotation_path = os.path.join(temp_dir, f'{i}_{j}.csv')
             with open(annotation_path, 'w') as f:
                 csv_writer = csv.writer(f)
