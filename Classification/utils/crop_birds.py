@@ -9,7 +9,7 @@ if not os.path.exists(output_dir):
     os.mkdir(output_dir)
 
 def crop_to_bounding_boxes(dataset, output_dir):
-  """
+    """
     Crop images in a dataset based on their bounding box annotations and save the cropped images and annotations to a zip file.
 
     Input:
@@ -20,7 +20,7 @@ def crop_to_bounding_boxes(dataset, output_dir):
 
     Output:
       zip_path (str): The path to the resulting zip file containing the cropped images and annotations.
-  """
+    """
     # Create a temporary directory to store the cropped images and annotations
     temp_dir = 'temp_dir'
     os.makedirs(temp_dir, exist_ok=True)
