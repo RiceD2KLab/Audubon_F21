@@ -50,7 +50,6 @@ def plot_distribution(data_frame, col_name, info, path, filt=None):
     chart = axs.bar(idx_list, val_list, color=color_list)
     for i, v in enumerate(val_list):
         axs.text(i, v + 1, str(v), color='black', fontsize=12, rotation=45, ha='right', va='bottom')
-        axs.text(i, -val_counts.max() * 0.05, idx_list[i], color='black', fontsize=12, rotation=45, ha='right', va='top')
     axs.set_title(title)
     axs.set_xlabel(x_label)
     axs.set_ylabel(y_label)
