@@ -20,8 +20,7 @@ def get_cmap(num, name='tab20c'):
     '''
     return plt.cm.get_cmap(name, num)
 
-def plot_distribution(data_frame, col_name, 
-                      info, path, filt=None):
+def plot_distribution(data_frame, col_name, info, path, filt=None):
     ''' 
     Plot a barchart of the value counts of a column in a dataframe.
     
@@ -30,7 +29,6 @@ def plot_distribution(data_frame, col_name,
         col_name : The name of the column to plot.
         info : A tuple containing the x-label, y-label, and title of the plot.
         path : The directory in which to save the plot.
-        font_size: Desired size of font for axis labels. Small = 8, Medium = 10, Large = 12.
         filt : int or None. If not None, only show categories with a count of at least `filt`.
     
     Output:
@@ -50,11 +48,13 @@ def plot_distribution(data_frame, col_name,
     # make plot
     fig, axs = plt.subplots(figsize=(10, 6))
     chart = axs.barh(idx_list, val_list, color=color_list)
+    for i, v in enumerate(val_list):
+        axs.text(v + 1, i, str(v), color='black', fontsize=12, va='center')
     axs.set_title(title)
-    axs.set_xlabel(x_label)
     axs.set_ylabel(y_label)
+    axs.set_xlabel(x_label)
     axs.invert_yaxis()
-    axs.bar_label(chart)
+    axs.set_yticklabels(idx_list, ha='right', fontsize=12)
     if SAVE_FIG:
         fig.savefig(path + title + '.pdf', bbox_inches='tight')
     return fig
