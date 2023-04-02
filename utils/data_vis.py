@@ -47,14 +47,16 @@ def plot_distribution(data_frame, col_name, info, path, filt=None):
 
     # make plot
     fig, axs = plt.subplots(figsize=(10, 6))
-    chart = axs.barh(idx_list, val_list, color=color_list)
+    chart = axs.bar(idx_list, val_list, color=color_list)
     for i, v in enumerate(val_list):
-        axs.text(v + 1, i, str(v), color='black', fontsize=12, va='center')
+        axs.text(i, v + 1, str(v), color='black', fontsize=12, rotation=45, ha='right', va='bottom')
+        axs.text(i, -val_counts.max() * 0.05, idx_list[i], color='black', fontsize=12, rotation=45, ha='right', va='top')
     axs.set_title(title)
-    axs.set_ylabel(y_label)
     axs.set_xlabel(x_label)
-    axs.invert_yaxis()
-    axs.set_yticklabels(idx_list, ha='right', fontsize=12)
+    axs.set_ylabel(y_label)
+    axs.set_xticks(range(len(idx_list)))
+    axs.set_xticklabels(idx_list, rotation=45, ha='right', fontsize=12)
+    axs.set_ylim(0, val_counts.max() * 1.2)
     if SAVE_FIG:
         fig.savefig(path + title + '.pdf', bbox_inches='tight')
     return fig
