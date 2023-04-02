@@ -54,6 +54,8 @@ def plot_distribution(data_frame, col_name, info, path, filt=None):
     axs.set_xticks(range(len(idx_list)))
     axs.set_xticklabels(idx_list, rotation=45, ha='right', fontsize=12)
     axs.set_ylim(0, val_counts.max() * 1.2)
+    for i, v in enumerate(val_list):
+        axs.text(i, v + val_counts.max() * 0.05, str(v), ha='center', fontsize=10)
     if SAVE_FIG:
         fig.savefig(path + title + '.pdf', bbox_inches='tight')
     return fig
