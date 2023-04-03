@@ -343,7 +343,11 @@ def mkdir(path):
 
 def setup_for_distributed(is_master):
     """
-    This function disables printing when not in master process
+    This method sets up the printing behavior for distributed training. If the current process is not the master process, 
+    it disables printing.
+    
+    Input:
+        is_master (bool): whether the current process is the master process or not.
     """
     import builtins as __builtin__
 
@@ -358,6 +362,12 @@ def setup_for_distributed(is_master):
 
 
 def is_dist_avail_and_initialized():
+    """
+    This function checks whether distributed training is available and has been initialized.
+
+    Output:
+        True if distributed training is available and initialized, False otherwise.
+    """
     if not dist.is_available():
         return False
     if not dist.is_initialized():
@@ -366,34 +376,71 @@ def is_dist_avail_and_initialized():
 
 
 def get_world_size():
+    """
+    Returns the number of processes in the distributed group, including the master process. 
+    
+    Output:
+        The number of process in the distributed group, including the master process. If the distributed environment is 
+        not available or not initialized, it returns 1, which corresponds to the case where no distributed training is 
+        being used.
+    """
     if not is_dist_avail_and_initialized():
         return 1
     return dist.get_world_size()
 
 
 def get_rank():
+    """
+    Returns the rank of the current process in the distributed group. 
+    
+    Output:
+       The rank of the current process in the distributed group, or 0 if not part of a distributed group.
+    """
     if not is_dist_avail_and_initialized():
         return 0
     return dist.get_rank()
 
 
 def is_main_process():
+    """
+    Returns a boolean indicating whether the current process is the main process.
+    
+    Output:
+        A boolean value. True if the current process is the main process, False otherwise.
+    """
     return get_rank() == 0
 
 
 def save_on_master(*args, **kwargs):
+    """
+    Save the given object(s) using torch.save() if the current process is the main process.
+
+    Input:
+        *args: positional arguments to pass to torch.save().
+        **kwargs: keyword arguments to pass to torch.save().
+    """
     if is_main_process():
         torch.save(*args, **kwargs)
 
 
 def init_distributed_mode(args):
+    """
+    Initializes distributed mode for PyTorch training based on the environment variables.
+    
+    Intput:
+        args: Namespace containing the command-line arguments.
+    """
+    # Check if the environment variables "RANK", "WORLD_SIZE", and "LOCAL_RANK" are set.
     if "RANK" in os.environ and "WORLD_SIZE" in os.environ:
+        #If they are set, set the rank, world size, and GPU device ID for the process.
         args.rank = int(os.environ["RANK"])
         args.world_size = int(os.environ["WORLD_SIZE"])
         args.gpu = int(os.environ["LOCAL_RANK"])
+    # If not, check if the environment variable "SLURM_PROCID" is set and use it to set the rank and GPU device ID.
     elif "SLURM_PROCID" in os.environ:
         args.rank = int(os.environ["SLURM_PROCID"])
         args.gpu = args.rank % torch.cuda.device_count()
+    # If neither set of environment variables is found, disable distributed mode.
     else:
         print("Not using distributed mode")
         args.distributed = False
@@ -401,6 +448,8 @@ def init_distributed_mode(args):
 
     args.distributed = True
 
+    # Once the rank and GPU device ID are determined, set the device for PyTorch and initializes the process group using the NCCL 
+    # backend and the URL specified in the command-line arguments.
     torch.cuda.set_device(args.gpu)
     args.dist_backend = "nccl"
     print(f"| distributed init (rank {args.rank}): {args.dist_url}", flush=True)
