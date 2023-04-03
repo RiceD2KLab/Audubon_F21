@@ -227,13 +227,35 @@ class MetricLogger:
         return self.delimiter.join(loss_str)
 
     def synchronize_between_processes(self):
+        """
+        Synchronize the state of all the meters across all processes in the distributed environment.
+        This method calls the `synchronize_between_processes` method of each meter instance in the `meters` dictionary.
+        """
         for meter in self.meters.values():
             meter.synchronize_between_processes()
 
     def add_meter(self, name, meter):
+        """
+        Adds a new meter to the metric logger.
+
+        Input:
+            name (str): Name of the meter.
+            meter (SmoothedValue): The meter to be added.
+        """
         self.meters[name] = meter
 
     def log_every(self, iterable, print_freq, header=None):
+        """
+        Log and print the status of an iterable, such as training or validation progress, at a given frequency.
+
+        Input:
+            iterable: An iterable to log and print the status of.
+            print_freq (int): The frequency at which to log and print the status of the iterable.
+            header (str, optional): The header string to use when logging and printing the status of the iterable.
+
+        Output:
+            A series of printed statements tracking the status of training or validation progress.
+        """
         i = 0
         if not header:
             header = ""
@@ -292,10 +314,26 @@ class MetricLogger:
 
 
 def collate_fn(batch):
+    """
+    Collates a batch of samples into a tuple of tensors.
+    
+    Input:
+        batch: A list of tuples, where each tuple contains the data for one sample.
+        
+    Output:
+        A tuple of tensors, where each tensor contains the data for all the samples in the batch.
+    """
     return tuple(zip(*batch))
 
 
 def mkdir(path):
+    """
+    Creates a new directory at a given path. Raises an error if there is a error besides the inputted directory already
+    existing. 
+    
+    Input:
+        path (str): The path at which to create the directory.
+    """
     try:
         os.makedirs(path)
     except OSError as e:
