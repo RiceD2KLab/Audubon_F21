@@ -177,12 +177,20 @@ class MetricLogger:
         Creates an instance of a metric that will be tracked during training and testing. 
         
         Input:
-            Delimiter:   
+            Delimiter (str): Separator to use between metric values and names when displaying them.  
         """
+        # Create a dictionary (meter) that maps metric names to SmoothedValue instances
         self.meters = defaultdict(SmoothedValue)
         self.delimiter = delimiter
 
     def update(self, **kwargs):
+        """
+        Update the values of the meters in the logger.
+
+        Input:
+            **kwargs: A dictionary containing the key-value pairs to update. The keys represent the name of 
+            the meters to update and the values represent the corresponding values to add to the meter.
+        """
         for k, v in kwargs.items():
             if isinstance(v, torch.Tensor):
                 v = v.item()
@@ -190,6 +198,16 @@ class MetricLogger:
             self.meters[k].update(v)
 
     def __getattr__(self, attr):
+        """
+        This method is called when an attribute that is not defined in the class is accessed.
+        Returns the requested attribute by checking in three places:
+            1. If the requested attribute is the key of a meter in the meters dictionary, it returns the meter.
+            2. If the requested attribute is already in the object's dictionary, it returns the attribute from there.
+            3. Otherwise, it raises an AttributeError with an informative message.
+            
+        Input:
+            attr (str): The name of the attribute that is being requested.
+        """
         if attr in self.meters:
             return self.meters[attr]
         if attr in self.__dict__:
@@ -197,6 +215,12 @@ class MetricLogger:
         raise AttributeError(f"'{type(self).__name__}' object has no attribute '{attr}'")
 
     def __str__(self):
+        """
+        Returns a string representation of the metrics stored in the `MetricLogger` object.
+        
+        Output:
+            A string containing the name and value of each metric, separated by the delimiter specified during initialization.
+        """
         loss_str = []
         for name, meter in self.meters.items():
             loss_str.append(f"{name}: {str(meter)}")
