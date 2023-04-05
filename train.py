@@ -224,8 +224,9 @@ def train_model_audubon(model, optimizer,
             stat_list.append(stats)
             epoch_list.append(epoch + 1)
         if test_loss < best_test_loss:
+            best_test_loss = test_loss
             print()
-            print("Updating the best model so far...")
+            print("Updating the best model so far with test loss:", best_test_loss)
             print()
             date = datetime.today().strftime('%m-%d')
             torch.save(model.state_dict(), save_path + model_name + '_' + date + '.pth')
