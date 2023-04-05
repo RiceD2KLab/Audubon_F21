@@ -7,7 +7,6 @@ torchvision.models.detection.faster_rcnn
 import numpy as np
 import torch
 from tqdm import tqdm
-from datetime import datetime
 import torchvision
 from PIL import Image
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
@@ -228,8 +227,7 @@ def train_model_audubon(model, optimizer,
             print()
             print("Updating the best model so far with test loss:", best_test_loss)
             print()
-            date = datetime.today().strftime('%m-%d')
-            torch.save(model.state_dict(), save_path + model_name + '_' + date + '.pth')
+            torch.save(model.state_dict(), save_path + model_name + '.pth')
 
     # predictions = get_predictions(model, testloader, device) # This line will cause out of memory error
     record = (np.array(stat_list), epoch_list)
