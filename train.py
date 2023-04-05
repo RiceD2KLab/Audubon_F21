@@ -227,7 +227,7 @@ def train_model_audubon(model, optimizer,
             print()
             print("Updating the best model so far with test loss:", best_test_loss)
             print()
-            torch.save(model.state_dict(), save_path + model_name + '.pth')
+            torch.save(model, save_path + model_name + '.pth')
 
     # predictions = get_predictions(model, testloader, device) # This line will cause out of memory error
     record = (np.array(stat_list), epoch_list)
