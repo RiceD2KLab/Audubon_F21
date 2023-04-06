@@ -177,7 +177,8 @@ def get_model_and_optim(num_classes, l_r, model_choice='fasterrcnn_resnet50_fpn'
         optimizer: A stochastic gradient descent (SGD) optimizer with learning rate 0.005, momentum 0.9, and weight decay 0.0005
     '''
     if model_choice == 'fasterrcnn_resnet50_fpn':
-        model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='DEFAULT')
+        model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights='DEFAULT',
+                                                                     weights_backbone='DEFAULT')
         in_features = model.roi_heads.box_predictor.cls_score.in_features
         model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
