@@ -1,5 +1,6 @@
 import torch
 from tqdm import tqdm
+import os
 from .eval import get_od_loss, get_od_stats
 
 
@@ -9,6 +10,10 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
                    save_path, name,
                    print_every):
     ''' Train a model and save the best model '''
+    # create save path
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
     # initialize variables
     train_loss_list = []
     val_loss_list = []

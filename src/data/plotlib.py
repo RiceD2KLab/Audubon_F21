@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import os
 
 
 def get_cmap(num, name='tab20c'):
@@ -49,5 +50,7 @@ def plot_distribution(data_frame, col_name,
         axs.text(i, chart[i].get_height() + 0.5, chart[i].get_height(), ha='center', fontsize=10)
 
     if path:
+        if not os.path.exists(path):
+            os.makedirs(path)
         fig.savefig(path + title + '.pdf', bbox_inches='tight')
     return fig
