@@ -7,7 +7,7 @@ from src.data.transforms import get_transform
 from src.data.plotlib import plot_curves, plot_precision_recall
 from src.models.pretrained import get_pretrained_od_model
 from src.optimizers.sgd import get_sgd_optim
-from train import train_detector
+from src.train import train_detector
 
 
 # Random seed
