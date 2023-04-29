@@ -1,6 +1,6 @@
 import torch
-from .train.coco.coco_utils import get_coco_eval_api_from_dataset
-from .train.coco.coco_eval import CocoEvaluator
+from .data.coco.coco_utils import get_coco_eval_api_from_dataset
+from .data.coco.coco_eval import CocoEvaluator
 
 
 def get_od_predictions(model, dataloader, device, idx):

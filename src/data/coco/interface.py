@@ -7,6 +7,7 @@ from collections import defaultdict
 from . import mask as maskUtils
 import copy
 
+
 class COCOeval:
     # Interface for evaluating detection on the Microsoft COCO dataset.
     #
@@ -499,6 +500,7 @@ class COCOeval:
 
     def __str__(self):
         self.summarize()
+
 
 class Params:
     '''
