@@ -1,9 +1,10 @@
 import torch
 from config import CONFIG, SEED, HYPERPARAMS, DEVICE, BIRD_ONLY
-from config import DETECTOR_PATH, TILED_NEW_CSV_PATH, TILED_IMG_PATH
+from config import DETECTOR_PATH, TILED_NEW_CSV_PATH, TILED_IMG_PATH, PLOTS_PATH
 from src.data.utils import get_file_names, split_img_annos
 from src.data.dataloader import get_od_dataloader
 from src.data.transforms import get_transform
+from src.data.plotlib import plot_curves, plot_precision_recall
 from src.models.pretrained import get_pretrained_od_model
 from src.optimizers.sgd import get_sgd_optim
 from train import train_detector
@@ -50,7 +51,12 @@ def train_pipeline(csv_path, img_path, split_ratio, batch_size, num_classes, l_r
         model_name,
         print_every=5
     )
-    print(results[0][-1])
+    plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
+                'training and validation loss curves', PLOTS_PATH)
+    plot_precision_recall(results[2], 'epoch', 'precision and recall',
+                          'train precision and recall curves', PLOTS_PATH)
+    plot_precision_recall(results[3], 'epoch', 'precision and recall',
+                          'validation precision and recall curves', PLOTS_PATH)
 
 
 train_pipeline(TILED_NEW_CSV_PATH, TILED_IMG_PATH,

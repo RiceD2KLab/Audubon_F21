@@ -1,6 +1,7 @@
 import torch
 from tqdm import tqdm
 import os
+import numpy as np
 from .eval import get_od_loss, get_od_stats
 
 
@@ -59,8 +60,6 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
             print(f"Epoch {epoch + 1} of {n_epochs}")
             print(f"Train Loss: {train_loss:.4f}")
             print(f"Val Loss: {val_loss:.4f}")
-            print(f"Train Stats: {train_stats}")
-            print(f"Val Stats: {val_stats}")
 
         # save best model
         if val_loss < best_val_loss:
@@ -68,4 +67,4 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
             print("Updating the best model so far with validation loss:", best_val_loss)
             torch.save(model, save_path + name + '.pt')
 
-        return train_loss_list, val_loss_list, train_stats_list, val_stats_list
+        return train_loss_list, val_loss_list, np.array(train_stats_list), np.array(val_stats_list)

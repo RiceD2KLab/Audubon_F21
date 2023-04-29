@@ -54,3 +54,48 @@ def plot_distribution(data_frame, col_name,
             os.makedirs(path)
         fig.savefig(path + title + '.pdf', bbox_inches='tight')
     return fig
+
+
+def plot_curves(arr1, arr2, label1, label2, xlabel, ylabel, title, path=None):
+    """ Plot two curves on the same plot. """
+    fig, axs = plt.subplots()
+    axs.plot(arr1, label=label1)
+    axs.plot(arr2, label=label2)
+    axs.set_xlabel(xlabel)
+    axs.set_ylabel(ylabel)
+    axs.set_title(title)
+    axs.legend()
+
+    if path:
+        if not os.path.exists(path):
+            os.makedirs(path)
+        fig.savefig(path + title + '.pdf', bbox_inches='tight')
+
+    return fig
+
+
+def plot_precision_recall(stat_arr, xlabel, ylabel, title, path=None):
+    """
+    Plot the precision and recall at different IoU thresholds for each training epoch of a model.  
+
+    Input:
+        stat_arr: An array containing the precision and recall values for IoU thresholds of 0.5 and 0.75 for each epoch. 
+        path: The path to save the plot (string).
+        title: The title of the plot (string). 
+    """
+    fig, axs = plt.subplots()
+    axs.plot(stat_arr[:, 0], label="Precision with IoU=0.5")
+    axs.plot(stat_arr[:, 1], label="Precision with IoU=0.75")
+    axs.plot(stat_arr[:, 2], label="Recall with IoU=0.5")
+    axs.plot(stat_arr[:, 3], label="Recall with IoU=0.75")
+    axs.set_xlabel(xlabel)
+    axs.set_ylabel(ylabel)
+    axs.set_title(title)
+    axs.legend()
+
+    if path:
+        if not os.path.exists(path):
+            os.makedirs(path)
+        fig.savefig(path + title + '.pdf', bbox_inches='tight')
+
+    return fig
