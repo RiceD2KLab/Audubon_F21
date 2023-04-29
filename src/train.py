@@ -1,0 +1,66 @@
+import torch
+from tqdm import tqdm
+from .eval import get_od_loss, get_od_stats
+
+
+def train_detector(model, optimizer, loss_fn, n_epochs,
+                   trainloader, valloader,
+                   device,
+                   save_path, name,
+                   print_every):
+    ''' Train a model and save the best model '''
+    # initialize variables
+    train_loss_list = []
+    val_loss_list = []
+    train_stats_list = []
+    val_stats_list = []
+    best_val_loss = float('inf')
+    model = model.to(device)
+
+    for epoch in range(n_epochs):
+        model.train()
+        train_loss = 0
+        for batch_id, (images, targets) in enumerate(tqdm(trainloader,
+                                                          desc=f"Epoch {epoch + 1} of {n_epochs}",
+                                                          leave=True, ncols=80)):
+            # move data to device
+            images = list(image.to(device) for image in images)
+            targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+
+            # forward pass
+            loss_dict = model(images, targets)
+            losses = sum(loss for loss in loss_dict.values())
+            train_loss += losses.item()
+
+            # backward pass
+            optimizer.zero_grad()
+            losses.backward()
+            optimizer.step()
+
+        # evaluate model
+        train_loss /= len(trainloader)
+        val_loss = get_od_loss(model, loss_fn, valloader, device)
+        train_stats = get_od_stats(model, trainloader, device)
+        val_stats = get_od_stats(model, valloader, device)
+
+        # record evaluation metrics
+        train_loss_list.append(train_loss)
+        val_loss_list.append(val_loss)
+        train_stats_list.append(train_stats)
+        val_stats_list.append(val_stats)
+
+        # print evaluation metrics
+        if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
+            print(f"Epoch {epoch + 1} of {n_epochs}")
+            print(f"Train Loss: {train_loss:.4f}")
+            print(f"Val Loss: {val_loss:.4f}")
+            print(f"Train Stats: {train_stats}")
+            print(f"Val Stats: {val_stats}")
+
+        # save best model
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            print("Updating the best model so far with validation loss:", best_val_loss)
+            torch.save(model, save_path + name + '.pt')
+
+        return train_loss_list, val_loss_list, train_stats_list, val_stats_list
