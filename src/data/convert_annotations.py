@@ -1,4 +1,5 @@
 import csv
+import os
 from src.data.utils import get_file_names, concat_frames, csv_to_df
 from src.data.plotlib import plot_distribution
 
@@ -7,6 +8,8 @@ def write_csv(old_path, new_path, mapping, delete):
     ''' write new csv files with new columns and new class names'''
     # get all file names in the old csv files folder sorted alphabetically
     old_csv_file_names = get_file_names(old_path, 'csv')
+    if not os.path.exists(new_path):
+        os.makedirs(new_path)
 
     # loop through all the csv files
     for idx in range(len(old_csv_file_names)):

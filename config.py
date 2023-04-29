@@ -10,7 +10,7 @@ SEED = 2023
 
 # Configurations
 CONFIG = {
-    'model': ('bird_only', 2) if BIRD_ONLY else ('species', 23),  # NOTE: 23 is read from database/class_id.csv,
+    'model': ('bird_only', 2) if BIRD_ONLY else ('species', 23),  # NOTE: 23 is read from ../database/class_id.csv,
     'data_split': (0.04, 0.005, 0.005) if SUBSET else (0.8, 0.1, 0.1),
     "batch_size": 1 if SUBSET else 8
 }
@@ -22,14 +22,14 @@ HYPERPARAMS = {
 }
 
 # Paths
-PLOTS_PATH = "./plots/"
-DATA_PATH = "./database/"
-IMG_PATH = DATA_PATH + 'detection/raw_data/images/'
-OLD_CSV_PATH = DATA_PATH + 'detection/raw_data/csv_files_old/'
-NEW_CSV_PATH = DATA_PATH + 'detection/raw_data/csv_files_new/'
-TILED_IMG_PATH = DATA_PATH + 'detection/tiled_data/images/'
-TILED_OLD_CSV_PATH = DATA_PATH + 'detection/tiled_data/csv_files_old/'
-TILED_NEW_CSV_PATH = DATA_PATH + 'detection/tiled_data/csv_files_new/'
+PLOTS_PATH = "../plots/"
+DATA_PATH = "../database/"
+IMG_PATH = DATA_PATH + 'detection/raw_data/annotated_images/'
+OLD_CSV_PATH = DATA_PATH + 'detection/raw_data/annotations_xywh/'
+NEW_CSV_PATH = DATA_PATH + 'detection/raw_data/annotations_xxyy/'
+TILED_IMG_PATH = DATA_PATH + 'detection/tiled_data/annotated_images/'
+TILED_OLD_CSV_PATH = DATA_PATH + 'detection/tiled_data/annotations_xywh/'
+TILED_NEW_CSV_PATH = DATA_PATH + 'detection/tiled_data/annotations_xxyy/'
 CROPPED_PATH = DATA_PATH + 'cropped/'
 DETECTOR_PATH = DATA_PATH + 'models/' + CONFIG['model'][0] + '/'
 
