@@ -6,6 +6,8 @@ The name "AviAlert" is a combination of the words "aviary" (a place where birds 
 
 A list of CSV and JPG files that share the same name but have different file extensions. The annotations in the JPG file should be saved to the CSV file with the following attributes:
 
+
+
 ## Running
 
 1. `csv_writer.py`
