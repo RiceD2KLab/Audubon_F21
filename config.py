@@ -53,10 +53,10 @@ DESC_MAPPING = {
     'Trash/Debris': 'Debris',
     'Trash': 'Debris',
     'Great Egret/White Morph Adult': 'Great Egret or White Morph Adult',
-    'Great Blue Heron Egg': 'Others',
-    'White Ibis Nest': 'Others',
-    'Double-Crested Cormorant Adult': 'Others',
-    'Great Blue Heron Nest': 'Others',
-    'American Avocet Adult': 'Others',
-    'American Oystercatcher': 'Others'
+    'Great Blue Heron Egg': 'Egg',
+    'White Ibis Nest': 'Other Bird',
+    'Double-Crested Cormorant Adult': 'Other Bird',
+    'Great Blue Heron Nest': 'Other Bird',
+    'American Avocet Adult': 'Other Bird',
+    'American Oystercatcher': 'Other Bird'
 }
