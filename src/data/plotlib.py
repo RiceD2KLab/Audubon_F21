@@ -76,12 +76,12 @@ def plot_curves(arr1, arr2, label1, label2, xlabel, ylabel, title, path=None):
 
 def plot_precision_recall(stat_arr, xlabel, ylabel, title, path=None):
     """
-    Plot the precision and recall at different IoU thresholds for each training epoch of a model.  
+    Plot the precision and recall at different IoU thresholds for each training epoch of a model.
 
     Input:
-        stat_arr: An array containing the precision and recall values for IoU thresholds of 0.5 and 0.75 for each epoch. 
+        stat_arr: An array containing the precision and recall values for IoU thresholds of 0.5 and 0.75 for each epoch.
         path: The path to save the plot (string).
-        title: The title of the plot (string). 
+        title: The title of the plot (string).
     """
     fig, axs = plt.subplots()
     axs.plot(stat_arr[:, 0], label="Precision with IoU=0.5")
