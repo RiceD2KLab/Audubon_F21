@@ -58,7 +58,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         train_loss = 0
         for batch_id, (images, targets) in enumerate(tqdm(trainloader,
                                                           desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                          position=0, leave=True, ncols=80)):
+                                                          position=0, leave=False, ncols=80)):
             # move data to device
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
@@ -79,6 +79,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
 
         # print evaluation metrics
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
+            print()
             print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.4f}', "| Validation loss:", f'{val_loss:.4f}')
 
         with HiddenPrints():
@@ -96,8 +97,8 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         # save best model
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            print("Updating the best model so far with validation loss:", best_val_loss)
             print()
+            print("Updating the best model so far with validation loss:", best_val_loss)
             torch.save(model, save_path + name + '.pt')
 
     return train_loss_list, val_loss_list, np.array(train_stats_list), np.array(val_stats_list)
@@ -147,7 +148,7 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         model.train()
         for batch_id, (inputs, labels) in enumerate(tqdm(trainloader,
                                                          desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                         position=0, leave=True, ncols=80)):
+                                                         position=0, leave=False, ncols=80)):
             model.zero_grad()
             inputs, labels = inputs.to(device), labels.to(device)
             # Loss
@@ -177,13 +178,14 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
 
         # print evaluation metrics
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
+            print()
             print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.4f}', "| Validation loss:", f'{val_loss:.4f}',
                   "| Training accuracy:", f'{train_accuracy:.4f}', "| Validation accuracy:", f'{val_accuracy:.4f}')
 
         # save best model
         if val_accuracy > best_val_accuracy:
             best_val_accuracy = val_accuracy
-            print("Updating the best model so far with validation accuracy:", best_val_accuracy)
             print()
+            print("Updating the best model so far with validation accuracy:", best_val_accuracy)
             torch.save(model, save_path + name + '.pt')
     return train_loss_list, val_loss_list, train_accuracy_list, val_accuracy_list
