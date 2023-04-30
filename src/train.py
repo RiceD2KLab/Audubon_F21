@@ -105,7 +105,9 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
 
         # Train
         model.train()
-        for batch_id, (inputs, labels) in enumerate(tqdm(trainloader)):
+        for batch_id, (inputs, labels) in enumerate(tqdm(trainloader,
+                                                         desc=f"Epoch {epoch + 1} of {n_epochs}",
+                                                         leave=True, ncols=80)):
             model.zero_grad()
             inputs, labels = inputs.to(device), labels.to(device)
             # Loss
@@ -132,6 +134,11 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         val_loss, val_accuracy = get_clf_loss_accuracy(model, loss_fn, valloader, device)
         val_loss_list.append(val_loss)
         val_accuracy_list.append(val_accuracy)
+        
+        # print evaluation metrics
+        if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
+            print("Epoch:", epoch + 1, "| Training loss:", train_loss, "| Validation loss:", val_loss,
+                  "| Training accuracy:", train_accuracy, "| Validation accuracy:", val_accuracy)
 
         # save best model
         if val_accuracy > best_val_accuracy:
