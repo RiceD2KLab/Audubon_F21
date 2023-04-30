@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import os
+from torchvision.io import read_image
+from torchvision.utils import draw_bounding_boxes
+import torchvision.transforms.functional as F
+import numpy as np
 
 
 def get_cmap(num, name='tab20c'):
@@ -98,4 +102,40 @@ def plot_precision_recall(stat_arr, xlabel, ylabel, title, path=None):
             os.makedirs(path)
         fig.savefig(path + title + '.pdf', bbox_inches='tight')
 
+    return fig
+
+
+def show(img, dpi):
+    ''' Show an image '''
+    n_channels, height, width = img.shape
+    fig, axs = plt.subplots(figsize=(width / dpi, height / dpi), dpi=dpi)
+    img = img.detach()
+    img = F.to_pil_image(img)
+    axs.imshow(np.asarray(img))
+    axs.set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
+    return fig
+
+
+def visualize_predictions(file_paths, output, path, title, dpi, score_threshold=0.8):
+    '''
+    Visualize bounding box predictions for the test dataset.
+
+    Input:
+        file_paths: A list of file paths (string) to the images in the test dataset.
+        output: A dictionary containing the predictions made by the model.
+        path: The directory where the output image should be saved (string).
+        title: The title of the output image (string).
+        score_threshold: The minimum score threshold for drawing bounding boxes. Defaults to 0.8.
+
+    Output:
+        fig: Each image overlaid with predicted bounding boxes.
+    '''
+    img = read_image(file_paths)
+    result = draw_bounding_boxes(img, output['boxes'][output['scores'] > score_threshold],
+                                 colors='blue', width=3)
+    fig = show(result, dpi)
+    if path:
+        if not os.path.exists(path):
+            os.makedirs(path)
+        fig.savefig(path + title + '.jpg', bbox_inches='tight')
     return fig

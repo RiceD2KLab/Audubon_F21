@@ -7,6 +7,7 @@ SUBSET = True
 # Constants
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 SEED = 2023
+DPI = 500
 
 # Configurations
 CONFIG = {

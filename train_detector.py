@@ -1,13 +1,14 @@
 import torch
 from config import CONFIG, SEED, HYPERPARAMS, DEVICE, BIRD_ONLY
-from config import DETECTOR_PATH, TILED_NEW_CSV_PATH, TILED_IMG_PATH, PLOTS_PATH
+from config import DETECTOR_PATH, TILED_NEW_CSV_PATH, TILED_IMG_PATH, PLOTS_PATH, DPI
 from src.data.utils import get_file_names, split_img_annos
 from src.data.dataloader import get_od_dataloader
 from src.data.transforms import get_transform
-from src.data.plotlib import plot_curves, plot_precision_recall
+from src.data.plotlib import plot_curves, plot_precision_recall, visualize_predictions
 from src.models.pretrained import get_pretrained_od_model
 from src.optimizers.sgd import get_sgd_optim
 from src.train import train_detector
+from src.eval import get_od_predictions
 
 
 # Random seed
@@ -51,12 +52,20 @@ def train_pipeline(csv_path, img_path, split_ratio, batch_size, num_classes, l_r
         model_name,
         print_every=1
     )
+
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
                 'training and validation loss curves', PLOTS_PATH)
     plot_precision_recall(results[2], 'epoch', 'precision and recall',
                           'training precision and recall curves', PLOTS_PATH)
     plot_precision_recall(results[3], 'epoch', 'precision and recall',
                           'validation precision and recall curves', PLOTS_PATH)
+
+    batch = 0
+    preds = get_od_predictions(model, valloader, DEVICE, batch)
+    for idx in range(len(preds)):
+        visualize_predictions(valset['jpg'][idx + batch * batch_size],
+                              preds[idx], PLOTS_PATH, model_name + '_batch_' + str(batch) + '_idx_' + str(idx),
+                              DPI, 0.5)
 
 
 train_pipeline(TILED_NEW_CSV_PATH, TILED_IMG_PATH,
