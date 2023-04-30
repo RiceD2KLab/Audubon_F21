@@ -41,8 +41,11 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
     results = train_classifier(model, optimizer, loss_fn, n_epochs,
                                trainloader, valloader, device, save_path, name)
 
+    # plot loss curves and accuracy curves
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
                 f'Training and validation loss curves of {name} bird classifier', PLOTS_PATH)
+    plot_curves(results[2], results[3], 'training accuracy', 'validation accuracy', 'epoch', 'accuracy',
+                f'Training and validation accuracy curves of {name} bird classifier', PLOTS_PATH)
 
     # load the best classifier
     model = torch.load(save_path + name + '.pt')
