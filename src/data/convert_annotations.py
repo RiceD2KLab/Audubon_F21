@@ -4,7 +4,7 @@ from src.data.utils import get_file_names, concat_frames, csv_to_df
 from src.data.plotlib import plot_distribution
 
 
-def write_csv(old_path, new_path, mapping, delete):
+def write_csv(old_path, new_path, mapping):
     ''' write new csv files with new columns and new class names'''
     # get all file names in the old csv files folder sorted alphabetically
     old_csv_file_names = get_file_names(old_path, 'csv')
@@ -23,10 +23,6 @@ def write_csv(old_path, new_path, mapping, delete):
         frame['ymin'] = frame['y']
         frame['xmax'] = frame['x'] + frame['width']
         frame['ymax'] = frame['y'] + frame['height']
-
-        # delete rows with class_name in ON_DELETE
-        for val in delete:
-            frame = frame[frame['class_name'] != val]
 
         # drop old columns
         frame = frame.drop('desc', axis=1)

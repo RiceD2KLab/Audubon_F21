@@ -41,7 +41,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             y_2 = target_df.iloc[row_idx]['ymax']
             boxes.append([x_1, y_1, x_2, y_2])
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
-        
+
         # compute area
         area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
 

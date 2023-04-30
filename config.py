@@ -51,14 +51,12 @@ DESC_MAPPING = {
     'Tri-Colored Heron Adult': 'Tricolored Heron Adult',
     'Cattle Egret Flying': 'Cattle Egret Adult',
     'Trash/Debris': 'Debris',
-    'Great Egret/White Morph Adult': 'Great Egret or White Morph Adult'
+    'Trash': 'Debris',
+    'Great Egret/White Morph Adult': 'Great Egret or White Morph Adult',
+    'Great Blue Heron Egg': 'Others',
+    'White Ibis Nest': 'Others',
+    'Double-Crested Cormorant Adult': 'Others',
+    'Great Blue Heron Nest': 'Others',
+    'American Avocet Adult': 'Others',
+    'American Oystercatcher': 'Others'
 }
-ON_DELETE = [
-    'Great Blue Heron Egg',
-    'White Ibis Nest',
-    'Double-Crested Cormorant Adult',
-    'Great Blue Heron Nest',
-    'American Avocet Adult',
-    'Trash',
-    'American Oystercatcher'
-]
