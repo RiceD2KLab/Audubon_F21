@@ -2,7 +2,6 @@ import torch
 
 # Flags for training detector
 BIRD_ONLY = True
-SUBSET = True
 
 # Constants
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -12,7 +11,7 @@ DPI = 500
 # Configurations
 CONFIG_DETECTOR = {
     'model': ('bird_only', 2) if BIRD_ONLY else ('species', 23),  # NOTE: 23 is read from ../database/class_id.csv,
-    'data_split': (0.08, 0.01, 0.01) if SUBSET else (0.8, 0.1, 0.1),
+    'data_split': (0.8, 0.1, 0.1),
     "batch_size": 8
 }
 CONFIG_CLASSIFIER = {
