@@ -18,3 +18,7 @@ A list of CSV and JPG files that share the same name but have different file ext
 ## Issues
 
 1. Tiling function is incorrect and inefficient. Need to write a new one.
+
+## Acknowledgements
+
+Thanks ChatGPT for helping with writing documentation for this project.
