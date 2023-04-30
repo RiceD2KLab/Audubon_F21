@@ -49,12 +49,12 @@ def add_class_id_and_data_exploration(new_path, title, data_path, plot_path=None
     contact_frame = concat_frames(new_csv_file_names)
     val_counts = contact_frame['class_name'].value_counts()
     print('Number of classes: ', len(val_counts))
-    print(val_counts)
+    # print(val_counts)
 
     # add class_id column
     sorted_class_name = sorted(contact_frame['class_name'].unique())  # alphabetically sorted
     class_id_mapping = {item: index for index, item in enumerate(sorted_class_name)}
-    print('class_id_mapping: ', class_id_mapping)
+    # print('class_id_mapping: ', class_id_mapping)
 
     # save class_id_mapping to csv file
     with open(data_path + 'class_id.csv', 'w', newline='') as file:
@@ -73,3 +73,4 @@ def add_class_id_and_data_exploration(new_path, title, data_path, plot_path=None
 
     # plot distribution of classes
     _ = plot_distribution(contact_frame, 'class_name', 'class', 'count', title, plot_path)
+    print("Finished adding class_id column and plotting distribution of classes")
