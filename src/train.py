@@ -3,6 +3,7 @@ import os
 import numpy as np
 from .eval import get_od_loss, get_od_stats, get_clf_loss_accuracy
 import sys
+from livelossplot import PlotLosses
 
 
 class HiddenPrints:
@@ -24,8 +25,7 @@ class HiddenPrints:
 def train_detector(model, optimizer, loss_fn, n_epochs,
                    trainloader, valloader,
                    device,
-                   save_path, name,
-                   print_every=5):
+                   save_path, name):
     '''
     Args:
         model (torch.nn): detector model
@@ -37,7 +37,6 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         device (torch.device): device to use
         save_path (string): path to save the best model
         name (string): name of the model
-        print_every (int): print evaluation metrics every print_every epochs
     Train a model and save the best model.
     '''
     # create save path
@@ -52,7 +51,11 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
     best_val_loss = float('inf')
     model = model.to(device)
 
+    # plot live loss
+    liveloss = PlotLosses()
+
     for epoch in range(n_epochs):
+        logs = {}
         model.train()
         train_loss = 0
         for batch_id, (images, targets) in enumerate(trainloader):
@@ -72,12 +75,9 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
 
         # evaluate model
         train_loss /= len(trainloader)
+        logs['training loss'] = train_loss
         val_loss = get_od_loss(model, loss_fn, valloader, device)
-
-        # print evaluation metrics
-        if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
-            print()
-            print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.4f}', "| Validation loss:", f'{val_loss:.4f}')
+        logs['validation loss'] = val_loss
 
         with HiddenPrints():
             train_stats = get_od_stats(model, trainloader, device)
@@ -94,9 +94,10 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         # save best model
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            print()
-            print("Updating the best model so far with validation loss:", best_val_loss)
             torch.save(model, save_path + name + '.pt')
+
+        liveloss.update(logs)
+        liveloss.send()
 
     return train_loss_list, val_loss_list, np.array(train_stats_list), np.array(val_stats_list)
 
@@ -135,8 +136,10 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
     # Move the model and loss function to device
     model = model.to(device)
     loss_fn = loss_fn.to(device)
+    liveloss = PlotLosses()
 
     for epoch in range(n_epochs):
+        logs = {}
         correct = 0
         train_loss = 0
         n_samples = 0
@@ -171,16 +174,16 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         val_loss_list.append(val_loss)
         val_accuracy_list.append(val_accuracy)
 
-        # print evaluation metrics
-        if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
-            print()
-            print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.4f}', "| Validation loss:", f'{val_loss:.4f}',
-                  "| Training accuracy:", f'{train_accuracy:.4f}', "| Validation accuracy:", f'{val_accuracy:.4f}')
+        logs['training loss'] = train_loss
+        logs['validation loss'] = val_loss
+        logs['training accuracy'] = train_accuracy
+        logs['validation accuracy'] = val_accuracy
 
         # save best model
         if val_accuracy > best_val_accuracy:
             best_val_accuracy = val_accuracy
-            print()
-            print("Updating the best model so far with validation accuracy:", best_val_accuracy)
             torch.save(model, save_path + name + '.pt')
+
+        liveloss.update(logs)
+        liveloss.send()
     return train_loss_list, val_loss_list, train_accuracy_list, val_accuracy_list
