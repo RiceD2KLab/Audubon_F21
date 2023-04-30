@@ -14,6 +14,11 @@ def compute_class_weights_from_dataset(dataset):
 
 
 def get_weighted_cross_entropy_loss_fn(class_weights, device):
-    ''' Return weighted cross entropy loss function '''
+    '''
+    Args:
+        class_weights (list of floats): class weights
+        device (torch.device): device to use
+    Return weighted cross entropy loss function
+    '''
     loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(class_weights, dtype=torch.float32)).to(device)
     return loss_fn
