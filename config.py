@@ -22,12 +22,12 @@ CONFIG_CLASSIFIER = {
 
 # Hyperparameters
 HYPERPARAMS_DETECTOR = {
-    'num_epoch': 5,
+    'num_epoch': 10,
     "l_r": 0.002,
 }
 
 HYPERPARAMS_CLASSIFIER = {
-    'num_epoch': 5,
+    'num_epoch': 20,
     'l_r': 0.0001,
 }
 
