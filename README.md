@@ -4,16 +4,15 @@ The name "AviAlert" is a combination of the words "aviary" (a place where birds 
 
 ## Data format
 
-A list of CSV and JPG files that share the same name but have different file extensions. The annotations in the JPG file should be saved to the CSV file with the following attributes:
+CSV and JPG files that share the same name but have different file extensions. The CSV files and JPG files should be saved in different folders.
 
 ## Running
 
-1. `csv_writer.py`
-2. `crop_birds.py`
+Run the demo notebook [here](https://colab.research.google.com/drive/1TiGTjLM1XzjMOdD-v-PrEPylSTFlBXjL?usp=sharing).
 
 ## Reference
 
-`scr\data\coco` is from somewhere else.
+`scr\data\coco` is downloaded from [COCO API](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools) and [PyTorch reference for detection](https://github.com/pytorch/vision/tree/main/references/detection)
 
 ## Issues
 
