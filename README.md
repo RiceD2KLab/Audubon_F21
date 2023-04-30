@@ -65,7 +65,7 @@ The following open source packages are used in this project:
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
 ## Data science pipeline
-Our pipeline is split into three sections: data wrangling, modeling, and model evaluation. Before wrangling, we will split the data into training, validation and testing groups. Overall, we plan to use a similar data science pipeline as past groups. This is especially true for the bird detector, given the model is already highly accurate. This semester we will focus on improving the bird classifier and developing the output (annotation tool).
+Our data science pipeline splits the tasks of bird detection and species classification between two models. The bird detection model is based on the model developed by previous groups. We focused on developing a bird classification model that performs well for all species classes. For each model, we followed specific data wrangling, model training and evaluation steps. Additionally, we overhauled the output of the models by launching a graphical user interface (GUI) which will allow scientists to easily annotate their own drone images
 
 <img src="data science pipeline.png">
 
