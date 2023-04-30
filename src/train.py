@@ -58,7 +58,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         train_loss = 0
         for batch_id, (images, targets) in enumerate(tqdm(trainloader,
                                                           desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                          position=0, leave=False, ncols=80)):
+                                                          position=0, leave=True, ncols=80)):
             # move data to device
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
@@ -148,7 +148,7 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         model.train()
         for batch_id, (inputs, labels) in enumerate(tqdm(trainloader,
                                                          desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                         position=0, leave=False, ncols=80)):
+                                                         position=0, leave=True, ncols=80)):
             model.zero_grad()
             inputs, labels = inputs.to(device), labels.to(device)
             # Loss
