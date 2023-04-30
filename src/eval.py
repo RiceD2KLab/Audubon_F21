@@ -5,7 +5,14 @@ import pandas as pd
 
 
 def get_od_predictions(model, dataloader, device, idx):
-    ''' Returns object detection results for a given index in a dataloader '''
+    '''
+    Args:
+        model (torchvision.models.detection): object detection model
+        dataloader (torch.utils.data.DataLoader): dataloader
+        device (torch.device): device to use
+        idx (int): index of the image to predict on
+    Returns object detection results for a given index in a dataloader
+    '''
     model.eval()
     with torch.no_grad():
         for batch_id, (images, targets) in enumerate(dataloader):
@@ -21,7 +28,14 @@ def get_od_predictions(model, dataloader, device, idx):
 
 
 def get_od_loss(model, loss_fn, dataloader, device):
-    ''' Returns loss for an object detection model on a given dataset '''
+    '''
+    Args:
+        model (torchvision.models.detection): object detection model
+        loss_fn (torch.nn): loss function TODO: customize and use loss_fn in the future
+        dataloader (torch.utils.data.DataLoader): dataloader
+        device (torch.device): device to use
+    Returns loss for an object detection model on a given dataset.
+    '''
     loss = 0
     with torch.no_grad():
         for batch_id, (images, targets) in enumerate(dataloader):
@@ -38,7 +52,13 @@ def get_od_loss(model, loss_fn, dataloader, device):
 
 
 def get_od_stats(model, dataloader, device):
-    ''' Returns stats for an object detection model on a given dataset '''
+    '''
+    Args:
+        model (torchvision.models.detection): object detection model
+        dataloader (torch.utils.data.DataLoader): dataloader
+        device (torch.device): device to use
+    Returns stats for an object detection model on a given dataset.
+    '''
     n_threads = torch.get_num_threads()
     print(f"Using {n_threads} threads for inference")
     torch.set_num_threads(n_threads)
@@ -71,7 +91,14 @@ def get_od_stats(model, dataloader, device):
 
 
 def get_clf_loss_accuracy(model, loss_fn, dataloader, device):
-    ''' Returns loss and accuracy for a classifier model on a given dataset '''
+    '''
+    Args:
+        model (torch.nn): classifier model
+        loss_fn (torch.nn): loss function
+        dataloader (torch.utils.data.DataLoader): dataloader
+        device (torch.device): device to use
+    Returns loss and accuracy for a classifier model on a given dataset.
+    '''
     # Set model to evaluation mode
     model.eval()
 
@@ -100,7 +127,13 @@ def get_clf_loss_accuracy(model, loss_fn, dataloader, device):
 
 
 def get_clf_predictions(model, dataloader, device):
-    ''' Predict on test dataset '''
+    '''
+    Args:
+        model (torch.nn): classifier model
+        dataloader (torch.utils.data.DataLoader): dataloader
+        device (torch.device): device to use
+    Return predictions on a given dataset.
+    '''
     model.eval()
     true_labels = []
     out_labels = []
@@ -117,7 +150,12 @@ def get_clf_predictions(model, dataloader, device):
 
 
 def get_stats_from_confusion_matrix(confusion_matrix, class_names):
-    ''' Returns precision, recall, and f1 score from confusion matrix '''
+    '''
+    Args:
+        confusion_matrix (numpy.ndarray): confusion matrix computed from sklearn.metrics.confusion_matrix
+        class_names (list of strings): list of class names
+    Returns precision, recall, and f1 score from confusion matrix.
+    '''
     recall = confusion_matrix.diagonal() / confusion_matrix.sum(axis=0)
     precision = confusion_matrix.diagonal() / confusion_matrix.sum(axis=1)
     f1_score = 2 * precision * recall / (precision + recall)
