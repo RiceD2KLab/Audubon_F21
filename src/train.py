@@ -45,6 +45,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
 
         # evaluate model
         train_loss /= len(trainloader)
+        print("Computing loss for the validation set")
         val_loss = get_od_loss(model, loss_fn, valloader, device)
         train_stats = get_od_stats(model, trainloader, device)
         val_stats = get_od_stats(model, valloader, device)
@@ -57,9 +58,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
 
         # print evaluation metrics
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
-            print(f"Epoch {epoch + 1} of {n_epochs}")
-            print(f"Train Loss: {train_loss:.4f}")
-            print(f"Val Loss: {val_loss:.4f}")
+            print("Epoch:", epoch + 1, "| Training loss:", train_loss, "| Validation loss:", val_loss)
 
         # save best model
         if val_loss < best_val_loss:

@@ -1,4 +1,5 @@
 import torch
+from tqdm import tqdm
 from .data.coco.coco_utils import get_coco_api_from_dataset
 from .data.coco.coco_eval import CocoEvaluator
 
@@ -23,7 +24,7 @@ def get_od_loss(model, loss_fn, dataloader, device):
     ''' Returns loss for an object detection model on a given dataset '''
     loss = 0
     with torch.no_grad():
-        for batch_id, (images, targets) in enumerate(dataloader):
+        for batch_id, (images, targets) in enumerate(tqdm(dataloader, leave=True, ncols=80)):
             # move data to device
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
