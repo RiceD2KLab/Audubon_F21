@@ -42,7 +42,7 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
                                trainloader, valloader, device, save_path, name, print_every=1)
 
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
-                'training and validation loss curves of bird classifier', PLOTS_PATH)
+                f'training and validation loss curves of {name} bird classifier', PLOTS_PATH)
 
     # load the best classifier
     model = torch.load(save_path + name + '.pt')
@@ -53,7 +53,7 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
 
     # plot confusion matrix
     _ = plot_confusion_matrix(true_labels_list, predicted_list, class_names,
-                              title='Confusion matrix on validation set',
+                              title=f'Confusion matrix of {name} bird classifier on validation set',
                               path=PLOTS_PATH)
 
     # get stats
