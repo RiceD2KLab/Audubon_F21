@@ -68,6 +68,7 @@ def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_cla
                               DPI, 0.5)
 
 
-train_detector_pipeline(TILED_NEW_CSV_PATH, TILED_IMG_PATH,
-                        CONFIG_DETECTOR['data_split'], CONFIG_DETECTOR['batch_size'], CONFIG_DETECTOR['model'][1],
-                        HYPERPARAMS_DETECTOR['l_r'], HYPERPARAMS_DETECTOR['num_epoch'], CONFIG_DETECTOR['model'][0])
+if __name__ == '__main__':
+    train_detector_pipeline(TILED_NEW_CSV_PATH, TILED_IMG_PATH,
+                            CONFIG_DETECTOR['data_split'], CONFIG_DETECTOR['batch_size'], CONFIG_DETECTOR['model'][1],
+                            HYPERPARAMS_DETECTOR['l_r'], HYPERPARAMS_DETECTOR['num_epoch'], CONFIG_DETECTOR['model'][0])

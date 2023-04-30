@@ -62,6 +62,7 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
     stats.to_csv(DATA_PATH + name + '_stats.csv', index=False)
 
 
-train_classifier_pipline(CROPPED_PATH, CLF_TRAIN_PATH, CLF_VAL_PATH,
-                         CONFIG_CLASSIFIER['batch_size'], HYPERPARAMS_CLASSIFIER['num_epoch'],
-                         CONFIG_CLASSIFIER['model'], CLASSIFIER_PATH, DEVICE, HYPERPARAMS_CLASSIFIER['l_r'])
+if __name__ == '__main__':
+    train_classifier_pipline(CROPPED_PATH, CLF_TRAIN_PATH, CLF_VAL_PATH,
+                             CONFIG_CLASSIFIER['batch_size'], HYPERPARAMS_CLASSIFIER['num_epoch'],
+                             CONFIG_CLASSIFIER['model'], CLASSIFIER_PATH, DEVICE, HYPERPARAMS_CLASSIFIER['l_r'])
