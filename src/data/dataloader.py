@@ -31,8 +31,15 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         else:
             labels = torch.tensor(target_df['class_id'].values, dtype=torch.int64)
 
-        # bounding boxes
-        boxes = torch.from_numpy(target_df[['xmin', 'ymin', 'xmax', 'ymax']].values).type(torch.float32)
+        # boxes
+        boxes = []
+        for row_idx in range(len(target_df)):
+            x_1 = target_df.iloc[row_idx]['xmin']
+            y_1 = target_df.iloc[row_idx]['ymin']
+            x_2 = target_df.iloc[row_idx]['xmax']
+            y_2 = target_df.iloc[row_idx]['ymax']
+            boxes.append([x_1, y_1, x_2, y_2])
+        boxes = torch.as_tensor(boxes, dtype=torch.float32)
 
         # target
         target = {}
