@@ -37,9 +37,11 @@ def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_cla
         False, BIRD_ONLY
     )
 
+    # Model and optimizer
     model = get_pretrained_od_model(num_classes)
     optimizer = get_sgd_optim(model, l_r)
 
+    # Train the model
     results = train_detector(
         model,
         optimizer,
@@ -52,6 +54,7 @@ def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_cla
         model_name
     )
 
+    # Plot the loss curves and precision-recall curves
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
                 f'Training and validation loss curves of {model_name} detector', PLOTS_PATH)
     plot_precision_recall(results[2], 'epoch', 'precision and recall',
@@ -59,6 +62,7 @@ def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_cla
     plot_precision_recall(results[3], 'epoch', 'precision and recall',
                           f'Validation precision and recall curves of {model_name} detector', PLOTS_PATH)
 
+    # Visualize the predictions
     batch = 0
     preds = get_od_predictions(model, valloader, DEVICE, batch)
     for idx in range(len(preds)):

@@ -16,16 +16,16 @@ from src.data.plotlib import plot_curves
 
 def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epochs, name, save_path, device, lr):
     ''' Train a classifier model using the given hyperparameters and configurations.'''
-    # explore data
+    # explore cropped bird images data
     all_data = datasets.ImageFolder(all_data_dir)
     all_dataloader = get_clf_dataloader_from_dir(all_data_dir, batch_size=batch_size, shuffle=False, preprocess=None)
     class_names = all_dataloader.dataset.classes
 
-    # weights and tranformations
+    # compute weights and tranformations
     weights = ResNet50_Weights.IMAGENET1K_V2
     preprocess = weights.transforms()
 
-    # dataloaders
+    # get dataloaders from image folders
     trainloader = get_clf_dataloader_from_dir(train_dir, batch_size=batch_size, shuffle=True, preprocess=preprocess)
     valloader = get_clf_dataloader_from_dir(val_dir, batch_size=batch_size, shuffle=False, preprocess=preprocess)
 
