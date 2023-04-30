@@ -26,26 +26,35 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
 
         # labels
         target_df = csv_to_df(target_path)
+        num_objs = len(target_df)
         if self._bird_only:
-            labels = torch.tensor([1] * len(target_df), dtype=torch.int64)
+            labels = torch.tensor([1] * num_objs, dtype=torch.int64)
         else:
             labels = torch.tensor(target_df['class_id'].values, dtype=torch.int64)
 
         # boxes
         boxes = []
-        for row_idx in range(len(target_df)):
+        for row_idx in range(num_objs):
             x_1 = target_df.iloc[row_idx]['xmin']
             y_1 = target_df.iloc[row_idx]['ymin']
             x_2 = target_df.iloc[row_idx]['xmax']
             y_2 = target_df.iloc[row_idx]['ymax']
             boxes.append([x_1, y_1, x_2, y_2])
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
+        
+        # compute area
+        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+
+        # suppose all instances are not crowd
+        iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
 
         # target
         target = {}
         target['boxes'] = boxes
         target['labels'] = labels
         target['image_id'] = torch.tensor([idx])
+        target["area"] = area
+        target["iscrowd"] = iscrowd
 
         # apply transforms
         if self._transform is not None:
