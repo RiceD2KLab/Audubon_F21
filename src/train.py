@@ -134,7 +134,7 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         val_loss, val_accuracy = get_clf_loss_accuracy(model, loss_fn, valloader, device)
         val_loss_list.append(val_loss)
         val_accuracy_list.append(val_accuracy)
-        
+
         # print evaluation metrics
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
             print("Epoch:", epoch + 1, "| Training loss:", train_loss, "| Validation loss:", val_loss,
