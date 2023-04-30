@@ -49,7 +49,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
 
         # print evaluation metrics
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
-            print("Epoch:", epoch + 1, "| Training loss:", train_loss, "| Validation loss:", val_loss)
+            print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.2f}', "| Validation loss:", f'{val_loss:.2f}')
 
         print()
         print("Evaluating model on training set...")
@@ -137,8 +137,8 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
 
         # print evaluation metrics
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
-            print("Epoch:", epoch + 1, "| Training loss:", train_loss, "| Validation loss:", val_loss,
-                  "| Training accuracy:", train_accuracy, "| Validation accuracy:", val_accuracy)
+            print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.2f}', "| Validation loss:", f'{val_loss:.2f}',
+                  "| Training accuracy:", f'{train_accuracy:.2f}', "| Validation accuracy:", f'{val_accuracy:.2f}')
 
         # save best model
         if val_accuracy > best_val_accuracy:
