@@ -3,7 +3,7 @@ from .coco import transforms as T
 
 
 def get_transform(train):
-    ''' Transformations to apply to images'''
+    ''' Transformations to apply to images depending on whether training is True or False'''
     transforms = []
     transforms.append(T.PILToTensor())
     transforms.append(T.ConvertImageDtype(torch.float))

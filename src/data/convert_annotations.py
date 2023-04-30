@@ -10,7 +10,7 @@ def write_csv(old_path, new_path, mapping):
         old_path: path to the folder containing the old csv files
         new_path: path to the folder to save the new csv files
         mapping: dictionary mapping old class names to new class names
-    Write new csv files to new_path with new class names and new columns
+    Write new csv files to new_path with new class names and new columns.
     '''
     # get all file names in the old csv files folder sorted alphabetically
     old_csv_file_names = get_file_names(old_path, 'csv')
@@ -47,7 +47,14 @@ def write_csv(old_path, new_path, mapping):
 
 
 def add_class_id_and_data_exploration(new_path, title, data_path, plot_path=None):
-    ''' add class_id column to each csv file and plot distribution of classes'''
+    '''
+    Args:
+        new_path: path to the folder containing the new csv files
+        title: title of the plot
+        data_path: path to the folder containing the new csv files
+        plot_path: path to the folder to save the plot
+    Add class_id column to each csv file and plot distribution of classes.
+    '''
     # get all file names in the new csv files folder sorted alphabetically
     new_csv_file_names = get_file_names(new_path, 'csv')
 

@@ -11,6 +11,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             jpg_paths (list of strings): list of paths to images
             csv_paths (list of strings): list of paths to targets
             transforms (torchvision.transforms): transforms to apply to images and targets
+            bird_only (bool): whether to be bird-only or species
         '''
         self._jpg_paths = jpg_paths
         self._csv_paths = csv_paths
@@ -18,7 +19,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         self._bird_only = bird_only
 
     def __getitem__(self, idx):
-        ''' Returns image and target for a given index '''
+        ''' Returns image and target for a given idx '''
         # file path
         image_path, target_path = self._jpg_paths[idx], self._csv_paths[idx]
 
@@ -74,7 +75,15 @@ def od_collate_fn(batch):
 
 
 def get_od_dataloader(jpg_paths, csv_paths, transform, batch_size, shuffle, species):
-    ''' Returns dataloader for object detection '''
+    '''
+    Args:
+        jpg_paths (list of strings): list of paths to images
+        csv_paths (list of strings): list of paths to targets
+        batch_size (int): batch size
+        shuffle (bool): whether to shuffle the data
+        species (bool): whether to be bird-only or species
+    Returns dataloader for object detection
+    '''
     od_dataset = ObjectDetectionDataset(jpg_paths, csv_paths, transform, species)
     od_dataloader = torch.utils.data.DataLoader(od_dataset,
                                                 batch_size=batch_size,
@@ -84,7 +93,14 @@ def get_od_dataloader(jpg_paths, csv_paths, transform, batch_size, shuffle, spec
 
 
 def get_clf_dataloader_from_dir(dir_path, batch_size, shuffle, preprocess):
-    ''' Returns dataloader for classification '''
+    '''
+    Args:
+        dir_path (string): path to the folder containing the images
+        batch_size (int): batch size
+        shuffle (bool): whether to shuffle the data
+        preprocess (torchvision.transforms): transforms to apply to images
+    Returns dataloader for classification.
+    '''
     data = datasets.ImageFolder(dir_path, transform=preprocess)
     dataloader = torch.utils.data.DataLoader(data, batch_size=batch_size, shuffle=shuffle)
     return dataloader
