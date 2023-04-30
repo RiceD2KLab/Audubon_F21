@@ -60,7 +60,7 @@ def get_od_stats(model, dataloader, device):
     Returns stats for an object detection model on a given dataset.
     '''
     n_threads = torch.get_num_threads()
-    print(f"Using {n_threads} threads for inference")
+    # print(f"Using {n_threads} threads for inference")
     torch.set_num_threads(n_threads)
 
     cpu_device = torch.device("cpu")
