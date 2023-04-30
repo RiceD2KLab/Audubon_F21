@@ -32,6 +32,7 @@ TILED_IMG_PATH = DATA_PATH + 'detection/tiled_data/annotated_images/'
 TILED_OLD_CSV_PATH = DATA_PATH + 'detection/tiled_data/annotations_xywh/'
 TILED_NEW_CSV_PATH = DATA_PATH + 'detection/tiled_data/annotations_xxyy/'
 CROPPED_PATH = DATA_PATH + 'cropped/'
+CROPPED_SPLIT_PATH = DATA_PATH + 'cropped_splitted/'
 DETECTOR_PATH = DATA_PATH + 'models/' + CONFIG['model'][0] + '/'
 
 # Annotations mapping relations
