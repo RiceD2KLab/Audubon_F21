@@ -60,6 +60,7 @@ def split_img_annos(img_files, anno_files, frac, seed=None):
     num_of_files = len(img_files)
     train_idx = int(num_of_files * frac[0])
     test_idx = train_idx + int(num_of_files * frac[1])
+    val_idx = min(test_idx + int(num_of_files * frac[2]), num_of_files)
 
     indices = np.arange(num_of_files)
     np.random.shuffle(indices)
@@ -68,8 +69,8 @@ def split_img_annos(img_files, anno_files, frac, seed=None):
          'csv': [anno_files[idx] for idx in indices[:train_idx]]},
         {'jpg': [img_files[idx] for idx in indices[train_idx: test_idx]],
          'csv': [anno_files[idx] for idx in indices[train_idx: test_idx]]},
-        {'jpg': [img_files[idx] for idx in indices[test_idx:]],
-         'csv': [anno_files[idx] for idx in indices[test_idx:]]},
+        {'jpg': [img_files[idx] for idx in indices[test_idx:val_idx]],
+         'csv': [anno_files[idx] for idx in indices[test_idx:val_idx]]},
     ]
 
     return train_test_val
