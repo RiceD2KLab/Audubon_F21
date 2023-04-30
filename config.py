@@ -11,7 +11,7 @@ SEED = 2023
 # Configurations
 CONFIG = {
     'model': ('bird_only', 2) if BIRD_ONLY else ('species', 23),  # NOTE: 23 is read from ../database/class_id.csv,
-    'data_split': (0.004, 0.0005, 0.0005) if SUBSET else (0.8, 0.1, 0.1),
+    'data_split': (0.04, 0.005, 0.005) if SUBSET else (0.8, 0.1, 0.1),
     "batch_size": 1 if SUBSET else 8
 }
 
