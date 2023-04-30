@@ -70,6 +70,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             print("Updating the best model so far with validation loss:", best_val_loss)
+            print()
             torch.save(model, save_path + name + '.pt')
 
     return train_loss_list, val_loss_list, np.array(train_stats_list), np.array(val_stats_list)
