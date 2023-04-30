@@ -1,1 +1,2 @@
 split-folders==0.5.1
+livelossplot==0.5.5
