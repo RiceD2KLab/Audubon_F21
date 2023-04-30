@@ -7,7 +7,12 @@ import sys
 
 
 class HiddenPrints:
-    ''' Hide prints '''
+    '''
+    Hide prints object.
+    Example:
+        with HiddenPrints():
+            print("This will not be printed")
+    '''
     def __enter__(self):
         self._original_stdout = sys.stdout
         sys.stdout = open(os.devnull, 'w')
