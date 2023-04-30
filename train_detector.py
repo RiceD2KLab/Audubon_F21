@@ -1,5 +1,5 @@
 import torch
-from config import CONFIG, SEED, HYPERPARAMS, DEVICE, BIRD_ONLY
+from config import CONFIG_DETECTOR, SEED, HYPERPARAMS_DETECTOR, DEVICE, BIRD_ONLY
 from config import DETECTOR_PATH, TILED_NEW_CSV_PATH, TILED_IMG_PATH, PLOTS_PATH, DPI
 from src.data.utils import get_file_names, split_img_annos
 from src.data.dataloader import get_od_dataloader
@@ -15,7 +15,7 @@ from src.eval import get_od_predictions
 torch.manual_seed(SEED)
 
 
-def train_pipeline(csv_path, img_path, split_ratio, batch_size, num_classes, l_r, num_epoch, model_name):
+def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_classes, l_r, num_epoch, model_name):
     ''' Train a detector model using the given hyperparameters and configurations. '''
     # Add JPG and CSV file names to a dictionary (makes referencing the files easier).
     csv_files = get_file_names(csv_path, 'csv')
@@ -68,6 +68,6 @@ def train_pipeline(csv_path, img_path, split_ratio, batch_size, num_classes, l_r
                               DPI, 0.5)
 
 
-train_pipeline(TILED_NEW_CSV_PATH, TILED_IMG_PATH,
-               CONFIG['data_split'], CONFIG['batch_size'], CONFIG['model'][1],
-               HYPERPARAMS['l_r'], HYPERPARAMS['num_epoch'], CONFIG['model'][0])
+train_detector_pipeline(TILED_NEW_CSV_PATH, TILED_IMG_PATH,
+                        CONFIG_DETECTOR['data_split'], CONFIG_DETECTOR['batch_size'], CONFIG_DETECTOR['model'][1],
+                        HYPERPARAMS_DETECTOR['l_r'], HYPERPARAMS_DETECTOR['num_epoch'], CONFIG_DETECTOR['model'][0])

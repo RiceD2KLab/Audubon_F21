@@ -1,6 +1,7 @@
 import torch
 from .data.coco.coco_utils import get_coco_api_from_dataset
 from .data.coco.coco_eval import CocoEvaluator
+import pandas as pd
 
 
 def get_od_predictions(model, dataloader, device, idx):
@@ -66,4 +67,59 @@ def get_od_stats(model, dataloader, device):
 
     stats = coco_evaluator.coco_eval['bbox'].stats
 
+    return stats
+
+
+def get_clf_loss_accuracy(model, loss_fn, dataloader, device):
+    ''' Returns loss and accuracy for a classifier model on a given dataset '''
+    # Set model to evaluation mode
+    model.eval()
+
+    # Initialize variables
+    correct = 0
+    cumulative_loss = 0
+    n_samples = 0
+
+    with torch.no_grad():
+        for batch_id, (inputs, labels) in enumerate(dataloader):
+            inputs, labels = inputs.to(device), labels.to(device)
+            # Loss
+            predicted = model(inputs)
+            loss = loss_fn(predicted, labels)
+            cumulative_loss += loss.item()
+
+            # Accuracy
+            predicted_labels = predicted.detach().softmax(dim=1)
+            dummy_max_vals, max_ids = predicted_labels.max(dim=1)
+            correct += (max_ids == labels).sum().cpu().item()
+            n_samples += inputs.size(0)
+
+    loss = cumulative_loss / len(dataloader)
+    accuracy = correct / n_samples
+    return loss, accuracy
+
+
+def get_clf_predictions(model, dataloader, device):
+    ''' Predict on test dataset '''
+    model.eval()
+    true_labels = []
+    out_labels = []
+    with torch.no_grad():
+        for batch_id, (inputs, labels) in enumerate(dataloader):
+            true_labels.append(labels)
+            inputs, labels = inputs.to(device), labels.to(device)
+            # Accuracy
+            predicted = model(inputs)
+            predicted_labels = predicted.detach().softmax(dim=1)
+            dummy_max_vals, max_ids = predicted_labels.max(dim=1)
+            out_labels.append(max_ids)
+    return true_labels, out_labels
+
+
+def get_stats_from_confusion_matrix(confusion_matrix, class_names):
+    ''' Returns precision, recall, and f1 score from confusion matrix '''
+    recall = confusion_matrix.diagonal() / confusion_matrix.sum(axis=0)
+    precision = confusion_matrix.diagonal() / confusion_matrix.sum(axis=1)
+    f1_score = 2 * precision * recall / (precision + recall)
+    stats = pd.DataFrame({'class': class_names, 'precision': precision, 'recall': recall, 'f1_score': f1_score})
     return stats

@@ -4,6 +4,7 @@ from torchvision.io import read_image
 from torchvision.utils import draw_bounding_boxes
 import torchvision.transforms.functional as F
 import numpy as np
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 
 def get_cmap(num, name='tab20c'):
@@ -138,4 +139,31 @@ def visualize_predictions(file_paths, output, path, title, dpi, score_threshold=
         if not os.path.exists(path):
             os.makedirs(path)
         fig.savefig(path + title + '.jpg', bbox_inches='tight')
+    return fig
+
+
+def plot_confusion_matrix(true_label_list, predicted_list, class_names, title='Confusion matrix', path=None):
+    '''
+    Plot a confusion matrix.
+
+    Input:
+        true_label_list: A list of true labels.
+        predicted_list: A list of predicted labels.
+        class_names: A list of class names.
+        path: The directory where the output image should be saved (string).
+
+    Output:
+        A confusion matrix.
+    '''
+    conf_mat = confusion_matrix(true_label_list, predicted_list)
+    disp = ConfusionMatrixDisplay(confusion_matrix=conf_mat, display_labels=class_names)
+    fig, ax = plt.subplots(figsize=(25, 10))
+    disp.plot(ax=ax)
+    ax.set_title(title)
+    plt.xticks(rotation=45, ha='right', fontsize=12)
+    if path:
+        if not os.path.exists(path):
+            os.makedirs(path)
+        fig.savefig(path + title + '.pdf', bbox_inches='tight')
+
     return fig

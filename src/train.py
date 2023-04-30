@@ -2,7 +2,7 @@ import torch
 from tqdm import tqdm
 import os
 import numpy as np
-from .eval import get_od_loss, get_od_stats
+from .eval import get_od_loss, get_od_stats, get_clf_loss_accuracy
 
 
 def train_detector(model, optimizer, loss_fn, n_epochs,
@@ -74,3 +74,69 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
             torch.save(model, save_path + name + '.pt')
 
     return train_loss_list, val_loss_list, np.array(train_stats_list), np.array(val_stats_list)
+
+
+def train_classifier(model, optimizer, loss_fn, n_epochs,
+                     trainloader, valloader,
+                     device,
+                     save_path, name,
+                     print_every):
+    ''' Train a model and save the best model '''
+    # create save path
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    # initialize variables
+    train_loss_list = []
+    val_loss_list = []
+    train_accuracy_list = []
+    val_accuracy_list = []
+
+    best_val_accuracy = 0
+
+    # Move the model and loss function to device
+    model = model.to(device)
+    loss_fn = loss_fn.to(device)
+
+    for epoch in range(n_epochs):
+        correct = 0
+        train_loss = 0
+        n_samples = 0
+
+        # Train
+        model.train()
+        for batch_id, (inputs, labels) in enumerate(tqdm(trainloader)):
+            model.zero_grad()
+            inputs, labels = inputs.to(device), labels.to(device)
+            # Loss
+            predicted = model(inputs)
+            loss = loss_fn(predicted, labels)
+            train_loss += loss.item()
+
+            # Accuracy
+            predicted_labels = predicted.detach().softmax(dim=1)
+            dummy_max_vals, max_ids = predicted_labels.max(dim=1)
+            correct += (max_ids == labels).sum().cpu().item()
+            n_samples += inputs.size(0)
+
+            # Backpropagation
+            loss.backward()
+            optimizer.step()
+
+        train_loss /= len(trainloader)
+        train_accuracy = correct / n_samples
+        train_loss_list.append(train_loss)
+        train_accuracy_list.append(train_accuracy)
+
+        # Evaluate
+        val_loss, val_accuracy = get_clf_loss_accuracy(model, loss_fn, valloader, device)
+        val_loss_list.append(val_loss)
+        val_accuracy_list.append(val_accuracy)
+
+        # save best model
+        if val_accuracy > best_val_accuracy:
+            best_val_accuracy = val_accuracy
+            print("Updating the best model so far with validation accuracy:", best_val_accuracy)
+            print()
+            torch.save(model, save_path + name + '.pt')
+    return train_loss_list, val_loss_list, train_accuracy_list, val_accuracy_list

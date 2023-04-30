@@ -1,5 +1,7 @@
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models import resnet50, ResNet50_Weights
+import torch
 
 
 def get_pretrained_od_model(num_classes, choice='fasterrcnn_resnet50_fpn'):
@@ -14,4 +16,12 @@ def get_pretrained_od_model(num_classes, choice='fasterrcnn_resnet50_fpn'):
 
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    return model
+
+
+def get_pretrained_resnet50(num_classes, weights=ResNet50_Weights.IMAGENET1K_V2):
+    ''' Return a pretrained classifier model from torchvision '''
+    # Choose pretrained classifier model
+    model = resnet50(weights=weights)
+    model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
     return model

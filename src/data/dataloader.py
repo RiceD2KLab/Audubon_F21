@@ -1,5 +1,6 @@
 import torch
 from PIL import Image
+import torchvision.datasets as datasets
 from .utils import csv_to_df
 
 
@@ -80,3 +81,10 @@ def get_od_dataloader(jpg_paths, csv_paths, transform, batch_size, shuffle, spec
                                                 shuffle=shuffle,
                                                 collate_fn=od_collate_fn)
     return od_dataloader
+
+
+def get_clf_dataloader_from_dir(dir_path, batch_size, shuffle, preprocess):
+    ''' Returns dataloader for classification '''
+    data = datasets.ImageFolder(dir_path, transform=preprocess)
+    dataloader = torch.utils.data.DataLoader(data, batch_size=batch_size, shuffle=shuffle)
+    return dataloader
