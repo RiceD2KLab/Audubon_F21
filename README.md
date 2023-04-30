@@ -25,15 +25,38 @@ The following open source packages are used in this project:
 
 ## Folder structure
 
-  - `utils` || Directory containing helper functions for data processing and exploration
-    - `data_processsing.py`
-    - `data_vis.py`
-    - `crop.py`
-  - `audubon_midpoint_demo.ipynb` || Colab notebook containing a demonstration of data processing, data exploration and building a bird-only detection model
+  - `assets` || Directory containing files used in the README, such as our data science pipeline
+  - `src` || Directory containing helper functions for data processing, data exploration and modeling
+    - `data` || Contains helper functions for data processing and data exploration
+       - `coco` || Contains helper functions for COCO API. Sources: Microsoft and Torchvision. For more information, see the bottom of the README
+         - `coco_eval.py`
+         - `coco_utils.py`
+         - `interface.py`
+         - `mask.py`
+         - `transforms.py`
+         - `utils.py`
+      - `convert_annotations.py`
+      - `crop_birds.py`
+      - `dataloader.py`
+      - `plotlib.py`
+      - `transforms.py`
+      - `utils.py`
+    - `loss_fun` || Contains helper functions for implemnting a weighted cross-entropy loss function during model training
+      - `weighted_cross_entropy.py`
+    - `models` || Contains helper functions for using a pre-trained ResNet50 model for the classifier
+      - `pretrained.py`
+    - `optimizers` || Contains helper functions for implementing optimizers for model training
+      - `adam.py`
+      - `sgd.py`
+    - `eval.py`
+    - `train.py`
+  - `config.py`|| File containing constant parameters, such as column names, bird classes and hyperparameters
+  - `requirements.txt` || List of dependencies 
+  - `train_classifier.py`|| Function for training a bird classification model
+  - `train_detector.py` || Function for training a bird localization model
+  - `update_database.py`|| Function for setting up data paths
+  - `audubon_demo.ipynb` || Colab notebook containing a demonstration of data processing, data exploration and building the bird localization and classification models
   - `README.md`
-  - `const.py` || File containing constant parameters, such as column names and hierarchical bird groups
-  - `requirements.txt` || List of dependencies
-  - `train.py` || File containing helper functions for building a bird-only detection model
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
