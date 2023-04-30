@@ -8,9 +8,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 
 def get_cmap(num, name='tab20c'):
-    '''
-    Return a function that maps each index in 0, 1, ..., n-1 to a distinct RGB color
-    '''
+    ''' Return a function that maps each index in 0, 1, ..., n-1 to a distinct RGB color '''
     return plt.cm.get_cmap(name, num)
 
 
@@ -62,7 +60,13 @@ def plot_distribution(data_frame, col_name,
 
 
 def plot_curves(arr1, arr2, label1, label2, xlabel, ylabel, title, path=None):
-    """ Plot two curves on the same plot. """
+    """ 
+    Inputs:
+        arr1: An array of values to plot.
+        arr2: An array of values to plot.
+        
+    Plot two curves on the same plot. 
+    """
     fig, axs = plt.subplots()
     axs.plot(arr1, label=label1)
     axs.plot(arr2, label=label2)
