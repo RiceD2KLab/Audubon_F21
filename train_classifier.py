@@ -39,7 +39,7 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
 
     # train classifier
     results = train_classifier(model, optimizer, loss_fn, n_epochs,
-                               trainloader, valloader, device, save_path, name, print_every=1)
+                               trainloader, valloader, device, save_path, name, print_every=5)
 
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
                 f'Training and validation loss curves of {name} bird classifier', PLOTS_PATH)

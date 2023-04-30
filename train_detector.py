@@ -50,7 +50,7 @@ def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_cla
         DEVICE,
         DETECTOR_PATH,
         model_name,
-        print_every=1
+        print_every=5
     )
 
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
