@@ -49,7 +49,7 @@ def train_pipeline(csv_path, img_path, split_ratio, batch_size, num_classes, l_r
         DEVICE,
         DETECTOR_PATH,
         model_name,
-        print_every=5
+        print_every=1
     )
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
                 'training and validation loss curves', PLOTS_PATH)
