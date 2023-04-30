@@ -54,7 +54,7 @@ def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_cla
     )
 
     plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
-                'training and validation loss curves', PLOTS_PATH)
+                'training and validation loss curves of bird detector', PLOTS_PATH)
     plot_precision_recall(results[2], 'epoch', 'precision and recall',
                           'training precision and recall curves', PLOTS_PATH)
     plot_precision_recall(results[3], 'epoch', 'precision and recall',

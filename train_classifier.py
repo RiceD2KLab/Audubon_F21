@@ -11,6 +11,7 @@ from src.train import train_classifier
 from src.eval import get_clf_predictions, get_stats_from_confusion_matrix
 from src.data.plotlib import plot_confusion_matrix
 from sklearn.metrics import confusion_matrix
+from src.data.plotlib import plot_curves
 
 
 def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epochs, name, save_path, device, lr):
@@ -37,8 +38,11 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
     loss_fn = get_weighted_cross_entropy_loss_fn(class_weights, device=device)
 
     # train classifier
-    train_classifier(model, optimizer, loss_fn, n_epochs,
-                     trainloader, valloader, device, save_path, name, print_every=1)
+    results = train_classifier(model, optimizer, loss_fn, n_epochs,
+                               trainloader, valloader, device, save_path, name, print_every=1)
+
+    plot_curves(results[0], results[1], 'training loss', 'validation loss', 'epoch', 'loss',
+                'training and validation loss curves of bird classifier', PLOTS_PATH)
 
     # load the best classifier
     model = torch.load(save_path + name + '.pt')
