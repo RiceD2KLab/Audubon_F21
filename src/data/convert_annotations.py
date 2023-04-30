@@ -5,7 +5,13 @@ from src.data.plotlib import plot_distribution
 
 
 def write_csv(old_path, new_path, mapping):
-    ''' write new csv files with new columns and new class names'''
+    '''
+    Args:
+        old_path: path to the folder containing the old csv files
+        new_path: path to the folder to save the new csv files
+        mapping: dictionary mapping old class names to new class names
+    Write new csv files to new_path with new class names and new columns
+    '''
     # get all file names in the old csv files folder sorted alphabetically
     old_csv_file_names = get_file_names(old_path, 'csv')
     if not os.path.exists(new_path):
