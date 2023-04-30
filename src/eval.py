@@ -21,7 +21,6 @@ def get_od_predictions(model, dataloader, device, idx):
 
 def get_od_loss(model, loss_fn, dataloader, device):
     ''' Returns loss for an object detection model on a given dataset '''
-    model.eval()
     loss = 0
     with torch.no_grad():
         for batch_id, (images, targets) in enumerate(dataloader):
