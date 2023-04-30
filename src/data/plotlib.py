@@ -60,12 +60,12 @@ def plot_distribution(data_frame, col_name,
 
 
 def plot_curves(arr1, arr2, label1, label2, xlabel, ylabel, title, path=None):
-    """ 
+    """
     Inputs:
         arr1: An array of values to plot.
         arr2: An array of values to plot.
-        
-    Plot two curves on the same plot. 
+
+    Plot two curves on the same plot.
     """
     fig, axs = plt.subplots()
     axs.plot(arr1, label=label1)
