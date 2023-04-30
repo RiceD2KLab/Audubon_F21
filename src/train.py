@@ -3,13 +3,25 @@ from tqdm import tqdm
 import os
 import numpy as np
 from .eval import get_od_loss, get_od_stats, get_clf_loss_accuracy
+import sys
+
+
+class HiddenPrints:
+    ''' Hide prints '''
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
 
 
 def train_detector(model, optimizer, loss_fn, n_epochs,
                    trainloader, valloader,
                    device,
                    save_path, name,
-                   print_every):
+                   print_every=5):
     '''
     Args:
         model (torch.nn): detector model
@@ -41,7 +53,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         train_loss = 0
         for batch_id, (images, targets) in enumerate(tqdm(trainloader,
                                                           desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                          leave=False, ncols=80)):
+                                                          position=0, leave=True, ncols=80)):
             # move data to device
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
@@ -64,14 +76,11 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
             print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.4f}', "| Validation loss:", f'{val_loss:.4f}')
 
-        # print()
-        # print("Evaluating model on training set...")
-        train_stats = get_od_stats(model, trainloader, device)
+        with HiddenPrints():
+            train_stats = get_od_stats(model, trainloader, device)
 
-        # print()
-        # print("Evaluating model on validation set...")
-        val_stats = get_od_stats(model, valloader, device)
-        # print()
+        with HiddenPrints():
+            val_stats = get_od_stats(model, valloader, device)
 
         # record evaluation metrics
         train_loss_list.append(train_loss)
@@ -93,7 +102,7 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
                      trainloader, valloader,
                      device,
                      save_path, name,
-                     print_every):
+                     print_every=5):
     '''
     Args:
         model (torch.nn): classifier model
@@ -133,7 +142,7 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         model.train()
         for batch_id, (inputs, labels) in enumerate(tqdm(trainloader,
                                                          desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                         leave=False, ncols=80)):
+                                                         position=0, leave=True, ncols=80)):
             model.zero_grad()
             inputs, labels = inputs.to(device), labels.to(device)
             # Loss
