@@ -10,7 +10,20 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
                    device,
                    save_path, name,
                    print_every):
-    ''' Train a model and save the best model '''
+    '''
+    Args:
+        model (torch.nn): detector model
+        optimizer (torch.optim): optimizer
+        loss_fn (torch.nn): loss function
+        n_epochs (int): number of epochs
+        trainloader (torch.utils.data.DataLoader): dataloader for training set
+        valloader (torch.utils.data.DataLoader): dataloader for validation set
+        device (torch.device): device to use
+        save_path (string): path to save the best model
+        name (string): name of the model
+        print_every (int): print evaluation metrics every print_every epochs
+    Train a model and save the best model.
+    '''
     # create save path
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -28,7 +41,7 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         train_loss = 0
         for batch_id, (images, targets) in enumerate(tqdm(trainloader,
                                                           desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                          leave=True, ncols=80)):
+                                                          leave=False, ncols=80)):
             # move data to device
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
@@ -51,14 +64,14 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
         if (epoch + 1) % print_every == 0 or epoch == n_epochs - 1:
             print("Epoch:", epoch + 1, "| Training loss:", f'{train_loss:.4f}', "| Validation loss:", f'{val_loss:.4f}')
 
-        print()
-        print("Evaluating model on training set...")
+        # print()
+        # print("Evaluating model on training set...")
         train_stats = get_od_stats(model, trainloader, device)
 
-        print()
-        print("Evaluating model on validation set...")
+        # print()
+        # print("Evaluating model on validation set...")
         val_stats = get_od_stats(model, valloader, device)
-        print()
+        # print()
 
         # record evaluation metrics
         train_loss_list.append(train_loss)
@@ -81,7 +94,20 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
                      device,
                      save_path, name,
                      print_every):
-    ''' Train a model and save the best model '''
+    '''
+    Args:
+        model (torch.nn): classifier model
+        optimizer (torch.optim): optimizer
+        loss_fn (torch.nn): loss function
+        n_epochs (int): number of epochs
+        trainloader (torch.utils.data.DataLoader): dataloader for training set
+        valloader (torch.utils.data.DataLoader): dataloader for validation set
+        device (torch.device): device to use
+        save_path (string): path to save the best model
+        name (string): name of the model
+        print_every (int): print evaluation metrics every print_every epochs
+    Train a model and save the best model
+    '''
     # create save path
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -107,7 +133,7 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         model.train()
         for batch_id, (inputs, labels) in enumerate(tqdm(trainloader,
                                                          desc=f"Epoch {epoch + 1} of {n_epochs}",
-                                                         leave=True, ncols=80)):
+                                                         leave=False, ncols=80)):
             model.zero_grad()
             inputs, labels = inputs.to(device), labels.to(device)
             # Loss
