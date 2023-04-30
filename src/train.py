@@ -75,9 +75,9 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
 
         # evaluate model
         train_loss /= len(trainloader)
-        logs['training loss'] = train_loss
+        logs['loss'] = train_loss
         val_loss = get_od_loss(model, loss_fn, valloader, device)
-        logs['validation loss'] = val_loss
+        logs['val_loss'] = val_loss
 
         with HiddenPrints():
             train_stats = get_od_stats(model, trainloader, device)
@@ -174,10 +174,10 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
         val_loss_list.append(val_loss)
         val_accuracy_list.append(val_accuracy)
 
-        logs['training loss'] = train_loss
-        logs['validation loss'] = val_loss
-        logs['training accuracy'] = train_accuracy
-        logs['validation accuracy'] = val_accuracy
+        logs['loss'] = train_loss
+        logs['val_loss'] = val_loss
+        logs['accuracy'] = train_accuracy
+        logs['val_accuracy'] = val_accuracy
 
         # save best model
         if val_accuracy > best_val_accuracy:
