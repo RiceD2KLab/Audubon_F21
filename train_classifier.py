@@ -1,6 +1,6 @@
 import torch
 from config import CLASSIFIER_PATH, CONFIG_CLASSIFIER, HYPERPARAMS_CLASSIFIER
-from config import CLF_TRAIN_PATH, CLF_VAL_PATH, CROPPED_PATH, DEVICE, PLOTS_PATH
+from config import CLF_TRAIN_PATH, CLF_VAL_PATH, CROPPED_PATH, DEVICE, PLOTS_PATH, DATA_PATH
 import torchvision.datasets as datasets
 from src.data.dataloader import get_clf_dataloader_from_dir
 from torchvision.models import ResNet50_Weights
@@ -59,7 +59,7 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
     # get stats
     conf_mat = confusion_matrix(true_labels_list, predicted_list)
     stats = get_stats_from_confusion_matrix(conf_mat, class_names)
-    print(stats)
+    stats.to_csv(DATA_PATH + name + '_stats.csv', index=False)
 
 
 train_classifier_pipline(CROPPED_PATH, CLF_TRAIN_PATH, CLF_VAL_PATH,
