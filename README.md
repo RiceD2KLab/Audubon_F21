@@ -67,7 +67,7 @@ The following open source packages are used in this project:
 ## Data science pipeline
 Our data science pipeline splits the tasks of bird detection and species classification between two models. The bird detection model is based on the model developed by previous groups. We focused on developing a bird classification model that performs well for all species classes. For each model, we followed specific data wrangling, model training and evaluation steps. Additionally, we overhauled the output of the models by launching a graphical user interface (GUI) which will allow scientists to easily annotate their own drone images
 
-<img src="data science pipeline.png">
+<img src="assets/data science pipeline.png">
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
