@@ -7,7 +7,7 @@ import torch
 def get_pretrained_od_model(num_classes, choice='fasterrcnn_resnet50_fpn'):
     '''
     Return a pretrained object detection model from torchvision
-    Use FastRCNPredictor as box predictor
+    Use FastRCNPredictor as box predictor with num_classes output channels
     '''
     # Choose pretrained object detection model
     if choice == 'fasterrcnn_resnet50_fpn':
@@ -20,7 +20,10 @@ def get_pretrained_od_model(num_classes, choice='fasterrcnn_resnet50_fpn'):
 
 
 def get_pretrained_resnet50(num_classes, weights=ResNet50_Weights.IMAGENET1K_V2):
-    ''' Return a pretrained classifier model from torchvision '''
+    '''
+    Return a resnet50 classifier model from torchvision
+    with num_classes output channels and pretrained weights
+    '''
     # Choose pretrained classifier model
     model = resnet50(weights=weights)
     model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
