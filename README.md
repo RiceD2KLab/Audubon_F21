@@ -16,7 +16,7 @@ Run the demo notebook [here](https://colab.research.google.com/drive/1TiGTjLM1Xz
 
 ## Issues
 
-1. Tiling function is incorrect and inefficient. Need to write a new one.
+1. Tiling function is inefficient. Need to write a new one.
 
 ## Acknowledgements
 
