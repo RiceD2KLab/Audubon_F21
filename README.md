@@ -1,4 +1,4 @@
-# AviAlert - D2K Team Aubudon Spring 2023
+# AviAlert - D2K Team Audubon Spring 2023
 
 The name "AviAlert" is a combination of the words "aviary" (a place where birds are kept) and "alert" (to bring attention to something). AviAlert is a Python package for object dectection and classification.
 
