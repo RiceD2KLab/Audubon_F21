@@ -10,10 +10,10 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         Initialize ObjectDetectionDataset object.
         
         Args:
-            jpg_paths (list of strings): List of paths to the image files.
-            csv_paths (list of strings): List of paths to the CSV files containing target data.
-            transform (torchvision.transforms): Transforms to apply to images and targets.
-            bird_only (bool): Whether to only include bird species.
+            jpg_paths: List of paths to the image files.
+            csv_paths: List of paths to the CSV files containing target data.
+            transform: Transforms to apply to images and targets.
+            bird_only: Whether to only include bird species.
         '''
         self._jpg_paths = jpg_paths
         self._csv_paths = csv_paths
@@ -25,7 +25,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         Get image and target for a given index.
 
         Args:
-            idx (int): Index of the item to get.
+            idx: Index of the item to get.
 
         Returns:
             Tuple of image and target.
@@ -89,7 +89,7 @@ def od_collate_fn(batch):
     Stack images and targets in batches of consistant size and shape for object detection.
 
     Args:
-        batch (list): List of (image, target) tuples.
+        batch: List of (image, target) tuples.
 
     Returns:
         Tuple of stacked images and targets.
@@ -102,12 +102,12 @@ def get_od_dataloader(jpg_paths, csv_paths, transform, batch_size, shuffle, spec
     Returns a dataloader for object detection.
 
     Args:
-        jpg_paths (list of strings): List of paths to images.
-        csv_paths (list of strings): List of paths to targets.
-        transform (torchvision.transforms.transforms.Compose): Transforms to apply to images.
-        batch_size (int): Batch size.
-        shuffle (bool): Whether to shuffle the data.
-        species (bool): Whether to be bird-only or species.
+        jpg_paths: List of paths to images.
+        csv_paths: List of paths to targets.
+        transform: Transforms to apply to images.
+        batch_size: Batch size.
+        shuffle: Whether to shuffle the data.
+        species: Whether to be bird-only or species.
 
     Returns:
         The object detection dataloader.
@@ -127,10 +127,10 @@ def get_clf_dataloader_from_dir(dir_path, batch_size, shuffle, preprocess):
     Returns a dataloader for classification.
 
     Args:
-        dir_path (str): Path to the folder containing the images.
-        batch_size (int): Batch size.
-        shuffle (bool): Whether to shuffle the data.
-        preprocess (torchvision.transforms.transforms.Compose): Transforms to apply to images.
+        dir_path: Path to the folder containing the images.
+        batch_size: Batch size.
+        shuffle: Whether to shuffle the data.
+        preprocess: Transforms to apply to images.
 
     Returns:
         The classification dataloader.
