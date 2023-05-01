@@ -8,16 +8,22 @@ from livelossplot import PlotLosses
 
 class HiddenPrints:
     '''
-    Hide prints object.
+    Hide prints object. Used to hide the model training output in our demonstration Colab notebook. 
     Example:
         with HiddenPrints():
             print("This will not be printed")
     '''
     def __enter__(self):
+        '''
+        Hides printed output by redirecting standard output to os.devnull
+        '''
         self._original_stdout = sys.stdout
         sys.stdout = open(os.devnull, 'w')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        '''
+        Restores the original standard output stream
+        '''
         sys.stdout.close()
         sys.stdout = self._original_stdout
 
@@ -29,25 +35,19 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
     '''
     Trains a detector model for object detection using the specified optimizer, loss function, and training/validation data loaders.
 
-    Args:
-        model (torch.nn.Module): The detector model to train.
-        optimizer (torch.optim.Optimizer): The optimizer to use for training.
-        loss_fn (torch.nn.Module): The loss function to use for training.
-        n_epochs (int): The number of epochs to train for.
-        trainloader (torch.utils.data.DataLoader): The data loader for the training set.
-        valloader (torch.utils.data.DataLoader): The data loader for the validation set.
-        device (torch.device): The device to use for training and inference.
-        save_path (str): The path to save the best model.
-        name (str): The name of the model.
+    Input:
+        model: The detector model to train.
+        optimizer: The optimizer to use for training.
+        loss_fn: The loss function to use for training.
+        n_epochs: The number of epochs to train for.
+        trainloader: The data loader for the training set.
+        valloader: The data loader for the validation set.
+        device: The device to use for training and inference.
+        save_path: The path to save the best model.
+        name: The name of the model.
 
-    Returns:
-        Tuple: A tuple of four numpy arrays containing the training loss, validation loss, training statistics, and validation statistics, respectively.
-
-    Raises:
-        ValueError: If `save_path` does not exist and cannot be created.
-
-    Notes:
-        The model is trained for the specified number of epochs using the given optimizer and loss function. During each epoch, the model is trained on the training data loader by performing forward and backward passes, and then evaluated on the validation data loader by computing the loss and evaluation statistics. The best model is saved based on the validation loss. The function also uses the liveloss library to plot the live training and validation loss.
+    Output:
+        A tuple of four numpy arrays containing the training loss, validation loss, training statistics, and validation statistics.
     '''
     # create save path
     if not os.path.exists(save_path):
@@ -120,23 +120,20 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
     '''
     Trains a PyTorch classifier model and saves the best model based on validation accuracy.
 
-    Args:
-        model (torch.nn): The classifier model to train.
-        optimizer (torch.optim): The optimizer used for training.
-        loss_fn (torch.nn): The loss function used for training.
-        n_epochs (int): The number of epochs to train for.
-        trainloader (torch.utils.data.DataLoader): The dataloader for the training set.
-        valloader (torch.utils.data.DataLoader): The dataloader for the validation set.
-        device (torch.device): The device to use for training.
-        save_path (str): The path to save the best model.
-        name (str): The name of the model to save.
-        print_every (int, optional): Print evaluation metrics every `print_every` epochs. Defaults to 5.
+    Input:
+        model: The classifier model to train.
+        optimizer: The optimizer used for training.
+        loss_fn: The loss function used for training.
+        n_epochs: The number of epochs to train for.
+        trainloader: The dataloader for the training set.
+        valloader: The dataloader for the validation set.
+        device: The device to use for training.
+        save_path: The path to save the best model.
+        name: The name of the model to save.
+        print_every: Print evaluation metrics every `print_every` epochs. Defaults to 5.
 
-    Returns:
-        Tuple of four lists representing the training loss, validation loss, training accuracy, and validation accuracy respectively.
-
-    Raises:
-        None.
+    Output:
+        Tuple of four lists representing the training loss, validation loss, training accuracy, and validation accuracy.
     '''
     # create save path
     if not os.path.exists(save_path):
