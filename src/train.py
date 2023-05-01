@@ -36,15 +36,15 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
     Trains a detector model for object detection using the specified optimizer, loss function, and training/validation data loaders.
 
     Input:
-        model: The detector model to train.
-        optimizer: The optimizer to use for training.
-        loss_fn: The loss function to use for training.
-        n_epochs: The number of epochs to train for.
-        trainloader: The data loader for the training set.
-        valloader: The data loader for the validation set.
-        device: The device to use for training and inference.
-        save_path: The path to save the best model.
-        name: The name of the model.
+        model (torch object): The detector model to train.
+        optimizer (function): The optimizer to use for training.
+        loss_fn (function): The loss function to use for training.
+        n_epochs (int): The number of epochs to train for.
+        trainloader (dataloader): The data loader for the training set.
+        valloader (dataloader): The data loader for the validation set.
+        device (str): The device to use for training and inference.
+        save_path (str): The path to save the best model.
+        name (str): The name of the model.
 
     Output:
         A tuple of four numpy arrays containing the training loss, validation loss, training statistics, and validation statistics.
