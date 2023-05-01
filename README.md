@@ -4,10 +4,15 @@ The name "AviAlert" is a combination of the words "aviary" (a place where birds 
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
+## Demo
+
+Run the demo notebook [here](https://colab.research.google.com/drive/1TiGTjLM1XzjMOdD-v-PrEPylSTFlBXjL?usp=sharing).
+
 ## Project description
+
 Audubon Texas is pioneering the use of drone photography to monitor populations of colonial waterbirds in the Texas Gulf Coast. Researchers need to comb through high resolution images and manually count up birds by species class, which can take weeks for even one image. Seeking to automate the annotation process, Houston Audubon partnered with the Data to Knowledge (D2K) lab at Rice University. Student teams have developed an object detection based deep learning model that can automatically detect birds within a drone image and classify their species. This semester, we will continue the project with two main objectives:
-  1. Improve the species classification capabilities of the model.
-  2. Develop an AI-assisted waterbird annotation tool.
+    1. Improve the species classification capabilities of the model.
+    2. Develop an AI-assisted waterbird annotation tool.
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -122,12 +127,6 @@ Our team utilize Dropbox which permits multiple downloads of files within a shor
 ## Data format
 
 CSV and JPG files that share the same name but have different file extensions. The CSV files and JPG files should be saved in different folders.
-
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
-
-## Running
-
-Run the demo notebook [here](https://colab.research.google.com/drive/1TiGTjLM1XzjMOdD-v-PrEPylSTFlBXjL?usp=sharing).
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
