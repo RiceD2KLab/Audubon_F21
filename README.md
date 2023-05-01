@@ -6,7 +6,7 @@ The name "AviAlert" is a combination of the words "aviary" (a place where birds 
 
 ## Demo
 
-Run the demo notebook [here](https://colab.research.google.com/drive/1TiGTjLM1XzjMOdD-v-PrEPylSTFlBXjL?usp=sharing).
+Run the demo notebook in Colab by clicking [here](https://colab.research.google.com/drive/1TiGTjLM1XzjMOdD-v-PrEPylSTFlBXjL?usp=sharing). The executed notebook is saved in `notebooks/demo.ipynb`.
 
 ## Project description
 
@@ -40,6 +40,9 @@ The following open source packages are used in this project:
         - `package.json`
         - `src`|| Directory containing files for the front-end of the GUI
     - `server` || Directory containing files for setting up the server and GUI backend
+  - `notebooks` || Directory containing Jupyter notebooks for demonstrations or examples
+    - `demo.ipynb`
+
   - `src` || Directory containing helper functions for data processing, data exploration and modeling
     - `data` || Contains helper functions for data processing and data exploration
        - `coco` || Contains helper functions for COCO API. Sources: Microsoft and Torchvision. For more information, see the bottom of the README
