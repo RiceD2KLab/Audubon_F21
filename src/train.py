@@ -121,16 +121,16 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
     Trains a PyTorch classifier model and saves the best model based on validation accuracy.
 
     Input:
-        model: The classifier model to train.
-        optimizer: The optimizer used for training.
-        loss_fn: The loss function used for training.
-        n_epochs: The number of epochs to train for.
-        trainloader: The dataloader for the training set.
-        valloader: The dataloader for the validation set.
-        device: The device to use for training.
-        save_path: The path to save the best model.
-        name: The name of the model to save.
-        print_every: Print evaluation metrics every `print_every` epochs. Defaults to 5.
+        model (Torch object): The classifier model to train.
+        optimizer (function): The optimizer used for training.
+        loss_fn (function): The loss function used for training.
+        n_epochs (int): The number of epochs to train for.
+        trainloader (dataloader): The dataloader for the training set.
+        valloader (dataloader): The dataloader for the validation set.
+        device (str): The device to use for training.
+        save_path (str): The path to save the best model.
+        name (str): The name of the model to save.
+        print_every (int): Print evaluation metrics every `print_every` epochs. Defaults to 5.
 
     Output:
         Tuple of four lists representing the training loss, validation loss, training accuracy, and validation accuracy.
