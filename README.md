@@ -35,9 +35,11 @@ The following open source packages are used in this project:
 
   - `assets` || Directory containing files used in the README, such as our data science pipeline
   - `GUI` || Directory containing files used to run the GUI
-    - `audobon-website` || Contain files for the front-end of the GUI
-    - `audobon-website` || Contain files for the backbone of the GUI
-    - `README.md` || Readme file for the GUI. Refer here for details of the GUI
+    - `audubon-website` || Contain files for the front-end of the GUI
+        - `README.md` || Readme file for the GUI. Refer here for details of the GUI
+        - `package.json`
+        - `src`|| Directory containing files for the front-end of the GUI
+    - `server` || Directory containing files for setting up the server and GUI backend
   - `src` || Directory containing helper functions for data processing, data exploration and modeling
     - `data` || Contains helper functions for data processing and data exploration
        - `coco` || Contains helper functions for COCO API. Sources: Microsoft and Torchvision. For more information, see the bottom of the README
@@ -108,14 +110,14 @@ Each annotated UAV image has a corresponding CSV file containing bird annotation
   - Width of the bounding box
   - Height of the bounding box
 
-In order to access the dataset in Colab, use the following code:
+In order to access the full dataset in Colab, use the following code:
 
 ```
 !gdown -q 'https://drive.google.com/uc?id=1oK_1Y16dMwcqytFd41UNHxP_O7ju22bo'
 !unzip -q './S23-Audubon.zip' && mv S23-Audubon [desired folder in working directory] 
 ```
 
-The dataset is stored in Google Drive, and must be accessed using the !gdown command. 
+The full Audubon dataset is stored in Google Drive, and must be accessed using the !gdown command. 
 
 Our team utilize Dropbox which permits multiple downloads of files within a short timeframe. We have segregated the images and annotations into distinct folders for the original and tiled data. Use the following code to retrieve the data:
 

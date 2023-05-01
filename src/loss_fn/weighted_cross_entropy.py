@@ -30,8 +30,8 @@ def get_weighted_cross_entropy_loss_fn(class_weights, device):
     Returns a weighted cross entropy loss function with the given class weights.
     
     Args:
-        class_weights: A list of class weights
-        device: The device to compute the weights on
+        class_weights (list): A list of class weights
+        device (str): The device to compute the weights on
     
     Returns:
         The weighted cross entropy loss function

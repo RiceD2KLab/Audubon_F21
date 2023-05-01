@@ -27,7 +27,7 @@ def plot_distribution(data_frame, col_name,
     Plots a barchart of the value counts of a column in a dataframe.
 
     Args:
-        data_frame (pandas.DataFrame): The dataframe containing the column to plot.
+        data_frame (pandas dataframe): The dataframe containing the column to plot.
         col_name (str): The name of the column to plot.
         x_label (str): The label for the x-axis.
         y_label (str): The label for the y-axis.
@@ -174,7 +174,7 @@ def visualize_predictions(file_paths, output, path, title, dpi, score_threshold=
         path (str): The directory where the output image should be saved.
         title (str): The title of the output image.
         dpi (int): The DPI of the output image.
-        score_threshold (float, optional): The minimum score threshold for drawing bounding boxes. 
+        score_threshold (float): The minimum score threshold for drawing bounding boxes. 
             Defaults to 0.8.
 
     Returns:
@@ -201,8 +201,8 @@ def plot_confusion_matrix(true_label_list, predicted_list, class_names, title='C
         true_label_list (list): A list of true labels.
         predicted_list (list): A list of predicted labels.
         class_names (list): A list of class names.
-        title (str, optional): The title of the output image. Defaults to 'Confusion matrix'.
-        path (str, optional): The directory where the output image should be saved.
+        title (str): The title of the output image. Defaults to 'Confusion matrix'.
+        path (str): The directory where the output image should be saved.
 
     Returns:
         A figure object containing the confusion matrix.
