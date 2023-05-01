@@ -7,7 +7,23 @@ from src.data.crop_birds import cropping
 
 
 def update_database():
-    ''' Update database with new annotations and images '''
+    ''' 
+    Update database using the following steps: 
+        1. Update annotations on the original images by writing a new CSV file NEW_CSV_PATH.
+        2. Update annotations on the tiled images by creating a new CSV file TILED_NEW_CSV_PATH.
+        3. Plot a histogram of bird species distribution in the full image dataset.
+        4. Plot a histogram of bird species distribution in the tiled image dataset.
+        5. Crop the birds from the original images into folders according to their species class, 
+           using annotations in the NEW_CSV_PATH file and saving the cropped images in CROPPED_PATH.
+        6. Split the cropped images into train, validation, and test sets, and save them 
+           in a separate directory at CROPPED_SPLIT_PATH, with a ratio of (0.8, 0.1, 0.1) respectively.
+    
+    Output: 
+        Updated annotations in NEW_CSV_PATH and TILED_NEW_CSV_PATH
+        Histograms of species class distribution in the full image and tiled image datasets
+        Cropped bird images organized into folders by species class
+        Training, validation and test sets of cropped images
+    '''
 
     # update annotations on original images
     write_csv(OLD_CSV_PATH, NEW_CSV_PATH, DESC_MAPPING)
