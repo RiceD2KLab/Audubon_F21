@@ -8,16 +8,22 @@ from livelossplot import PlotLosses
 
 class HiddenPrints:
     '''
-    Hide prints object.
+    Hide prints object. Used to hide the model training output in our demonstration Colab notebook. 
     Example:
         with HiddenPrints():
             print("This will not be printed")
     '''
     def __enter__(self):
+        '''
+        Hides printed output by redirecting standard output to os.devnull
+        '''
         self._original_stdout = sys.stdout
         sys.stdout = open(os.devnull, 'w')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        '''
+        Restores the original standard output stream
+        '''
         sys.stdout.close()
         sys.stdout = self._original_stdout
 
@@ -27,17 +33,21 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
                    device,
                    save_path, name):
     '''
-    Args:
-        model (torch.nn): detector model
-        optimizer (torch.optim): optimizer
-        loss_fn (torch.nn): loss function
-        n_epochs (int): number of epochs
-        trainloader (torch.utils.data.DataLoader): dataloader for training set
-        valloader (torch.utils.data.DataLoader): dataloader for validation set
-        device (torch.device): device to use
-        save_path (string): path to save the best model
-        name (string): name of the model
-    Train a model and save the best model.
+    Trains a detector model for object detection using the specified optimizer, loss function, and training/validation data loaders.
+
+    Input:
+        model (torch object): The detector model to train.
+        optimizer (function): The optimizer to use for training.
+        loss_fn (function): The loss function to use for training.
+        n_epochs (int): The number of epochs to train for.
+        trainloader (dataloader): The data loader for the training set.
+        valloader (dataloader): The data loader for the validation set.
+        device (str): The device to use for training and inference.
+        save_path (str): The path to save the best model.
+        name (str): The name of the model.
+
+    Output:
+        A tuple of four numpy arrays containing the training loss, validation loss, training statistics, and validation statistics.
     '''
     # create save path
     if not os.path.exists(save_path):
@@ -108,18 +118,22 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
                      save_path, name,
                      print_every=5):
     '''
-    Args:
-        model (torch.nn): classifier model
-        optimizer (torch.optim): optimizer
-        loss_fn (torch.nn): loss function
-        n_epochs (int): number of epochs
-        trainloader (torch.utils.data.DataLoader): dataloader for training set
-        valloader (torch.utils.data.DataLoader): dataloader for validation set
-        device (torch.device): device to use
-        save_path (string): path to save the best model
-        name (string): name of the model
-        print_every (int): print evaluation metrics every print_every epochs
-    Train a model and save the best model
+    Trains a PyTorch classifier model and saves the best model based on validation accuracy.
+
+    Input:
+        model (Torch object): The classifier model to train.
+        optimizer (function): The optimizer used for training.
+        loss_fn (function): The loss function used for training.
+        n_epochs (int): The number of epochs to train for.
+        trainloader (dataloader): The dataloader for the training set.
+        valloader (dataloader): The dataloader for the validation set.
+        device (str): The device to use for training.
+        save_path (str): The path to save the best model.
+        name (str): The name of the model to save.
+        print_every (int): Print evaluation metrics every `print_every` epochs. Defaults to 5.
+
+    Output:
+        Tuple of four lists representing the training loss, validation loss, training accuracy, and validation accuracy.
     '''
     # create save path
     if not os.path.exists(save_path):

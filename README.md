@@ -1,4 +1,4 @@
-# AviAlert - D2K Team Aubudon Spring 2023
+# AviAlert - D2K Team Audubon Spring 2023
 
 The name "AviAlert" is a combination of the words "aviary" (a place where birds are kept) and "alert" (to bring attention to something). AviAlert is a Python package for object dectection and classification.
 
@@ -29,6 +29,10 @@ The following open source packages are used in this project:
 ## Folder structure
 
   - `assets` || Directory containing files used in the README, such as our data science pipeline
+  - `GUI` || Directory containing files used to run the GUI
+    - `audobon-website` || Contain files for the front-end of the GUI
+    - `audobon-website` || Contain files for the backbone of the GUI
+    - `README.md` || Readme file for the GUI. Refer here for details of the GUI
   - `src` || Directory containing helper functions for data processing, data exploration and modeling
     - `data` || Contains helper functions for data processing and data exploration
        - `coco` || Contains helper functions for COCO API. Sources: Microsoft and Torchvision. For more information, see the bottom of the README

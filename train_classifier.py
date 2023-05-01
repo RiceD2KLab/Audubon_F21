@@ -15,7 +15,25 @@ from src.data.plotlib import plot_curves
 
 
 def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epochs, name, save_path, device, lr):
-    ''' Train a classifier model using the given hyperparameters and configurations.'''
+    ''' 
+    Train a ResNet50 classifier model using the given hyperparameters and configurations.
+    
+    Input:
+        all_data_dir (str): Directory for full dataset of cropped bird images paired with labels in CSV format
+        train_dir (str): Directory for cropped bird train set
+        val_dir (str): Directory for cropped bird validation set
+        batch_size (int): Batch size to train the classification model
+        n_epochs (int): Number of epochs to train the classification model
+        name (str): Desired name of the classification model
+        save_path (str): Path to save the trained model and training statistics
+        device (str): The device to run the training on ('cpu' or 'cuda')
+        lr (float): Learning rate to train the classification model
+    
+    Output:
+        Trained classification model
+        Plots of training metrics (loss curve and accuracy curve)
+        Plot of confusion matrix for each object class in the test set
+    '''
     # explore cropped bird images data
     all_data = datasets.ImageFolder(all_data_dir)
     all_dataloader = get_clf_dataloader_from_dir(all_data_dir, batch_size=batch_size, shuffle=False, preprocess=None)
