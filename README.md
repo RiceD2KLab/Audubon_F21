@@ -112,6 +112,13 @@ In order to access the dataset in Colab, use the following code:
 
 The dataset is stored in Google Drive, and must be accessed using the !gdown command. 
 
+Our team utilize Dropbox which permits multiple downloads of files within a short timeframe. We have segregated the images and annotations into distinct folders for the original and tiled data. Use the following code to retrieve the data:
+
+```linux
+!wget 'https://www.dropbox.com/s/xi6ipd06nqyq3k5/database.zip'
+!unzip -q './database.zip'
+```
+
 ## Data format
 
 CSV and JPG files that share the same name but have different file extensions. The CSV files and JPG files should be saved in different folders.
