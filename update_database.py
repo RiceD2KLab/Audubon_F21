@@ -8,7 +8,7 @@ from src.data.crop_birds import cropping
 
 def update_database():
     ''' 
-    Update database using the following steps: 
+    Process the dataset using the following steps: 
         1. Update annotations on the original images by writing a new CSV file NEW_CSV_PATH.
         2. Update annotations on the tiled images by creating a new CSV file TILED_NEW_CSV_PATH.
         3. Plot a histogram of bird species distribution in the full image dataset.
