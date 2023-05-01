@@ -19,15 +19,15 @@ def train_classifier_pipline(all_data_dir, train_dir, val_dir, batch_size, n_epo
     Train a ResNet50 classifier model using the given hyperparameters and configurations.
     
     Input:
-        all_data_dir: Directory for full dataset of cropped bird images paired with labels in CSV format
-        train_dir: Directory for cropped bird train set
-        val_dir: Directory for cropped bird validation set
-        batch_size: Batch size to train the classification model
-        n_epochs: Number of epochs to train the classification model
-        name: Desired name of the classification model
-        save_path: Path to save the trained model and training statistics
-        device: The device to run the training on ('cpu' or 'cuda')
-        lr: Learning rate to train the classification model
+        all_data_dir (str): Directory for full dataset of cropped bird images paired with labels in CSV format
+        train_dir (str): Directory for cropped bird train set
+        val_dir (str): Directory for cropped bird validation set
+        batch_size (int): Batch size to train the classification model
+        n_epochs (int): Number of epochs to train the classification model
+        name (str): Desired name of the classification model
+        save_path (str): Path to save the trained model and training statistics
+        device (str): The device to run the training on ('cpu' or 'cuda')
+        lr (float): Learning rate to train the classification model
     
     Output:
         Trained classification model
