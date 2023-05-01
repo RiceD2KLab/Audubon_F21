@@ -16,8 +16,11 @@ The following open source packages are used in this project:
   - `numpy`
   - `pandas`
   - `matplotlib`
+  - `scikit-learn`
   - `torch`
-  - `tqdm`
+  - `torchvision`
+  - `livelossplot`
+  - `split-folders`
   - `cv2`
   - `pycocotools`
 
@@ -67,22 +70,12 @@ The following open source packages are used in this project:
   ```linux
   !git clone -b avialert https://github.com/RiceD2KLab/Audubon_F21.git
   ```
- ### Install Pytorch
-
-  <a href="https://pytorch.org/get-started/locally/">Installation instructions here</a> <br>
-
-  Requirements: Linux or macOS with Python ≥ 3.6
-
-  ```linux
-  pip3 install torch==1.13.1+cu116 torchvision==0.14.1+cu116 -f https://download.pytorch.org/whl/cu102/torch_stable.html
-  ```
-
- ### Install other dependencies
+ ### Install dependencies
 
   The Python version is 3.8.16 and users can install the required packages using the following command:
 
   ```linux
-  pip install requirements.txt
+  pip install -r requirements.txt
   ```
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
@@ -129,4 +122,4 @@ Run the demo notebook [here](https://colab.research.google.com/drive/1TiGTjLM1Xz
 
 ## Reference
 
-`scr\data\coco` is downloaded from [COCO API](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools) and [PyTorch reference for detection](https://github.com/pytorch/vision/tree/main/references/detection)
+Files in `scr\data\coco` are downloaded from [COCO API](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools) and [PyTorch reference for detection](https://github.com/pytorch/vision/tree/main/references/detection).
