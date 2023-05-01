@@ -42,7 +42,6 @@ The following open source packages are used in this project:
     - `server` || Directory containing files for setting up the server and GUI backend
   - `notebooks` || Directory containing Jupyter notebooks for demonstrations or examples
     - `demo.ipynb`
-
   - `src` || Directory containing helper functions for data processing, data exploration and modeling
     - `data` || Contains helper functions for data processing and data exploration
        - `coco` || Contains helper functions for COCO API. Sources: Microsoft and Torchvision. For more information, see the bottom of the README
@@ -72,7 +71,6 @@ The following open source packages are used in this project:
   - `train_classifier.py`|| Function for training a bird classification model
   - `train_detector.py` || Function for training a bird localization model
   - `update_database.py`|| Function for setting up data paths
-  - `audubon_demo.ipynb` || Colab notebook containing a demonstration of data processing, data exploration and building the bird localization and classification models
   - `README.md`
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
