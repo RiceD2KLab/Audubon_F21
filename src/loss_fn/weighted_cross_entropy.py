@@ -6,10 +6,12 @@ import torch
 
 def compute_class_weights_from_dataset(dataset):
     '''
-    Computes class weights from a `datasets.ImageFolder` object.
+    Computes class weights from a dataset of images associated with n classes.
+    Weights are used in the weighted cross-entropy loss function. Weights are inversely 
+    proportional to the number of each class samples in the dataset.
     
     Args:
-        dataset (torchvision.datasets.ImageFolder): ImageFolder object containing the dataset
+        dataset: Torch ImageFolder object containing the dataset
     
     Returns:
         A list of class weights computed using the `compute_class_weight` function
@@ -28,8 +30,8 @@ def get_weighted_cross_entropy_loss_fn(class_weights, device):
     Returns a weighted cross entropy loss function with the given class weights.
     
     Args:
-        class_weights (torch.tensor): A list of class weights
-        device (torch.device): The device to use
+        class_weights: A list of class weights
+        device: The device to compute the weights on
     
     Returns:
         The weighted cross entropy loss function
