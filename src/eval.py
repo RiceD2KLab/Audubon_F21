@@ -9,10 +9,10 @@ def get_od_predictions(model, dataloader, device, idx):
     Returns object detection predictions for a given index in a dataloader.
 
     Args:
-        model (torchvision.models.detection): Object detection model
-        dataloader (torch.utils.data.DataLoader): DataLoader
-        device (torch.device): Device to use
-        idx (int): Index of the image to predict on
+        model: Object detection model
+        dataloader: DataLoader
+        device: Device to run training on ('cpu' or 'cuda')
+        idx: Index of the image to predict on
 
     Returns:
         object detection results for a given index in a dataloader
@@ -36,10 +36,10 @@ def get_od_loss(model, loss_fn, dataloader, device):
     Returns loss for an object detection model on a given dataset.
 
     Args:
-        model (torchvision.models.detection): Object detection model
-        loss_fn (torch.nn): Loss function TODO: customize and use loss_fn in the future
-        dataloader (torch.utils.data.DataLoader): DataLoader
-        device (torch.device): Device to use
+        model: Torch object detection model
+        loss_fn: Loss function TODO: customize and use loss_fn in the future
+        dataloader: DataLoader
+        device: Device to run training on ('cpu' or 'cuda')
 
     Returns:
         Loss for an object detection model on a given dataset.
@@ -107,10 +107,10 @@ def get_clf_loss_accuracy(model, loss_fn, dataloader, device):
     Returns loss and accuracy for a classifier model on a given dataset.
 
     Args:
-        model (torch.nn): Classifier model
-        loss_fn (torch.nn): Loss function
-        dataloader (torch.utils.data.DataLoader): DataLoader
-        device (torch.device): Device to use
+        model: Classifier model
+        loss_fn: Loss function
+        dataloader: DataLoader
+        device: Device to run training on ('cpu' or 'cuda')
 
     Returns:
         Loss and accuracy for a classifier model on a given dataset.
@@ -147,9 +147,9 @@ def get_clf_predictions(model, dataloader, device):
     Returns the true labels and predicted labels of the given dataset.
 
     Args:
-        model (torch.nn): Classifier model
-        dataloader (torch.utils.data.DataLoader): DataLoader
-        device (torch.device): Device to use
+        model: Classifier model
+        dataloader: DataLoader
+        device: Device to run training on ('cpu' or 'cuda')
 
     Returns:
         A tuple of two lists, containing the true labels and predicted labels respectively.
@@ -174,8 +174,8 @@ def get_stats_from_confusion_matrix(confusion_matrix, class_names):
     Returns precision, recall, f1-score, and support for each class given a confusion matrix.
 
     Args:
-        confusion_matrix (numpy.ndarray): Confusion matrix
-        class_names (list): List of class names
+        confusion_matrix: Confusion matrix object (numpy array)
+        class_names: List of class names
 
     Returns:
         A dictionary with precision, recall, f1-score, and support for each class.
