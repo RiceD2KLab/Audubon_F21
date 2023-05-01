@@ -14,6 +14,7 @@ def get_sgd_optim(model, lr, momentum=0.9, weight_decay=0.0005):
     Returns:
         The created SGD optimizer.
     """
+    # Filter model parameters that need to have gradients computed
     params = [param for param in model.parameters() if param.requires_grad]
     optimizer = torch.optim.SGD(params, lr=lr, momentum=momentum, weight_decay=weight_decay)
     return optimizer

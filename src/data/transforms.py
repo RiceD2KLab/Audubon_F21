@@ -16,8 +16,12 @@ def get_transform(train):
         to the input image.
     '''
     transforms = []
+
+    # Add transforms of converting PIL to tensor and changing image data type
     transforms.append(T.PILToTensor())
     transforms.append(T.ConvertImageDtype(torch.float))
+
+    # If it's training mode, add some random modifications of images to the transform
     if train:
         transforms.append(T.RandomHorizontalFlip(0.5))
         transforms.append(T.RandomPhotometricDistort())

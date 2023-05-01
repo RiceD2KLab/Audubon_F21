@@ -27,6 +27,7 @@ def concat_frames(file_names):
     Returns:
         A pandas dataframe containing rows from all the concatenated CSV files.
     """
+    # Get a list of Panda dataframes from a list of csv files
     frames = [csv_to_df(file_name) for file_name in file_names]
     return pd.concat(frames, axis=0, ignore_index=True)
 
@@ -42,6 +43,8 @@ def get_file_names(path, extension):
         A sorted list of file names that match the specified file extension.
     """
     file_names = []
+
+    # Get file names of files with the correct extnesion
     for file in os.listdir(path):
         if file.endswith(extension):
             file_names.append(os.path.join(path, file))
@@ -69,12 +72,17 @@ def split_img_annos(img_files, anno_files, frac, seed=None):
         np.random.seed(seed)
 
     num_of_files = len(img_files)
+
+    # calculate the indices for the training, testing, and validation sets based on the fraction
     train_idx = int(num_of_files * frac[0])
     test_idx = train_idx + int(num_of_files * frac[1])
     val_idx = min(test_idx + int(num_of_files * frac[2]), num_of_files)
 
+    # shuffle the indices to randomly split the dataset
     indices = np.arange(num_of_files)
     np.random.shuffle(indices)
+
+    # divide the files into training, testing, and validation sets based on the calculated indices
     train_test_val = [
         {'jpg': [img_files[idx] for idx in indices[:train_idx]],
          'csv': [anno_files[idx] for idx in indices[:train_idx]]},

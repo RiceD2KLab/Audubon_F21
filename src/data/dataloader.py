@@ -28,7 +28,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
             idx (int): Index of the item to get.
 
         Returns:
-            tuple: Tuple of image and target.
+            Tuple of image and target.
         '''
         # file path
         image_path, target_path = self._jpg_paths[idx], self._csv_paths[idx]
@@ -79,7 +79,7 @@ class ObjectDetectionDataset(torch.utils.data.Dataset):
         Return the length of the dataset.
 
         Returns:
-            int: The length of the dataset.
+            The length of the dataset.
         '''
         return len(self._jpg_paths)
 
@@ -92,7 +92,7 @@ def od_collate_fn(batch):
         batch (list): List of (image, target) tuples.
 
     Returns:
-        tuple: Tuple of stacked images and targets.
+        Tuple of stacked images and targets.
     '''
     return tuple(zip(*batch))
 
@@ -110,9 +110,11 @@ def get_od_dataloader(jpg_paths, csv_paths, transform, batch_size, shuffle, spec
         species (bool): Whether to be bird-only or species.
 
     Returns:
-        torch.utils.data.DataLoader: The object detection dataloader.
+        The object detection dataloader.
     '''
     od_dataset = ObjectDetectionDataset(jpg_paths, csv_paths, transform, species)
+
+    # Create PyTorch DataLoader for Object Detection
     od_dataloader = torch.utils.data.DataLoader(od_dataset,
                                                 batch_size=batch_size,
                                                 shuffle=shuffle,
@@ -131,8 +133,10 @@ def get_clf_dataloader_from_dir(dir_path, batch_size, shuffle, preprocess):
         preprocess (torchvision.transforms.transforms.Compose): Transforms to apply to images.
 
     Returns:
-        torch.utils.data.DataLoader: The classification dataloader.
+        The classification dataloader.
     '''
     data = datasets.ImageFolder(dir_path, transform=preprocess)
+
+    # Create PyTorch DataLoader for Classfication
     dataloader = torch.utils.data.DataLoader(data, batch_size=batch_size, shuffle=shuffle)
     return dataloader

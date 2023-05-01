@@ -12,6 +12,7 @@ def get_adam_optim(model, lr=0.0001):
     Returns:
         Adam optimizer instance
     '''
+    # Filter model parameters that need to have gradients computed
     params = [param for param in model.parameters() if param.requires_grad]
     optimizer = torch.optim.Adam(params, lr=lr)
     return optimizer

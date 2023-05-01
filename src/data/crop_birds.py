@@ -9,14 +9,21 @@ def cropping(csv_path, img_path, cropped_path):
     
     Args:
         csv_path (str): Path to the folder containing the csv files.
+                        csv files contain bounding boxes of birds in images.
         img_path (str): Path to the folder containing the images.
         cropped_path (str): Path to the folder to save the cropped images.
     """
+    # Get the file names of CSV and JPG files from their parent paths
     jpg_files = get_file_names(img_path, 'jpg')
     csv_files = get_file_names(csv_path, 'csv')
+    
+    
     for idx in range(len(jpg_files)):
+        # Read the CSV and JPG files from paths
         img = cv2.imread(jpg_files[idx])
         boxes = csv_to_df(csv_files[idx])
+
+        # Loop through every bounding box and crop images
         for dummy, box in boxes.iterrows():
             xmin, xmax, ymin, ymax = box['xmin'], box['xmax'], box['ymin'], box['ymax']
             class_name = box['class_name']

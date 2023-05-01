@@ -15,6 +15,8 @@ def compute_class_weights_from_dataset(dataset):
         A list of class weights computed using the `compute_class_weight` function
     '''
     targets = dataset.targets
+
+    # Compute class weights for each class in the dataset
     class_weights = compute_class_weight(class_weight='balanced',
                                          classes=np.unique(targets),
                                          y=targets)
@@ -32,5 +34,6 @@ def get_weighted_cross_entropy_loss_fn(class_weights, device):
     Returns:
         The weighted cross entropy loss function
     '''
+    # Get Cross-entrophy loss with class wieghts
     loss_fn = nn.CrossEntropyLoss(weight=torch.tensor(class_weights, dtype=torch.float32)).to(device)
     return loss_fn

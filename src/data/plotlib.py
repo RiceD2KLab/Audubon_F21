@@ -42,14 +42,17 @@ def plot_distribution(data_frame, col_name,
     plt.rcdefaults()
     val_counts = data_frame[col_name].value_counts()
 
+    # Filter value counts if minimum count is specified
     if filt:
         val_counts = val_counts[val_counts >= filt]
     idx_list = val_counts.index.tolist()
     val_list = val_counts.values.tolist()
+
+    # Get a colormap for the plot
     cmap = get_cmap(len(idx_list))
     color_list = [cmap(idx) for idx in range(len(idx_list))]
 
-    # make plot
+    # Create plot
     fig, axs = plt.subplots(figsize=(10, 6))
     chart = axs.bar(idx_list, val_list, color=color_list)
     axs.set_title(title)
@@ -61,6 +64,7 @@ def plot_distribution(data_frame, col_name,
     for i in range(len(chart)):
         axs.text(i, chart[i].get_height() + 0.5, chart[i].get_height(), ha='center', fontsize=10)
 
+    # Save plot if path is specified
     if path:
         if not os.path.exists(path):
             os.makedirs(path)
@@ -85,6 +89,7 @@ def plot_curves(arr1, arr2, label1, label2, xlabel, ylabel, title, path=None):
     Returns:
         A matplotlib figure of the two curves.
     '''
+    # Create plot with two curves
     fig, axs = plt.subplots()
     axs.plot(arr1, label=label1)
     axs.plot(arr2, label=label2)
@@ -116,6 +121,8 @@ def plot_precision_recall(stat_arr, xlabel, ylabel, title, path=None):
         A matplotlib figure of the precision and recall at different IoU thresholds for each epoch.
     '''
     fig, axs = plt.subplots()
+
+    # Plot precision and recall for each epoch for IoU thresholds of 0.5 and 0.75
     axs.plot(stat_arr[:, 0], label="Precision with IoU=0.5")
     axs.plot(stat_arr[:, 1], label="Precision with IoU=0.75")
     axs.plot(stat_arr[:, 2], label="Recall with IoU=0.5")
@@ -145,7 +152,11 @@ def show(img, dpi):
         A matplotlib figure of the image.
     '''
     n_channels, height, width = img.shape
+
+    # Create a figure with the appropriate dimensions and dots per inch
     fig, axs = plt.subplots(figsize=(width / dpi, height / dpi), dpi=dpi)
+    
+    # Convert the image tensor to PIL image and display it in the figure
     img = img.detach()
     img = F.to_pil_image(img)
     axs.imshow(np.asarray(img))
@@ -170,6 +181,8 @@ def visualize_predictions(file_paths, output, path, title, dpi, score_threshold=
         A figure object containing each image overlaid with predicted bounding boxes.
     '''
     img = read_image(file_paths)
+
+    # Draw the predicted bounding boxes on the image
     result = draw_bounding_boxes(img, output['boxes'][output['scores'] > score_threshold],
                                  colors='blue', width=3)
     fig = show(result, dpi)
@@ -194,8 +207,12 @@ def plot_confusion_matrix(true_label_list, predicted_list, class_names, title='C
     Returns:
         A figure object containing the confusion matrix.
     '''
+
+    # Caculate the confusion matrix and create a display for it
     conf_mat = confusion_matrix(true_label_list, predicted_list)
     disp = ConfusionMatrixDisplay(confusion_matrix=conf_mat, display_labels=class_names)
+
+    # Plot the display in a figure
     fig, ax = plt.subplots(figsize=(25, 10))
     disp.plot(ax=ax)
     ax.set_title(title)
