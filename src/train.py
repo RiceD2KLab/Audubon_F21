@@ -8,10 +8,7 @@ from livelossplot import PlotLosses
 
 class HiddenPrints:
     '''
-    Hide prints object. Used to hide the model training output in our demonstration Colab notebook. 
-    Example:
-        with HiddenPrints():
-            print("This will not be printed")
+    Hide printed function outputs. Used to hide the model training output in our demonstration Colab notebook. 
     '''
     def __enter__(self):
         '''
