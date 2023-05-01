@@ -4,13 +4,14 @@ from src.data.utils import csv_to_df, get_file_names
 
 
 def cropping(csv_path, img_path, cropped_path):
-    '''
+    """
+    Crops images based on bounding boxes in csv files and saves them in a new folder.
+    
     Args:
-        csv_path: path to the folder containing the csv files
-        img_path: path to the folder containing the images
-        cropped_path: path to the folder to save the cropped images
-    Crop images based on bounding boxes in csv files and save them in a new folder.
-    '''
+        csv_path (str): Path to the folder containing the csv files.
+        img_path (str): Path to the folder containing the images.
+        cropped_path (str): Path to the folder to save the cropped images.
+    """
     jpg_files = get_file_names(img_path, 'jpg')
     csv_files = get_file_names(csv_path, 'csv')
     for idx in range(len(jpg_files)):

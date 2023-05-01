@@ -6,11 +6,12 @@ from src.data.plotlib import plot_distribution
 
 def write_csv(old_path, new_path, mapping):
     '''
-    Args:
-        old_path: path to the folder containing the old csv files
-        new_path: path to the folder to save the new csv files
-        mapping: dictionary mapping old class names to new class names
     Write new csv files to new_path with new class names and new columns.
+
+    Args:
+        old_path (str): path to the folder containing the old csv files
+        new_path (str): path to the folder to save the new csv files
+        mapping (Dict): dictionary mapping old class names to new class names
     '''
     # get all file names in the old csv files folder sorted alphabetically
     old_csv_file_names = get_file_names(old_path, 'csv')
@@ -48,12 +49,13 @@ def write_csv(old_path, new_path, mapping):
 
 def add_class_id_and_data_exploration(new_path, title, data_path, plot_path=None):
     '''
-    Args:
-        new_path: path to the folder containing the new csv files
-        title: title of the plot
-        data_path: path to the folder containing the new csv files
-        plot_path: path to the folder to save the plot
     Add class_id column to each csv file and plot distribution of classes.
+
+    Args:
+        new_path (str): Path to the folder containing the new csv files
+        title (str): Title of the plot
+        data_path (str): Path to the folder to save the class_id_mapping.csv file
+        plot_path (str, optional): Path to the folder to save the plot. Default is None.
     '''
     # get all file names in the new csv files folder sorted alphabetically
     new_csv_file_names = get_file_names(new_path, 'csv')

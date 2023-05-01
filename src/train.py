@@ -27,17 +27,27 @@ def train_detector(model, optimizer, loss_fn, n_epochs,
                    device,
                    save_path, name):
     '''
+    Trains a detector model for object detection using the specified optimizer, loss function, and training/validation data loaders.
+
     Args:
-        model (torch.nn): detector model
-        optimizer (torch.optim): optimizer
-        loss_fn (torch.nn): loss function
-        n_epochs (int): number of epochs
-        trainloader (torch.utils.data.DataLoader): dataloader for training set
-        valloader (torch.utils.data.DataLoader): dataloader for validation set
-        device (torch.device): device to use
-        save_path (string): path to save the best model
-        name (string): name of the model
-    Train a model and save the best model.
+        model (torch.nn.Module): The detector model to train.
+        optimizer (torch.optim.Optimizer): The optimizer to use for training.
+        loss_fn (torch.nn.Module): The loss function to use for training.
+        n_epochs (int): The number of epochs to train for.
+        trainloader (torch.utils.data.DataLoader): The data loader for the training set.
+        valloader (torch.utils.data.DataLoader): The data loader for the validation set.
+        device (torch.device): The device to use for training and inference.
+        save_path (str): The path to save the best model.
+        name (str): The name of the model.
+
+    Returns:
+        Tuple: A tuple of four numpy arrays containing the training loss, validation loss, training statistics, and validation statistics, respectively.
+
+    Raises:
+        ValueError: If `save_path` does not exist and cannot be created.
+
+    Notes:
+        The model is trained for the specified number of epochs using the given optimizer and loss function. During each epoch, the model is trained on the training data loader by performing forward and backward passes, and then evaluated on the validation data loader by computing the loss and evaluation statistics. The best model is saved based on the validation loss. The function also uses the liveloss library to plot the live training and validation loss.
     '''
     # create save path
     if not os.path.exists(save_path):
@@ -108,18 +118,25 @@ def train_classifier(model, optimizer, loss_fn, n_epochs,
                      save_path, name,
                      print_every=5):
     '''
+    Trains a PyTorch classifier model and saves the best model based on validation accuracy.
+
     Args:
-        model (torch.nn): classifier model
-        optimizer (torch.optim): optimizer
-        loss_fn (torch.nn): loss function
-        n_epochs (int): number of epochs
-        trainloader (torch.utils.data.DataLoader): dataloader for training set
-        valloader (torch.utils.data.DataLoader): dataloader for validation set
-        device (torch.device): device to use
-        save_path (string): path to save the best model
-        name (string): name of the model
-        print_every (int): print evaluation metrics every print_every epochs
-    Train a model and save the best model
+        model (torch.nn): The classifier model to train.
+        optimizer (torch.optim): The optimizer used for training.
+        loss_fn (torch.nn): The loss function used for training.
+        n_epochs (int): The number of epochs to train for.
+        trainloader (torch.utils.data.DataLoader): The dataloader for the training set.
+        valloader (torch.utils.data.DataLoader): The dataloader for the validation set.
+        device (torch.device): The device to use for training.
+        save_path (str): The path to save the best model.
+        name (str): The name of the model to save.
+        print_every (int, optional): Print evaluation metrics every `print_every` epochs. Defaults to 5.
+
+    Returns:
+        Tuple of four lists representing the training loss, validation loss, training accuracy, and validation accuracy respectively.
+
+    Raises:
+        None.
     '''
     # create save path
     if not os.path.exists(save_path):
