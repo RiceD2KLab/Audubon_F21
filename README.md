@@ -35,9 +35,11 @@ The following open source packages are used in this project:
 
   - `assets` || Directory containing files used in the README, such as our data science pipeline
   - `GUI` || Directory containing files used to run the GUI
-    - `audobon-website` || Contain files for the front-end of the GUI
-    - `audobon-website` || Contain files for the backbone of the GUI
-    - `README.md` || Readme file for the GUI. Refer here for details of the GUI
+    - `audubon-website` || Contain files for the front-end of the GUI
+        - `README.md` || Readme file for the GUI. Refer here for details of the GUI
+        - `package.json`
+        - `src`|| Directory containing files for the front-end of the GUI
+    - `server` || Directory containing files for setting up the server and GUI backend
   - `src` || Directory containing helper functions for data processing, data exploration and modeling
     - `data` || Contains helper functions for data processing and data exploration
        - `coco` || Contains helper functions for COCO API. Sources: Microsoft and Torchvision. For more information, see the bottom of the README
