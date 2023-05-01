@@ -7,10 +7,10 @@ def get_sgd_optim(model, lr, momentum=0.9, weight_decay=0.0005):
     Used for training the detection and classification models.
 
     Args:
-        model: The PyTorch model for which the optimizer will be created.
-        lr: The learning rate for the optimizer.
-        momentum: The momentum factor for SGD. Default is 0.9.
-        weight_decay: The weight decay (L2 penalty) factor for SGD. Default is 0.0005.
+        model (Torch object): The PyTorch model for which the optimizer will be created.
+        lr (float): The learning rate for the optimizer.
+        momentum (float): The momentum factor for SGD. Default is 0.9.
+        weight_decay (float): The weight decay (L2 penalty) factor for SGD. Default is 0.0005.
 
     Returns:
         The created SGD optimizer.
