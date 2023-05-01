@@ -20,14 +20,14 @@ def train_detector_pipeline(csv_path, img_path, split_ratio, batch_size, num_cla
     Train a detector model using the given hyperparameters and configurations. 
     
     Input:
-        csv_path: Path of CSV files containing annotations for the images
-        img_path: Path of JPG files in the dataset
-        split_ratio: Train/test/validation split ratio
-        batch_size: Batch size to train the detection model
-        num_classes: Number of classes for the detection model to output
-        l_r: Learning rate to train the detection model
-        num_epoch: Number of epochs to train the detection model 
-        model_name: Desired name of the model object
+        csv_path (str): Path of CSV files containing annotations for the images
+        img_path (str): Path of JPG files in the dataset
+        split_ratio (float): Train/test/validation split ratio
+        batch_size (int): Batch size to train the detection model
+        num_classes (int): Number of classes for the detection model to output
+        l_r (float): Learning rate to train the detection model
+        num_epoch (int): Number of epochs to train the detection model 
+        model_name (str): Desired name of the model object
         
     Output:
         A trained Torch object detection model
