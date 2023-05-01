@@ -110,14 +110,14 @@ Each annotated UAV image has a corresponding CSV file containing bird annotation
   - Width of the bounding box
   - Height of the bounding box
 
-In order to access the dataset in Colab, use the following code:
+In order to access the full dataset in Colab, use the following code:
 
 ```
 !gdown -q 'https://drive.google.com/uc?id=1oK_1Y16dMwcqytFd41UNHxP_O7ju22bo'
 !unzip -q './S23-Audubon.zip' && mv S23-Audubon [desired folder in working directory] 
 ```
 
-The dataset is stored in Google Drive, and must be accessed using the !gdown command. 
+The full Audubon dataset is stored in Google Drive, and must be accessed using the !gdown command. 
 
 Our team utilize Dropbox which permits multiple downloads of files within a short timeframe. We have segregated the images and annotations into distinct folders for the original and tiled data. Use the following code to retrieve the data:
 
