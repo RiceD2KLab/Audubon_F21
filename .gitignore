@@ -5,7 +5,7 @@
 /GUI/audobon-website/public
 /GUI/audobon-website/build
 /.pnp
-#/GUI/server/upload
+/GUI/server/upload
 /GUI/server/__pycache__
 /GUI/audobon-website/package-lock.json
 .pnp.js
