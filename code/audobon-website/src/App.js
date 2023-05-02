@@ -58,14 +58,24 @@ function App() {
   const [inputVal, setACInputVal] = useState('')
   const [csvData, setCSVData] = useState([])
   
-  // Function that changes the uploaded file
+  /**
+   * Stores the uplaoded file
+   * Inputs:
+   *      e - An object that contains the data for the file that was uploaded by the user
+   * Returns:
+   *      An updated file variable containing the file that was uploaded
+   */
   const changedFile = (e) => {
     setFile(e.target.files[0]);
   };
 
   /**
-   * Takes the uploaded file and sends it to the backend to be run through the classifier
-   * @returns the data from the classifier
+   * Sends the uploaded file to the backend to be run through the detector and classifier and sets up
+   * the rest of the GUI for annotation
+   * Inputs:
+   *      file - An object containing the image that was uploaded by the user
+   * Returns:
+   *      The data from the classifier in the form of csvData, nameArray, numBirds
    */
   const uploadedFile = () => {
     if (file == null) {
@@ -96,21 +106,41 @@ function App() {
     });
   };
   
-  // Changes the bird selected via the dropdown
+  /**
+   * Changes the selected bird in accordance with user input
+   * Inputs:
+   *      e - An object containing information found in the combobox that the user is changing
+   * Returns:
+   *      New value for selectedBird ina ccordance to what the user changed
+   */
   const changeBird = (e) => {
     let bird = e.target.innerHTML;
     setSelectedBird(bird)
   }
 
-  // Advances to the next bird and should mark the current image as not a bird
+  /**
+   * Advances to the next bird and should mark the current image as not a bird
+   * Input:
+   *     birdNum - An integer value representing the bird we are currently working on
+   * Returns:
+   *     An updated csvData array denoting the current bird as trash
+   */
   const notABird = () => {
     console.log("Not a bird!")
+    csvData[birdNum + 1][0] = "TRASH"
+    csvData[birdNum + 1][1] = "Trash/Debris"
     
     nextBirdFunc()
   }
 
   /**
-   * Sends data to the backend to update the sql database with the selected bird entry
+   * Updates the csvDataArray to display the new data that was presented to it
+   * Inputs:
+   *      selectedBird - A string denoting the value selected by the user
+   *      csvData - An array containing the information that is being stored by the system
+   *      birdNum - An integer value representing the bird that we are working on
+   * Returns:
+   *      An updated csvData array in accordance to user input
    */
   const sendInfo = () => {
     let birdArr = selectedBird.split(' ')
@@ -123,7 +153,10 @@ function App() {
 
   /**
    * Advances to the next bird, setting all variables up to display it
-   * @returns The next bird in the sequence
+   * Inputs:
+   *      birdNum - An integer value representing the bird that we are on
+   * Returns:
+   *      A new screen displaying the next bird in the list
    */
   const nextBirdFunc = () => {
     let x = birdNum + 1
@@ -135,8 +168,11 @@ function App() {
   }
 
   /**
-   * Goes back to the next bird, setting all variables up to display it
-   * @returns The previous bird in the sequence
+   * Goes back to the next bird upon button press, setting all variables up to display it
+   * Inputs:
+   *      birdNum - An integer value representing the bird that we are on
+   * Returns:
+   *      A new screen displaying the previous bird in the list
    */
   const prevBirdFunc = () => {
     let x = birdNum - 1
@@ -163,7 +199,11 @@ function App() {
   }
 
   /**
-   * Retrieves a CSV from the database and makes it available to download
+   * Generates a CSV to be downlaoded for the user upon button click
+   * Inputs:
+   *      csvData - An array which contains all of the data collected from this image
+   * Returns:
+   *      A CSV to be downloaded
    */
   const getCSV = () => {
     console.log("Hello")
@@ -204,7 +244,7 @@ function App() {
                 id = "bird-options"
                 options = {birdOptions}
                 onChange={changeBird}
-                value = {selectedBird}
+                value = {[csvData[birdNum + 1][1], csvData[birdNum + 1][0]].join(' ')}
                 inputValue = {inputVal}
                 onInputChange={(_, newInputValue) => {
                   setACInputVal(newInputValue)
