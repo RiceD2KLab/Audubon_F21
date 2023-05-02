@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+### Requirements to run the project
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+To run this project on your local machine you need 4 things
+1. This project must be on your computer
+2. Node.js and npm must be installed on your computer
+3. Python3 and several dependencies must be installed on your computer
+4. The 2 models must be downloaded and installed a folder within this project
 
-## Available Scripts
+### Installing Node.js and npm
 
-In the project directory, you can run:
+In order to install Node.js and npm you would need to go to https://nodejs.org/en/download and pick the package that is correct for your os. If you are using a windows computer click on Windows Installer. And if you are using a Mac click on macOS installer. Follow the prompts, no need for any change in the settings. Once you are done with the installer both Node.js and npm should be installed.
 
-### `npm start`
+### Python3 and pip
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+In order to install python3 go to this website https://www.python.org/downloads/ and follow the installation instructions similar to when installing Node.js. Once you are done with the installer both python3 and pip should be installed on your computer
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Installing the Detection and Classification models
 
-### `npm test`
+Within this project go to the folder titled GUI/server. If no models folder is found there make one. Then go to this link, https://drive.google.com/drive/folders/1GkywYLXdK-BeN7aoqSK5UsFyJ24X6Tcn?usp=sharing, and download both of the models to the models folder that was stated above.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Installing all dependencies
 
-### `npm run build`
+There are two sets of dependencies to install. First, to install the react dependencies in computer terminal navigate to the 'audobon-website' directory. Once there type in the command 'npm install'. This command will look at the package.json file, find all the dependencies needed and install them automatically. It will take a while.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Next to the install the python dependencies, in your terminal type in this series of commands:
+pip install flask
+pip install flask_restful
+pip install flask-cors
+pip install pandas
+pip install ast
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117   
+pip install opencv-python 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Upon following all of the above steps the program should be good to run.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Running the project
+In order to run the project you need two terminals, one for the webpage and one for the backend server. 
+To run the webpage go back to the 'audobon-website' folder in your terminal and type in the command 'npm start'. This will take a while to run the first time as react sets modules up. Once it is done a window should open in your default browser to the url 'http://localhost:3000/', displaying the landing page.
 
-### `npm run eject`
+To run the backend server you can right click on the 'script.py' file and copy its path (important to not copy the relative path) and paste that path into a different terminal. Alternatively you can hit run on an IDE while you have that file open. After a couple of seconds you should see:
+        * Serving Flask app 'restapi'
+        * Debug mode: off
+        WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+        * Running on http://127.0.0.1:5000
+        Press CTRL+C to quit
+on your terminal, this means that it is running successfully.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Congrats! You have now set up the application and can begin testing.

@@ -2,7 +2,6 @@
 
 # dependencies
 /GUI/audobon-website/node_modules
-/GUI/audobon-website/public
 /GUI/audobon-website/build
 /.pnp
 /GUI/server/upload
