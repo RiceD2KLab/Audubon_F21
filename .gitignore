@@ -1,0 +1,27 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/GUI/audobon-website/node_modules
+/GUI/audobon-website/public
+/GUI/audobon-website/build
+/.pnp
+#/GUI/server/upload
+/GUI/server/__pycache__
+/GUI/audobon-website/package-lock.json
+.pnp.js
+*.cmd
+/GUI/server/models/
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

@@ -4,7 +4,6 @@ import React, {useState} from 'react';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import fileDownload from 'js-file-download'
 
 /***
  * The main webpage. Contains all of the data with regards to the webpage and sets up communication to the backend
@@ -53,20 +52,30 @@ function App() {
   const [numbirds, setNumBirds] = useState(0)
   const [success, setSuccess] = useState(false)
   const [selectedBird, setSelectedBird] = useState(birdOptions[0])
-  const [display, setDisplay] = useState(0)
   const zoomed_in_image = require.context('../../server/upload/', true)
   const [birdNum, setBirdNum] = useState(0)
   const [nameArray, setNameArray] = useState([''])
   const [inputVal, setACInputVal] = useState('')
+  const [csvData, setCSVData] = useState([])
   
-  // Function that changes the uploaded file
+  /**
+   * Stores the uplaoded file
+   * Inputs:
+   *      e - An object that contains the data for the file that was uploaded by the user
+   * Returns:
+   *      An updated file variable containing the file that was uploaded
+   */
   const changedFile = (e) => {
     setFile(e.target.files[0]);
   };
 
   /**
-   * Takes the uploaded file and sends it to the backend to be run through the classifier
-   * @returns the data from the classifier
+   * Sends the uploaded file to the backend to be run through the detector and classifier and sets up
+   * the rest of the GUI for annotation
+   * Inputs:
+   *      file - An object containing the image that was uploaded by the user
+   * Returns:
+   *      The data from the classifier in the form of csvData, nameArray, numBirds
    */
   const uploadedFile = () => {
     if (file == null) {
@@ -84,11 +93,11 @@ function App() {
         'Content-Type': imgUpload.getHeaders
       },
     }).then((response) => {
-      setNumBirds(response.data.data)
+      setNumBirds(response.data.num_birds)
       setNameArray(response.data.bird_names)
+      setCSVData(response.data.data)
       setSuccess(true)
       setSelectedBird(birdOptions.find(element => element === response.data.bird_names[0]))
-      setDisplay(1)
     }).catch((error) => {
       if (error.response){
         console.log("error:");
@@ -97,56 +106,61 @@ function App() {
     });
   };
   
-  // Changes the bird selected via the dropdown
+  /**
+   * Changes the selected bird in accordance with user input
+   * Inputs:
+   *      e - An object containing information found in the combobox that the user is changing
+   * Returns:
+   *      New value for selectedBird ina ccordance to what the user changed
+   */
   const changeBird = (e) => {
     let bird = e.target.innerHTML;
     setSelectedBird(bird)
   }
 
-  // Advances to the next bird and should mark the current image as not a bird
+  /**
+   * Advances to the next bird and should mark the current image as not a bird
+   * Input:
+   *     birdNum - An integer value representing the bird we are currently working on
+   * Returns:
+   *     An updated csvData array denoting the current bird as trash
+   */
   const notABird = () => {
     console.log("Not a bird!")
+    csvData[birdNum + 1][0] = "TRASH"
+    csvData[birdNum + 1][1] = "Trash/Debris"
     
     nextBirdFunc()
   }
 
   /**
-   * Sends data to the backend to update the sql database with the selected bird entry
+   * Updates the csvDataArray to display the new data that was presented to it
+   * Inputs:
+   *      selectedBird - A string denoting the value selected by the user
+   *      csvData - An array containing the information that is being stored by the system
+   *      birdNum - An integer value representing the bird that we are working on
+   * Returns:
+   *      An updated csvData array in accordance to user input
    */
   const sendInfo = () => {
-    let bird = selectedBird
-    axios.post('http://127.0.0.1:5000/annotations', {
-      birdCode: (bird.split(' ')).pop(),
-      num: birdNum + 1, 
-    }).then((response) => {
-      console.log("Success!")
-    }).catch((error) => {
-      if (error.response){
-        console.log("error:");
-        console.log(error.response.data);
-      }
-    });
+    let birdArr = selectedBird.split(' ')
+
+    csvData[birdNum + 1][0] = birdArr.pop()
+    csvData[birdNum + 1][1] = birdArr.join(' ')
+
     nextBirdFunc()
   }
 
   /**
-   * Alternates between the two pages, one being the statistics page and the other being the bird classification page
-   */
-  const switchDisplay = () => {
-    if (display === 0) {
-      setDisplay(1)
-    } else {
-      setDisplay(0)
-    }
-  }
-
-  /**
    * Advances to the next bird, setting all variables up to display it
-   * @returns The next bird in the sequence
+   * Inputs:
+   *      birdNum - An integer value representing the bird that we are on
+   * Returns:
+   *      A new screen displaying the next bird in the list
    */
   const nextBirdFunc = () => {
     let x = birdNum + 1
-    if (x == numbirds) {
+    if (x === numbirds) {
       return
     }
     setBirdNum(x)
@@ -154,8 +168,11 @@ function App() {
   }
 
   /**
-   * Goes back to the next bird, setting all variables up to display it
-   * @returns The previous bird in the sequence
+   * Goes back to the next bird upon button press, setting all variables up to display it
+   * Inputs:
+   *      birdNum - An integer value representing the bird that we are on
+   * Returns:
+   *      A new screen displaying the previous bird in the list
    */
   const prevBirdFunc = () => {
     let x = birdNum - 1
@@ -177,20 +194,23 @@ function App() {
     setNumBirds(0)
     axios.post('http://127.0.0.1:5000/delete', {
       birdNum: numbirds,
+      fileName: file.name,
     })
   }
 
   /**
-   * Retrieves a CSV from the database and makes it available to download
+   * Generates a CSV to be downlaoded for the user upon button click
+   * Inputs:
+   *      csvData - An array which contains all of the data collected from this image
+   * Returns:
+   *      A CSV to be downloaded
    */
   const getCSV = () => {
-    axios.get('http://127.0.0.1:5000/annotations').then ((response) => {
-      fileDownload(response.data, 'imgdata.csv')
-    }).catch((error) => {
-      if (error.response){
-        console.log(error.response.data);
-      }
-    })
+    console.log("Hello")
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + csvData.map(e => e.join(",")).join("\n");
+    var encodedUri = encodeURI(csvContent)
+    window.open(encodedUri)
   }
 
   return (
@@ -209,14 +229,8 @@ function App() {
           </button>
         </div>
         <div className="Model-Output" style={{display: success ? 'inline' : 'none'}}>
-          <div className="Stats-Summary" style={{display: display ? 'none' : 'inline'}}>
-              Total Bird Count: { numbirds }
-              <button onClick={switchDisplay}>
-                Switch Display
-              </button>
-          </div>
 
-          <div className="Bird-Class" style={{display: display ? 'inline' : 'none'}}>
+          <div className="Bird-Class">
             AI Prediction: {nameArray[Number(birdNum)]}
             <div className="Images">
               <img src={zoomed_in_image(`./bird${birdNum}.jpg`)} className="zoomed-img" alt="bird"/>
@@ -230,7 +244,7 @@ function App() {
                 id = "bird-options"
                 options = {birdOptions}
                 onChange={changeBird}
-                value = {selectedBird}
+                value = {[csvData[birdNum + 1][1], csvData[birdNum + 1][0]].join(' ')}
                 inputValue = {inputVal}
                 onInputChange={(_, newInputValue) => {
                   setACInputVal(newInputValue)
@@ -247,16 +261,13 @@ function App() {
                 Not A Bird
               </button>
             </div>
-            <button onClick={switchDisplay} style={{display: 'none'}}>
-              Switch Display
-            </button>
             <button onClick = {prevBirdFunc}>
               Previous Bird
             </button>
             <button onClick = {nextBirdFunc}>
               Next Bird
             </button>
-            <button onClick = {getCSV} style={{display: 'none'}}>
+            <button onClick = {getCSV}>
               Get CSV
             </button>
             <button onClick = {doneWithImage}>

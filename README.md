@@ -137,3 +137,11 @@ CSV and JPG files that share the same name but have different file extensions. T
 ## Reference
 
 Files in `scr\data\coco` are downloaded from [COCO API](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools) and [PyTorch reference for detection](https://github.com/pytorch/vision/tree/main/references/detection).
+
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
+
+## Contributors
+
+<b>Students:</b> Benjamin Daecher (bhd1@rice.edu), Jose Mata Esqueda (jgm7@rice.edu), Jiehui Li (jl302@rice.edu), Zeyu Yang (zy45@rice.edu)<br>
+  <b>Mentor:</b> Krish Kabra (krish.kabra@rice.edu)<br>
+  <b>Sponsors:</b> Richard Gibbons (rgibbons@abcbirds.org), Anna Vallery (avallery1991@gmail.com)<br>
