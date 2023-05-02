@@ -5,12 +5,12 @@
 /code/audobon-website/public
 /code/audobon-website/build
 /.pnp
-/code/server/upload
+#/code/server/upload
 /code/server/__pycache__
 /code/audobon-website/package-lock.json
 .pnp.js
 *.cmd
-/code/server/models/*
+/code/server/models/
 
 # testing
 /coverage

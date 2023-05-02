@@ -4,7 +4,6 @@ import React, {useState} from 'react';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import fileDownload from 'js-file-download'
 
 /***
  * The main webpage. Contains all of the data with regards to the webpage and sets up communication to the backend
@@ -53,11 +52,11 @@ function App() {
   const [numbirds, setNumBirds] = useState(0)
   const [success, setSuccess] = useState(false)
   const [selectedBird, setSelectedBird] = useState(birdOptions[0])
-  const [display, setDisplay] = useState(0)
   const zoomed_in_image = require.context('../../server/upload/', true)
   const [birdNum, setBirdNum] = useState(0)
   const [nameArray, setNameArray] = useState([''])
   const [inputVal, setACInputVal] = useState('')
+  const [csvData, setCSVData] = useState([])
   
   // Function that changes the uploaded file
   const changedFile = (e) => {
@@ -84,11 +83,11 @@ function App() {
         'Content-Type': imgUpload.getHeaders
       },
     }).then((response) => {
-      setNumBirds(response.data.data)
+      setNumBirds(response.data.num_birds)
       setNameArray(response.data.bird_names)
+      setCSVData(response.data.data)
       setSuccess(true)
       setSelectedBird(birdOptions.find(element => element === response.data.bird_names[0]))
-      setDisplay(1)
     }).catch((error) => {
       if (error.response){
         console.log("error:");
@@ -114,30 +113,12 @@ function App() {
    * Sends data to the backend to update the sql database with the selected bird entry
    */
   const sendInfo = () => {
-    let bird = selectedBird
-    axios.post('http://127.0.0.1:5000/annotations', {
-      birdCode: (bird.split(' ')).pop(),
-      num: birdNum + 1, 
-    }).then((response) => {
-      console.log("Success!")
-    }).catch((error) => {
-      if (error.response){
-        console.log("error:");
-        console.log(error.response.data);
-      }
-    });
-    nextBirdFunc()
-  }
+    let birdArr = selectedBird.split(' ')
 
-  /**
-   * Alternates between the two pages, one being the statistics page and the other being the bird classification page
-   */
-  const switchDisplay = () => {
-    if (display === 0) {
-      setDisplay(1)
-    } else {
-      setDisplay(0)
-    }
+    csvData[birdNum + 1][0] = birdArr.pop()
+    csvData[birdNum + 1][1] = birdArr.join(' ')
+
+    nextBirdFunc()
   }
 
   /**
@@ -146,7 +127,7 @@ function App() {
    */
   const nextBirdFunc = () => {
     let x = birdNum + 1
-    if (x == numbirds) {
+    if (x === numbirds) {
       return
     }
     setBirdNum(x)
@@ -177,6 +158,7 @@ function App() {
     setNumBirds(0)
     axios.post('http://127.0.0.1:5000/delete', {
       birdNum: numbirds,
+      fileName: file.name,
     })
   }
 
@@ -184,13 +166,11 @@ function App() {
    * Retrieves a CSV from the database and makes it available to download
    */
   const getCSV = () => {
-    axios.get('http://127.0.0.1:5000/annotations').then ((response) => {
-      fileDownload(response.data, 'imgdata.csv')
-    }).catch((error) => {
-      if (error.response){
-        console.log(error.response.data);
-      }
-    })
+    console.log("Hello")
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + csvData.map(e => e.join(",")).join("\n");
+    var encodedUri = encodeURI(csvContent)
+    window.open(encodedUri)
   }
 
   return (
@@ -209,14 +189,8 @@ function App() {
           </button>
         </div>
         <div className="Model-Output" style={{display: success ? 'inline' : 'none'}}>
-          <div className="Stats-Summary" style={{display: display ? 'none' : 'inline'}}>
-              Total Bird Count: { numbirds }
-              <button onClick={switchDisplay}>
-                Switch Display
-              </button>
-          </div>
 
-          <div className="Bird-Class" style={{display: display ? 'inline' : 'none'}}>
+          <div className="Bird-Class">
             AI Prediction: {nameArray[Number(birdNum)]}
             <div className="Images">
               <img src={zoomed_in_image(`./bird${birdNum}.jpg`)} className="zoomed-img" alt="bird"/>
@@ -247,16 +221,13 @@ function App() {
                 Not A Bird
               </button>
             </div>
-            <button onClick={switchDisplay} style={{display: 'none'}}>
-              Switch Display
-            </button>
             <button onClick = {prevBirdFunc}>
               Previous Bird
             </button>
             <button onClick = {nextBirdFunc}>
               Next Bird
             </button>
-            <button onClick = {getCSV} style={{display: 'none'}}>
+            <button onClick = {getCSV}>
               Get CSV
             </button>
             <button onClick = {doneWithImage}>
