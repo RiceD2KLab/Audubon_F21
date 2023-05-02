@@ -56,7 +56,7 @@ function App() {
   const [birdNum, setBirdNum] = useState(0)
   const [nameArray, setNameArray] = useState([''])
   const [inputVal, setACInputVal] = useState('')
-  const [csvData, setCSVData] = useState([])
+  const [csvData, setCSVData] = useState([['', '', 0, 0, 0, 0], ['AMAVA', 'American Avocet Adult', 0, 0, 0, 0]])
   
   /**
    * Stores the uplaoded file
